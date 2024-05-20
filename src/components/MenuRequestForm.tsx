@@ -33,87 +33,107 @@ import TasteSlider from './TasteSlider'
 import { capitalize, Dish } from '../utils'
 import { Reorder } from "framer-motion"
 import { MdDragIndicator } from 'react-icons/md'
+import { useTranslation } from 'react-i18next'
 
 const SLIDER_DEFAULT = 0
+const MODAL_TIMER = 6000
 
 function MenuRequestForm() {
+
+  const { t } = useTranslation()
+
   const [title, setTitle] = useState('')
   const [menuDesc, setMenuDesc] = useState('')
 
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
+  const [sweetChecked, setSweetChecked] = useState(false)
   const [sweetSlider, setSweetSlider] = useState(SLIDER_DEFAULT)
+  const [bitterChecked, setBitterChecked] = useState(false)
   const [bitterSlider, setBitterSlider] = useState(SLIDER_DEFAULT)
+  const [sourChecked, setSourChecked] = useState(false)
   const [sourSlider, setSourSlider] = useState(SLIDER_DEFAULT)
+  const [saltyChecked, setSaltyChecked] = useState(false)
   const [saltySlider, setSaltySlider] = useState(SLIDER_DEFAULT)
+  const [umamiChecked, setUmamiChecked] = useState(false)
   const [umamiSlider, setUmamiSlider] = useState(SLIDER_DEFAULT)
+  const [piquantChecked, setPiquantChecked] = useState(false)
   const [piquantSlider, setPiquantSlider] = useState(SLIDER_DEFAULT)
+  const [fatChecked, setFatChecked] = useState(false)
   const [fatSlider, setFatSlider] = useState(SLIDER_DEFAULT)
+  const [temperatureChecked, setTemperatureChecked] = useState(false)
   const [tempSlider, setTempSlider] = useState(SLIDER_DEFAULT)
+  const [textureChecked, setTextureChecked] = useState(false)
   const [textureSlider, setTextureSlider] = useState(SLIDER_DEFAULT)
+  const [shapeChecked, setShapeChecked] = useState(false)
   const [shapeSlider, setShapeSlider] = useState(SLIDER_DEFAULT)
   const [isActive, setIsActive] = useState(false)
   const [color, setColor] = useState('')
 
   const baseParams = [
-    {label: 'sweet', value: sweetSlider, setter: setSweetSlider},
-    {label: 'bitter', value: bitterSlider, setter: setBitterSlider},
-    {label: 'sour', value: sourSlider, setter: setSourSlider},
-    {label: 'salty', value: saltySlider, setter: setSaltySlider},
-    {label: 'umami', value: umamiSlider, setter: setUmamiSlider},
+    {label: 'sweet', value: sweetSlider, setter: setSweetSlider, isChecked: sweetChecked, checkCallback: setSweetChecked},
+    {label: 'bitter', value: bitterSlider, setter: setBitterSlider, isChecked: bitterChecked, checkCallback: setBitterChecked},
+    {label: 'sour', value: sourSlider, setter: setSourSlider, isChecked: sourChecked, checkCallback: setSourChecked},
+    {label: 'salty', value: saltySlider, setter: setSaltySlider, isChecked: saltyChecked, checkCallback: setSaltyChecked},
+    {label: 'umami', value: umamiSlider, setter: setUmamiSlider, isChecked: umamiChecked, checkCallback: setUmamiChecked},
   ]
 
   const otherParams = [
-    {label: 'piquant', value: piquantSlider, setter: setPiquantSlider},
-    {label: 'fat', value: fatSlider, setter: setFatSlider},
-    {label: 'temperature', value: tempSlider, setter: setTempSlider, min: -10, max: 40},
-    {label: 'texture', value: textureSlider, setter: setTextureSlider},
-    {label: 'shape', value: shapeSlider, setter: setShapeSlider},
+    {label: 'piquant', value: piquantSlider, setter: setPiquantSlider, isChecked: piquantChecked, checkCallback: setPiquantChecked},
+    {label: 'fat', value: fatSlider, setter: setFatSlider, isChecked: fatChecked, checkCallback: setFatChecked},
+    {label: 'temperature', value: tempSlider, setter: setTempSlider, min: -10, max: 40, isChecked: temperatureChecked, checkCallback: setTemperatureChecked},
+    {label: 'texture', value: textureSlider, setter: setTextureSlider, isChecked: textureChecked, checkCallback: setTextureChecked},
+    {label: 'shape', value: shapeSlider, setter: setShapeSlider, isChecked: shapeChecked, checkCallback: setShapeChecked},
   ]
   const [dishes, setDishes] = useState<Array<Dish>>([])
   
   const toast = useToast()
   const {isOpen, onOpen, onClose} = useDisclosure()
 
+  const updateDish = (name: string, dish: Dish) => {
+    const newDishes = dishes.map((d) => d.name === name ? dish : d)
+    setDishes(newDishes)
+  }
+
   const saveDish = () => {
+    let state = {
+      name: name,
+      description: description,
+      sweet: sweetChecked ? sweetSlider : null,
+      bitter: bitterChecked ? bitterSlider : null,
+      sour: sourChecked ? sourSlider : null,
+      salty: saltyChecked ? saltySlider : null,
+      umami: umamiChecked ? umamiSlider : null,
+      piquant: piquantChecked ? piquantSlider : null,
+      fat: fatChecked ? fatSlider : null,
+      temperature: temperatureChecked ? tempSlider : null,
+      texture: textureChecked ? textureSlider : null,
+      shape: shapeChecked ? shapeSlider : null,
+      color: isActive ? color : null,
+    }
 
     if (!name) {
       toast({
-        title: 'Name is required',
-        description: 'Please provide a name for the dish.',
+        title: t("toast.nameRequired.title"),
+        description: t("toast.nameRequired.description"),
         status: 'error',
-        duration: 9000,
+        duration: MODAL_TIMER,
         isClosable: true,
       })
       return
     }
 
     if (dishes.find((dish) => dish.name === name)) {
+      updateDish(name, state)
       toast({
-        title: 'Dish already exists',
-        description: 'A dish with the same name already exists. Please provide a different name.',
-        status: 'error',
-        duration: 9000,
+        title: t("toast.dishUpdated.title"),
+        description: t("toast.dishUpdated.description"),
+        status: 'success',
+        duration: MODAL_TIMER,
         isClosable: true,
       })
-      return
-    }
-
-    setDishes([...dishes, {
-      name: name,
-      description: description,
-      sweet: sweetSlider,
-      bitter: bitterSlider,
-      sour: sourSlider,
-      salty: saltySlider,
-      umami: umamiSlider,
-      piquant: piquantSlider,
-      fat: fatSlider,
-      temperature: tempSlider,
-      texture: textureSlider,
-      shape: shapeSlider,
-      color: color,
-    }])
+    } else
+      setDishes([...dishes, state])
 
     setName('')
     setDescription('')
@@ -121,14 +141,19 @@ function MenuRequestForm() {
     onClose()
   }
 
+  const deleteDish = (name: string) => {
+    const newDishes = dishes.filter((dish) => dish.name !== name)
+    setDishes(newDishes)
+  }
+
   const loadDish = (name: string) => {
     const dish = dishes.find((dish) => dish.name === name)
     if (!dish) {
       toast({
-        title: 'Dish not found',
-        description: 'The dish you are trying to edit does not exist.',
+        title: t("toast.dishNotFound.title"),
+        description: t("toast.dishNotFound.description"),
         status: 'error',
-        duration: 9000,
+        duration: MODAL_TIMER,
         isClosable: true,
       })
       return
@@ -136,16 +161,27 @@ function MenuRequestForm() {
 
     setName(dish.name)
     setDescription(dish.description ?? '')
+    setSweetChecked(dish.sweet != null)
     setSweetSlider(dish.sweet ?? SLIDER_DEFAULT)
+    setBitterChecked(dish.bitter != null)
     setBitterSlider(dish.bitter ?? SLIDER_DEFAULT)
+    setSourChecked(dish.sour != null)
     setSourSlider(dish.sour ?? SLIDER_DEFAULT)
+    setSaltyChecked(dish.salty != null)
     setSaltySlider(dish.salty ?? SLIDER_DEFAULT)
+    setUmamiChecked(dish.umami != null)
     setUmamiSlider(dish.umami ?? SLIDER_DEFAULT)
+    setPiquantChecked(dish.piquant != null)
     setPiquantSlider(dish.piquant ?? SLIDER_DEFAULT)
+    setFatChecked(dish.fat != null)
     setFatSlider(dish.fat ?? SLIDER_DEFAULT)
+    setTemperatureChecked(dish.temperature != null)
     setTempSlider(dish.temperature ?? SLIDER_DEFAULT)
+    setTextureChecked(dish.texture != null)
     setTextureSlider(dish.texture ?? SLIDER_DEFAULT)
+    setShapeChecked(dish.shape != null)
     setShapeSlider(dish.shape ?? SLIDER_DEFAULT)
+    setIsActive(dish.color != null)
     setColor(dish.color ?? '')
   }
 
@@ -153,10 +189,10 @@ function MenuRequestForm() {
 
     if (!title) {
       toast({
-        title: 'Title is required',
-        description: 'Please provide a title for the menu.',
+        title: t("toast.menuTitleRequired.title"),
+        description: t("toast.menuTitleRequired.description"),
         status: 'error',
-        duration: 9000,
+        duration: MODAL_TIMER,
         isClosable: true,
       })
       return
@@ -164,24 +200,23 @@ function MenuRequestForm() {
 
     if (dishes.length === 0) {
       toast({
-        title: 'Dishes are required',
-        description: 'Please add at least one dish to the menu.',
+        title: t("toast.dishesRequired.title"),
+        description: t("toast.dishesRequired.description"),
         status: 'error',
-        duration: 9000,
+        duration: MODAL_TIMER,
         isClosable: true,
       })
       return
     }
 
     toast({
-      title: 'Menu request submitted',
-      description: `Your request for a menu titled ${title} has been submitted.`,
+      title: t("toast.menuSubmitted.title"),
+      description: t("toast.menuSubmitted.description"),
       status: 'success',
-      duration: 9000,
+      duration: MODAL_TIMER,
       isClosable: true,
     })
 
-    console.log('Menu request submitted')
     const menu = {
       title: title,
       description: menuDesc,
@@ -192,16 +227,16 @@ function MenuRequestForm() {
 
   return (
     <>
-      <InputWrapper label='Menu title' isRequired>
+      <InputWrapper label={t("main.menuTitle")} isRequired>
         <Input value={title} onChange={(e) => { e.preventDefault(); setTitle(e.target.value) }} />
-        <FormHelperText mb={3}>The id you'll use to refer to the menu.</FormHelperText>
+        <FormHelperText mb={3}>{t("main.formTitleCaption")}</FormHelperText>
       </InputWrapper>
 
-      <InputWrapper label='Description' isRequired={false}>
+      <InputWrapper label={t("main.description")} isRequired={false}>
         <Textarea
           value={menuDesc}
           onChange={(e) => {e.preventDefault(); setMenuDesc(e.target.value)}}
-          placeholder='A qualitative description of the menu.'
+          placeholder={t("main.descriptionPlaceholder")}
         />
       </InputWrapper>
 
@@ -209,10 +244,22 @@ function MenuRequestForm() {
         <Flex>
           <Center>
             <Icon boxSize={6} mr={2} as={RiRestaurantFill} />
-            <Text>Portate</Text>
+            <Text>{t("main.menuItems")}</Text>
           </Center>
           <Spacer />
-          <Button onClick={onOpen} leftIcon={<AddIcon />}>Add</Button>
+          <Button
+            onClick={() => {
+              if (dishes.length != 0) {
+                loadDish(dishes[dishes.length - 1]?.name ?? '')
+                setName('')
+                setDescription('')
+              }
+              onOpen()
+            }}
+            leftIcon={<AddIcon />}
+          >
+            {t("main.addItem")}
+          </Button>
 
           <Modal
             scrollBehavior='outside'
@@ -243,6 +290,8 @@ function MenuRequestForm() {
                         ariaLabel={`${param.label}-slider`}
                         value={param.value}
                         setValueCallback={param.setter}
+                        isChecked={param.isChecked}
+                        checkCallback={param.checkCallback}
                       />
                     )
                   })}
@@ -261,6 +310,8 @@ function MenuRequestForm() {
                         setValueCallback={param.setter}
                         min={param.min}
                         max={param.max}
+                        isChecked={param.isChecked}
+                        checkCallback={param.checkCallback}
                       />
                     )
                   })}
@@ -281,6 +332,8 @@ function MenuRequestForm() {
                   <option value='option1'>Joy</option>
                   <option value='option2'>Anger</option>
                   <option value='option3'>Fear</option>
+                  <option value='option4'>Sadness</option>
+                  <option value='option5'>Surprise</option>
                 </Select>
                 </Stack>
 
@@ -306,13 +359,25 @@ function MenuRequestForm() {
                         <Text>{dish.name}</Text>
                       </Center>
                       <Spacer />
-                      <Button variant='outline' colorScheme='red'>Delete</Button>
-                      <Button variant='outline' colorScheme='blue'>Edit</Button>
+                      <Button
+                        variant='outline'
+                        colorScheme='red'
+                        onClick={() => deleteDish(dish.name)}
+                      >
+                        Delete
+                      </Button>
+                      <Button
+                        variant='outline'
+                        colorScheme='blue'
+                        onClick={() => {loadDish(dish.name); onOpen()}}
+                      >
+                        Edit
+                      </Button>
                     </Stack>
                   </Reorder.Item>
                 )) : 
                   <Text color={'gray.500'}>
-                    Empty
+                    {t("main.emptyMenu")}
                   </Text>
                 }
               </Reorder.Group>

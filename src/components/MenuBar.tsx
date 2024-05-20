@@ -1,9 +1,12 @@
 import { Avatar, Box, Center, Flex, Image, Menu, MenuButton, MenuItem, MenuDivider, MenuList, Spacer, Text } from '@chakra-ui/react'
 import { FaHouseUser } from 'react-icons/fa'
 import { MdLogout, MdSettings } from 'react-icons/md'
+import LanguageSelector from './LanguageSelector'
+import { useTranslation } from 'react-i18next'
 
 function MenuBar() {
 
+  const {t} = useTranslation()
 
   return (
     <Box w='100%' height='3.2em' bgGradient='linear(to-r, yellow, black)'>
@@ -20,6 +23,10 @@ function MenuBar() {
         </Center>
 
         <Spacer />
+
+        <Center>
+          <LanguageSelector />
+        </Center>
         
         <Center>
           <Menu>
@@ -27,10 +34,10 @@ function MenuBar() {
               <Avatar borderColor='yellow' borderWidth={2} size='sm' />
             </MenuButton>
             <MenuList>
-              <MenuItem icon={<FaHouseUser size={20} />}>Profile</MenuItem>
-              <MenuItem icon={<MdSettings size={20} />}>Settings</MenuItem>
+              <MenuItem icon={<FaHouseUser size={20} />}>{t("topLeft.profile")}</MenuItem>
+              <MenuItem icon={<MdSettings size={20} />}>{t("topLeft.settings")}</MenuItem>
               <MenuDivider />
-              <MenuItem icon={<MdLogout size={20} />}>Logout</MenuItem>
+              <MenuItem icon={<MdLogout size={20} />}>{t("topLeft.logout")}</MenuItem>
             </MenuList>
           </Menu>
         </Center>

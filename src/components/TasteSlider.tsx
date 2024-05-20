@@ -1,27 +1,26 @@
 import { Box, Checkbox, Slider, SliderFilledTrack, SliderMark, SliderThumb, SliderTrack, Stack } from "@chakra-ui/react"
-import { useState } from "react"
 import { RxValue } from "react-icons/rx"
 
 interface TasteSliderProps {
     label: string
     ariaLabel: string
     value: number
+    isChecked: boolean
+    checkCallback: (checked: boolean) => void
     max?: number
     min?: number
     setValueCallback: (value: number) => void
 }
 
-function TasteSlider({label, ariaLabel, value, max, min, setValueCallback} : TasteSliderProps) {
-
-  const [isActive, setIsActive] = useState(false)
+function TasteSlider({label, ariaLabel, value, max, min, setValueCallback, isChecked, checkCallback} : TasteSliderProps) {
 
   return (
     <Stack direction={'row'} justifyContent='space-between'>
-    <Checkbox isChecked={isActive} onChange={(e) => setIsActive(e.target.checked)}>{label}</Checkbox>
+    <Checkbox isChecked={isChecked} onChange={(e) => checkCallback(e.target.checked)}>{label}</Checkbox>
     <Slider
         w={'250px'}
-        isDisabled={!isActive}
-        value={isActive ? value : (min ?? 0)}
+        isDisabled={!isChecked}
+        value={isChecked ? value : (min ?? 0)}
         step={0.5}
         max={max ?? 10}
         min={min ?? 0}
@@ -29,7 +28,7 @@ function TasteSlider({label, ariaLabel, value, max, min, setValueCallback} : Tas
         onChange={(val) => setValueCallback(val)}
     >
         <SliderMark
-            hidden={!isActive}
+            hidden={!isChecked}
             borderRadius={15}
             value={value}
             textAlign='center'
