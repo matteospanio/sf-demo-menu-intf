@@ -1,0 +1,53 @@
+{
+    "main": {
+        "actions": "Azioni",
+        "newMenuRequest": "Nuova richiesta di menu",
+        "menuTitle": "Titolo del menu",
+        "formDescription": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum repellat laboriosam esse consectetur corporis magni, omnis unde sapiente aperiam culpa magnam quo quisquam sequi? Nesciunt inventore repellat placeat perspiciatis quas ea accusantium explicabo aspernatur impedit voluptatum ab numquam cum, perferendis enim libero? Unde est aliquid facilis porro voluptates error sapiente. Amet, est ullam! Corporis, doloremque architecto eius facere quo veritatis praesentium! Quos alias facere voluptatum doloremque at incidunt quibusdam debitis! Aspernatur non optio, alias amet perferendis expedita vero veniam eligendi? Earum quaerat culpa recusandae, at ducimus numquam, fugiat modi provident minus cumque veniam quam aliquam non voluptatem explicabo itaque nesciunt.",
+        "formTitleCaption": "Il nome con cui verrà identificato il menu.",
+        "description": "Descrizione",
+        "descriptionPlaceholder": "Una descrizione qualitativa del menu.",
+        "menuItems": "Portate",
+        "addItem": "Aggiungi",
+        "emptyMenu": "Nessuna portata inserita.",
+        "submit": "Invia",
+        "save": "Salva"
+    },
+    "topLeft": {
+        "profile": "Profilo",
+        "logout": "Esci",
+        "settings": "Impostazioni"
+    },
+    "modal": {
+        "title": "New Menu Request",
+        "description": "Description",
+        "submit": "Submit",
+        "cancel": "Cancel"
+    },
+    "toast": {
+        "nameRequired": {
+            "title": "Nome mancante",
+            "description": "Per favore inserisci il nome del piatto."
+        },
+        "dishUpdated": {
+            "title": "Piatto modificato",
+            "description": "La portata è stata modificata con successo."
+        },
+        "dishNotFound": {
+            "title": "Portata non trovata",
+            "description": "La portata che stai cercando di modificare non è stata trovata."
+        },
+        "menuTitleRequired": {
+            "title": "Titolo del menu mancante",
+            "description": "Per favore inserisci il tito del menu."
+        },
+        "dishesRequired": {
+            "title": "Portate mancanti",
+            "description": "Per favore inserisci almeno una portata."
+        },
+        "menuSubmitted": {
+            "title": "Menu inviato",
+            "description": "Il menu è stato inviato con successo."
+        }
+    }
+}

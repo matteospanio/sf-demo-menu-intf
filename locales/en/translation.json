@@ -1,0 +1,53 @@
+{
+    "main": {
+        "actions": "Actions",
+        "newMenuRequest": "New Menu Request",
+        "menuTitle": "Menu Title",
+        "formDescription": "Welcome to the menu request form. Please fill out the following fields to request a new menu.\nFields marked with an asterisk (*) are required, and the form will not submit if they are left blank.\nThe most important part of the form is the menu composition, by clicking on the 'Add' button you can add as many menu items as you want, each with its description. The menu items can be reordered by dragging and dropping them.",
+        "formTitleCaption": "The id you'll use to reference this menu.",
+        "description": "Description",
+        "descriptionPlaceholder": "A qualitative description of the menu.",
+        "menuItems": "Menu Items",
+        "addItem": "Add",
+        "emptyMenu": "No menu items yet.",
+        "submit": "Submit",
+        "save": "Save"
+    },
+    "topLeft": {
+        "profile": "Profile",
+        "logout": "Logout",
+        "settings": "Settings"
+    },
+    "modal": {
+        "title": "New Menu Request",
+        "description": "Description",
+        "submit": "Submit",
+        "cancel": "Cancel"
+    },
+    "toast": {
+        "nameRequired": {
+            "title": "Name is required",
+            "description": "Please provide a name for the dish."
+        },
+        "dishUpdated": {
+            "title": "Dish updated",
+            "description": "The dish has been updated successfully."
+        },
+        "dishNotFound": {
+            "title": "Dish not found",
+            "description": "The dish you are trying to update does not exist."
+        },
+        "menuTitleRequired": {
+            "title": "Menu title is required",
+            "description": "Please provide a title for the menu."
+        },
+        "dishesRequired": {
+            "title": "Dishes are required",
+            "description": "Please provide at least one menu item."
+        },
+        "menuSubmitted": {
+            "title": "Menu submitted",
+            "description": "The menu has been submitted successfully."
+        }
+    }
+}
