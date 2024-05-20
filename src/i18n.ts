@@ -8,7 +8,7 @@ i18n.use(LanguageDetector)
     .use(initReactI18next)
     .init({
         backend: {
-            loadPath: '/locales/{{lng}}/{{ns}}.json',
+            loadPath: '/sf-demo-menu-intf/locales/{{lng}}/{{ns}}.json',
         },
         debug: true,
         // returnObjects: true,
