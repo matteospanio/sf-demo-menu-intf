@@ -18,11 +18,40 @@
         "logout": "Logout",
         "settings": "Settings"
     },
+    "cathegory": {
+        "appetizer": "Appetizer",
+        "firstCourse": "First Course",
+        "secondCourse": "Second Course",
+        "sideDish": "Side Dish",
+        "dessert": "Dessert",
+        "drink": "Drink",
+        "none": "None"
+    },
+    "param": {
+        "sweet": "sweet",
+        "salty": "salty",
+        "bitter": "bitter",
+        "sour": "sour",
+        "umami": "umami",
+        "piquant": "piquant",
+        "fat": "fat",
+        "temperature": "temperature",
+        "texture": "texture",
+        "shape": "shape"
+    },
+    "emotions": {
+        "joy": "joy",
+        "anger": "anger",
+        "fear": "fear",
+        "sadness": "sadness",
+        "surprise": "surprise"
+    },
     "modal": {
-        "title": "New Menu Request",
+        "title": "New Dish",
+        "name": "Name",
         "description": "Description",
-        "submit": "Submit",
-        "cancel": "Cancel"
+        "submit": "Save",
+        "cancel": "Close"
     },
     "toast": {
         "nameRequired": {

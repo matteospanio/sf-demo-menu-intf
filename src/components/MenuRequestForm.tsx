@@ -30,7 +30,7 @@ import { RiRestaurantFill } from 'react-icons/ri'
 import { useState } from 'react'
 import InputWrapper from './InputWrapper'
 import TasteSlider from './TasteSlider'
-import { capitalize, Dish } from '../utils'
+import { capitalize, Dish, Section } from '../utils'
 import { Reorder } from "framer-motion"
 import { MdDragIndicator } from 'react-icons/md'
 import { useTranslation } from 'react-i18next'
@@ -47,6 +47,7 @@ function MenuRequestForm() {
 
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
+  const [section, setSection] = useState(Section.None)
   const [sweetChecked, setSweetChecked] = useState(false)
   const [sweetSlider, setSweetSlider] = useState(SLIDER_DEFAULT)
   const [bitterChecked, setBitterChecked] = useState(false)
@@ -69,21 +70,22 @@ function MenuRequestForm() {
   const [shapeSlider, setShapeSlider] = useState(SLIDER_DEFAULT)
   const [isActive, setIsActive] = useState(false)
   const [color, setColor] = useState('')
+  const [emotions, setEmotions] = useState([])
 
   const baseParams = [
-    {label: 'sweet', value: sweetSlider, setter: setSweetSlider, isChecked: sweetChecked, checkCallback: setSweetChecked},
-    {label: 'bitter', value: bitterSlider, setter: setBitterSlider, isChecked: bitterChecked, checkCallback: setBitterChecked},
-    {label: 'sour', value: sourSlider, setter: setSourSlider, isChecked: sourChecked, checkCallback: setSourChecked},
-    {label: 'salty', value: saltySlider, setter: setSaltySlider, isChecked: saltyChecked, checkCallback: setSaltyChecked},
-    {label: 'umami', value: umamiSlider, setter: setUmamiSlider, isChecked: umamiChecked, checkCallback: setUmamiChecked},
+    {label: t('param.sweet'), value: sweetSlider, setter: setSweetSlider, isChecked: sweetChecked, checkCallback: setSweetChecked},
+    {label: t('param.bitter'), value: bitterSlider, setter: setBitterSlider, isChecked: bitterChecked, checkCallback: setBitterChecked},
+    {label: t('param.sour'), value: sourSlider, setter: setSourSlider, isChecked: sourChecked, checkCallback: setSourChecked},
+    {label: t('param.salty'), value: saltySlider, setter: setSaltySlider, isChecked: saltyChecked, checkCallback: setSaltyChecked},
+    {label: t('param.umami'), value: umamiSlider, setter: setUmamiSlider, isChecked: umamiChecked, checkCallback: setUmamiChecked},
   ]
 
   const otherParams = [
-    {label: 'piquant', value: piquantSlider, setter: setPiquantSlider, isChecked: piquantChecked, checkCallback: setPiquantChecked},
-    {label: 'fat', value: fatSlider, setter: setFatSlider, isChecked: fatChecked, checkCallback: setFatChecked},
-    {label: 'temperature', value: tempSlider, setter: setTempSlider, min: -10, max: 40, isChecked: temperatureChecked, checkCallback: setTemperatureChecked},
-    {label: 'texture', value: textureSlider, setter: setTextureSlider, isChecked: textureChecked, checkCallback: setTextureChecked},
-    {label: 'shape', value: shapeSlider, setter: setShapeSlider, isChecked: shapeChecked, checkCallback: setShapeChecked},
+    {label: t('param.piquant'), value: piquantSlider, setter: setPiquantSlider, isChecked: piquantChecked, checkCallback: setPiquantChecked},
+    {label: t('param.fat'), value: fatSlider, setter: setFatSlider, isChecked: fatChecked, checkCallback: setFatChecked},
+    {label: t('param.temperature'), value: tempSlider, setter: setTempSlider, min: -10, max: 40, isChecked: temperatureChecked, checkCallback: setTemperatureChecked},
+    {label: t('param.texture'), value: textureSlider, setter: setTextureSlider, isChecked: textureChecked, checkCallback: setTextureChecked},
+    {label: t('param.shape'), value: shapeSlider, setter: setShapeSlider, isChecked: shapeChecked, checkCallback: setShapeChecked},
   ]
   const [dishes, setDishes] = useState<Array<Dish>>([])
   
@@ -99,6 +101,7 @@ function MenuRequestForm() {
     let state = {
       name: name,
       description: description,
+      section: section,
       sweet: sweetChecked ? sweetSlider : null,
       bitter: bitterChecked ? bitterSlider : null,
       sour: sourChecked ? sourSlider : null,
@@ -269,13 +272,37 @@ function MenuRequestForm() {
           >
             <ModalOverlay />
             <ModalContent>
-              <ModalHeader>Nuova portata</ModalHeader>
+              <Stack direction='row'>
+                <Center>
+                  <div>
+                    <ModalHeader>{t('modal.title')}</ModalHeader>
+                  </div>
+                </Center>
+                <Center>
+                  <div>
+                    <Select
+                      value={section}
+                      onChange={(e) => setSection(e.target.value as Section)}
+                      size='sm'
+                      borderRadius='1rem'
+                      bg='coral'
+                      color='white'
+                    >
+                      <option value={Section.Appetizer}>{t('cathegory.appetizer')}</option>
+                      <option value={Section.FirstCourse}>{t('cathegory.firstCourse')}</option>
+                      <option value={Section.SecondCourse}>{t('cathegory.secondCourse')}</option>
+                      <option value={Section.Dessert}>{t('cathegory.dessert')}</option>
+                      <option value={Section.None}>{t('cathegory.none')}</option>
+                    </Select>
+                  </div>
+                </Center>
+              </Stack>
               <ModalCloseButton />
               <ModalBody>
-                <InputWrapper label='Nome' isRequired>
+                <InputWrapper label={t('modal.name')} isRequired>
                   <Input value={name} onChange={(e) => setName(e.target.value)} />
                 </InputWrapper>
-                <InputWrapper label='Descrizione' isRequired={false}>
+                <InputWrapper label={t('modal.description')} isRequired={false}>
                   <Textarea value={description} onChange={(e) => setDescription(e.target.value)} />
                 </InputWrapper>
 
@@ -287,7 +314,7 @@ function MenuRequestForm() {
                       <TasteSlider
                         key={index}
                         label={capitalize(param.label)}
-                        ariaLabel={`${param.label}-slider`}
+                        ariaLabel={`${param.label.toLowerCase()}-slider`}
                         value={param.value}
                         setValueCallback={param.setter}
                         isChecked={param.isChecked}
@@ -329,19 +356,19 @@ function MenuRequestForm() {
                 <Stack direction='row'>
                 <Checkbox mr='3rem'>Emotion</Checkbox>
                 <Select placeholder='None'>
-                  <option value='option1'>Joy</option>
-                  <option value='option2'>Anger</option>
-                  <option value='option3'>Fear</option>
-                  <option value='option4'>Sadness</option>
-                  <option value='option5'>Surprise</option>
+                  <option value='option1'>{capitalize(t('emotions.joy'))}</option>
+                  <option value='option2'>{capitalize(t('emotions.anger'))}</option>
+                  <option value='option3'>{capitalize(t('emotions.fear'))}</option>
+                  <option value='option4'>{capitalize(t('emotions.sadness'))}</option>
+                  <option value='option5'>{capitalize(t('emotions.surprise'))}</option>
                 </Select>
                 </Stack>
 
               </ModalBody>
 
               <ModalFooter justifyContent={'center'}>
-                <Button colorScheme='blue' mr={3} onClick={saveDish}>Save</Button>
-                <Button colorScheme='red' onClick={onClose}>Close</Button>
+                <Button colorScheme='blue' mr={3} onClick={saveDish}>{t('modal.submit')}</Button>
+                <Button colorScheme='red' onClick={onClose}>{t('modal.cancel')}</Button>
               </ModalFooter>
             </ModalContent>
           </Modal>

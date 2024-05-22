@@ -18,11 +18,40 @@
         "logout": "Esci",
         "settings": "Impostazioni"
     },
+    "cathegory": {
+        "appetizer": "Antipasto",
+        "firstCourse": "Primo",
+        "secondCourse": "Secondo",
+        "sideDish": "Contorno",
+        "dessert": "Dolce",
+        "drink": "Bevanda",
+        "none": "Nessuna"
+    },
+    "param": {
+        "sweet": "dolce",
+        "salty": "salato",
+        "bitter": "amaro",
+        "sour": "acido",
+        "umami": "umami",
+        "piquant": "piccante",
+        "fat": "grasso",
+        "temperature": "temperatura",
+        "texture": "consistenza",
+        "shape": "forma"
+    },
+    "emotions": {
+        "joy": "gioia",
+        "anger": "rabbia",
+        "fear": "paura",
+        "sadness": "tristezza",
+        "surprise": "sorpresa"
+    },
     "modal": {
-        "title": "New Menu Request",
-        "description": "Description",
-        "submit": "Submit",
-        "cancel": "Cancel"
+        "title": "Nuova portata",
+        "name": "Nome",
+        "description": "Descrizione",
+        "submit": "Salva",
+        "cancel": "Chiudi"
     },
     "toast": {
         "nameRequired": {
