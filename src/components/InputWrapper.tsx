@@ -17,8 +17,8 @@ interface InputWrapperProps {
 function InputWrapper({label, isRequired, children} : InputWrapperProps) {
   return (
     <FormControl isRequired={isRequired}>
-        <FormLabel>{label}</FormLabel>
-        {children}
+      <FormLabel>{label}</FormLabel>
+      {children}
     </FormControl>
   )
 }

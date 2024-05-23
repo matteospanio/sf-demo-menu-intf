@@ -11,7 +11,9 @@
         "addItem": "Aggiungi",
         "emptyMenu": "Nessuna portata inserita.",
         "submit": "Invia",
-        "save": "Salva"
+        "save": "Salva",
+        "edit": "Modifica",
+        "delete": "Elimina"
     },
     "topLeft": {
         "profile": "Profilo",
@@ -27,17 +29,21 @@
         "drink": "Bevanda",
         "none": "Nessuna"
     },
-    "param": {
-        "sweet": "dolce",
-        "salty": "salato",
-        "bitter": "amaro",
-        "sour": "acido",
-        "umami": "umami",
-        "piquant": "piccante",
-        "fat": "grasso",
-        "temperature": "temperatura",
-        "texture": "consistenza",
-        "shape": "forma"
+    "tastes": {
+        "base": {
+            "sweet": "dolce",
+            "salty": "salato",
+            "bitter": "amaro",
+            "sour": "acido",
+            "umami": "umami"
+        },
+        "other": {
+            "piquant": "piccante",
+            "fat": "grasso",
+            "temperature": "temperatura",
+            "texture": "consistenza",
+            "shape": "forma"
+        }
     },
     "emotions": {
         "joy": "gioia",
@@ -50,6 +56,14 @@
         "title": "Nuova portata",
         "name": "Nome",
         "description": "Descrizione",
+        "sections": {
+          "emotions": "Emozioni",
+          "tastes": {
+            "base": "Gusti base",
+            "other": "Altri sapori"
+          },
+          "vision": "Vista"
+        },
         "submit": "Salva",
         "cancel": "Chiudi"
     },
@@ -69,6 +83,10 @@
         "menuTitleRequired": {
             "title": "Titolo del menu mancante",
             "description": "Per favore inserisci il tito del menu."
+        },
+        "dishSaved": {
+            "title": "Portata salvata",
+            "description": "La portata è stata salvata con successo."
         },
         "dishesRequired": {
             "title": "Portate mancanti",

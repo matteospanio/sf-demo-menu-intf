@@ -1,43 +1,54 @@
-export const capitalize = (s: string) => {
-    return s.charAt(0).toUpperCase() + s.slice(1)
+export type Optional<T> = T | null
+
+export interface Indexable {
+  [key: string]: any
 }
 
-type Optional<T> = T | null
+export enum Emotion {
+  Joy = 'joy',
+  Anger = 'anger',
+  Fear = 'fear',
+  Surprise = 'surprise',
+  Sadness = 'sadness',
+}
 
-export type Dish = {
-    name: string
-    description: Optional<string>
-    section: Section
-    sweet: Optional<number>
-    bitter: Optional<number>
-    sour: Optional<number>
-    salty: Optional<number>
-    umami: Optional<number>
-    piquant: Optional<number>
-    fat: Optional<number>
-    temperature: Optional<number>
-    texture: Optional<number>
-    shape: Optional<number>
-    color: Optional<string>
+export enum Shape {
+  Sharp = 'sharp',
+  Round = 'round',
+  Smooth = 'smooth',
+  Symmetric = 'symmetric',
+  Asymmetric = 'asymmetric',
+  Compact = 'compact',
+  Loose = 'loose',
+}
+
+export enum Texture {
+  Crunchy = 'crunchy',
+  Soft = 'soft',
+  Liquid = 'liquid',
+  Creamy = 'creamy',
 }
 
 export enum Section {
-    Appetizer = 'appetizer',
-    FirstCourse = 'firstCourse',
-    SecondCourse = 'secondCourse',
-    Dessert = 'dessert',
-    None = 'none'
+  Appetizer = 'appetizer',
+  FirstCourse = 'firstCourse',
+  SecondCourse = 'secondCourse',
+  Dessert = 'dessert',
+  None = 'none'
 }
 
-export const makeSectionsList = (dishes: Dish[]): Map<Section, Dish[]> => {
-    let res: Map<Section, Dish[]> = new Map();
-
-    dishes.forEach(dish => {
-        if (!res.has(dish.section)) {
-            res.set(dish.section, []);
-        }
-        res.get(dish.section)?.push(dish);
-    })
-
-    return res
+export interface BasicTasteConfiguration extends Indexable {
+  sweet: Optional<number>
+  bitter: Optional<number>
+  sour: Optional<number>
+  salty: Optional<number>
+  umami: Optional<number>
 }
+
+export interface OtherSlideableConfig extends Indexable {
+  piquant: Optional<number>
+  fat: Optional<number>
+  temperature: Optional<number>
+}
+
+export const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)

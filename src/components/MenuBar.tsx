@@ -24,7 +24,7 @@ function MenuBar() {
 
         <Spacer />
 
-        <Center>
+        <Center mr={3}>
           <LanguageSelector />
         </Center>
         

@@ -4,17 +4,17 @@ import { initReactI18next } from 'react-i18next';
 import HttpApi from 'i18next-http-backend';
 
 i18n.use(LanguageDetector)
-    .use(HttpApi)
-    .use(initReactI18next)
-    .init({
-        backend: {
-            loadPath: '/sf-demo-menu-intf/locales/{{lng}}/{{ns}}.json',
-        },
-        debug: true,
-        // returnObjects: true,
-        lng: 'en',
-        fallbackLng: 'en',
-        interpolation: {
-            escapeValue: false
-        },
-    });
+  .use(HttpApi)
+  .use(initReactI18next)
+  .init({
+    backend: {
+        loadPath: '/sf-demo-menu-intf/locales/{{lng}}/{{ns}}.json',
+    },
+    debug: false,
+    // returnObjects: true,
+    lng: 'en',
+    fallbackLng: 'en',
+    interpolation: {
+        escapeValue: false
+    },
+  });

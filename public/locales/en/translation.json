@@ -11,7 +11,9 @@
         "addItem": "Add",
         "emptyMenu": "No menu items yet.",
         "submit": "Submit",
-        "save": "Save"
+        "save": "Save",
+        "edit": "Edit",
+        "delete": "Delete"
     },
     "topLeft": {
         "profile": "Profile",
@@ -27,17 +29,21 @@
         "drink": "Drink",
         "none": "None"
     },
-    "param": {
-        "sweet": "sweet",
-        "salty": "salty",
-        "bitter": "bitter",
-        "sour": "sour",
-        "umami": "umami",
-        "piquant": "piquant",
-        "fat": "fat",
-        "temperature": "temperature",
-        "texture": "texture",
-        "shape": "shape"
+    "tastes": {
+        "base": {
+            "sweet": "sweet",
+            "salty": "salty",
+            "bitter": "bitter",
+            "sour": "sour",
+            "umami": "umami"
+        },
+        "other": {
+            "piquant": "piquant",
+            "fat": "fat",
+            "temperature": "temperature",
+            "texture": "texture",
+            "shape": "shape"
+        }
     },
     "emotions": {
         "joy": "joy",
@@ -50,6 +56,14 @@
         "title": "New Dish",
         "name": "Name",
         "description": "Description",
+        "sections": {
+          "emotions": "Emotions",
+          "tastes": {
+            "base": "Basic tastes",
+            "other": "Other parameters"
+          },
+          "vision": "Vision"
+        },
         "submit": "Save",
         "cancel": "Close"
     },
@@ -65,6 +79,10 @@
         "dishNotFound": {
             "title": "Dish not found",
             "description": "The dish you are trying to update does not exist."
+        },
+        "dishSaved": {
+            "title": "Dish saved",
+            "description": "The dish has been saved successfully."
         },
         "menuTitleRequired": {
             "title": "Menu title is required",

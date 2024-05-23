@@ -1,5 +1,7 @@
 import { Box, Checkbox, Slider, SliderFilledTrack, SliderMark, SliderThumb, SliderTrack, Stack } from "@chakra-ui/react"
 import { RxValue } from "react-icons/rx"
+import { capitalize, Optional } from "../utils"
+import { useTranslation } from "react-i18next"
 
 interface TasteSliderProps {
     label: string
@@ -9,14 +11,22 @@ interface TasteSliderProps {
     checkCallback: (checked: boolean) => void
     max?: number
     min?: number
-    setValueCallback: (value: number) => void
+    setValueCallback: (taste: string, value: Optional<number>) => void
 }
 
 function TasteSlider({label, ariaLabel, value, max, min, setValueCallback, isChecked, checkCallback} : TasteSliderProps) {
+  const {t} = useTranslation()
 
   return (
     <Stack direction={'row'} justifyContent='space-between'>
-    <Checkbox isChecked={isChecked} onChange={(e) => checkCallback(e.target.checked)}>{label}</Checkbox>
+    <Checkbox
+        isChecked={isChecked}
+        onChange={(e) => {
+            checkCallback(e.target.checked)
+        }}
+    >
+        {capitalize(label)}
+    </Checkbox>
     <Slider
         w={'250px'}
         isDisabled={!isChecked}
@@ -25,7 +35,7 @@ function TasteSlider({label, ariaLabel, value, max, min, setValueCallback, isChe
         max={max ?? 10}
         min={min ?? 0}
         aria-label={ariaLabel}
-        onChange={(val) => setValueCallback(val)}
+        onChange={(val) => setValueCallback(label, val)}
     >
         <SliderMark
             hidden={!isChecked}
@@ -36,9 +46,9 @@ function TasteSlider({label, ariaLabel, value, max, min, setValueCallback, isChe
             color='white'
             mt='-9'
             ml='-6'
-            w='12'
+            w='14'
         >
-            {value}
+            {label == t('tastes.other.temperature') ? `${value}°C` : value}
         </SliderMark>
         <SliderTrack>
             <SliderFilledTrack />
