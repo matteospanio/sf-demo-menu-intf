@@ -27,6 +27,14 @@ export enum Texture {
   Soft = 'soft',
   Liquid = 'liquid',
   Creamy = 'creamy',
+  Solid = 'solid',
+  Rough = 'rough',
+  Hard = 'hard',
+  Viscous = 'viscous',
+  Airy = 'airy',
+  Dense = 'dense',
+  Hollow = 'hollow',
+  Porous = 'porous',
 }
 
 export enum Section {
@@ -49,6 +57,11 @@ export interface OtherSlideableConfig extends Indexable {
   piquant: Optional<number>
   fat: Optional<number>
   temperature: Optional<number>
+}
+
+export interface SelectOption<T> {
+  label: string,
+  value: T
 }
 
 export const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)

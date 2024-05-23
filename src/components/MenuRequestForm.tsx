@@ -15,7 +15,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  // Select,
   Spacer,
   Stack,
   Text,
@@ -33,12 +32,14 @@ import { BasicTasteConfiguration, Emotion, Optional, OtherSlideableConfig, Secti
 import { Reorder } from "framer-motion"
 import { MdDragIndicator } from 'react-icons/md'
 import { useTranslation } from 'react-i18next'
-import { Dish, deleteListElement, saveDish } from '../dish'
+import { Dish, deleteListDish, saveDish } from '../dish'
 import { MODAL_TIMER, SLIDER_DEFAULT } from '../constants'
-// import { MultiSelect } from 'chakra-multiselect'
-import { Select } from "chakra-react-select";
 import SectionSelect from './SectionSelect'
 import EmotionSelect from './EmotionSelect'
+import ShapesSelect from './ShapesSelect'
+import TextureSelect from './TextureSelect'
+import ColorSelector from './ColorSelector'
+import SummaryDrawer from './SummaryDrawer'
 
 
 function MenuRequestForm() {
@@ -74,7 +75,7 @@ function MenuRequestForm() {
   })
 
   const [emotions, setEmotions] = useState<Emotion[]>([])
-  const [texture, setTexture] = useState<Optional<Texture>>(null)
+  const [textures, setTextures] = useState<Texture[]>([])
 
   const handleTasteChange = (taste: string, value: Optional<number>) => {
     if (taste in basicTastes)
@@ -85,16 +86,14 @@ function MenuRequestForm() {
       throw new Error('Invalid taste parameter')
   }
 
-  const handleVisionChange = (param: string, value: string | Shape) => {
+  const handleVisionChange = (param: string, values: string[] | Shape[]) => {
     if (param == 'shapes')
-      setVisionParams({ ...visionParams, shapes: [...visionParams.shapes, value as Shape] })
+      setVisionParams({ ...visionParams, shapes: values as Shape[] })
     else if (param == 'colors')
-      setVisionParams({ ...visionParams, colors: [...visionParams.colors, value as string] })
+      setVisionParams({ ...visionParams, colors: values as string[] })
     else
       throw new Error('Invalid vision parameter')
   }
-
-
 
   const [sweetChecked, setSweetChecked] = useState(false)
   const [bitterChecked, setBitterChecked] = useState(false)
@@ -104,24 +103,38 @@ function MenuRequestForm() {
   const [piquantChecked, setPiquantChecked] = useState(false)
   const [fatChecked, setFatChecked] = useState(false)
   const [temperatureChecked, setTemperatureChecked] = useState(false)
+  const [colorCheck1, setColorCheck1] = useState(false)
+  const [colorCheck2, setColorCheck2] = useState(false)
+  const [colorCheck3, setColorCheck3] = useState(false)
+
+  const [color1, setColor1] = useState('#ffffff')
+  const [color2, setColor2] = useState('#ffffff')
+  const [color3, setColor3] = useState('#ffffff')
+
+  let colorObjects = [
+    { color: color1, check: colorCheck1, setCheck: setColorCheck1, setColor: setColor1 },
+    { color: color2, check: colorCheck2, setCheck: setColorCheck2, setColor: setColor2 },
+    { color: color3, check: colorCheck3, setCheck: setColorCheck3, setColor: setColor3 },
+  ]
 
   const baseParams = [
-    { label: t('tastes.base.sweet'), isChecked: sweetChecked, checkCallback: setSweetChecked },
-    { label: t('tastes.base.bitter'), isChecked: bitterChecked, checkCallback: setBitterChecked },
-    { label: t('tastes.base.sour'), isChecked: sourChecked, checkCallback: setSourChecked },
-    { label: t('tastes.base.salty'), isChecked: saltyChecked, checkCallback: setSaltyChecked },
-    { label: t('tastes.base.umami'), isChecked: umamiChecked, checkCallback: setUmamiChecked },
+    { label: 'sweet', isChecked: sweetChecked, checkCallback: setSweetChecked },
+    { label: 'bitter', isChecked: bitterChecked, checkCallback: setBitterChecked },
+    { label: 'sour', isChecked: sourChecked, checkCallback: setSourChecked },
+    { label: 'salty', isChecked: saltyChecked, checkCallback: setSaltyChecked },
+    { label: 'umami', isChecked: umamiChecked, checkCallback: setUmamiChecked },
   ]
 
   const otherParams = [
-    { label: t('tastes.other.piquant'), isChecked: piquantChecked, checkCallback: setPiquantChecked },
-    { label: t('tastes.other.fat'), isChecked: fatChecked, checkCallback: setFatChecked },
-    { label: t('tastes.other.temperature'), min: -10, max: 40, isChecked: temperatureChecked, checkCallback: setTemperatureChecked },
+    { label: 'piquant', isChecked: piquantChecked, checkCallback: setPiquantChecked },
+    { label: 'fat', isChecked: fatChecked, checkCallback: setFatChecked },
+    { label: 'temperature', min: -10, max: 40, isChecked: temperatureChecked, checkCallback: setTemperatureChecked },
   ]
   const [dishes, setDishes] = useState<Array<Dish>>([])
 
   const toast = useToast()
   const { isOpen: isModalOpen, onOpen: openModal, onClose: closeModal } = useDisclosure()
+  const { isOpen: isDrawerOpen, onOpen: openDrawer, onClose: closeDrawer } = useDisclosure()
 
   const saveDishes = () => {
     let state: Dish = {
@@ -142,10 +155,17 @@ function MenuRequestForm() {
           temperature: temperatureChecked ? otherTastes.temperature : null,
         },
       },
-      vision: visionParams,
-      texture,
+      vision: {
+        colors: colorObjects
+          .filter((colorObject) => colorObject.check)
+          .map((colorObject) => colorObject.color),
+        shapes: visionParams.shapes,
+      },
+      textures,
       emotions,
     }
+
+    console.log(state)
 
     const [newDishes, result] = saveDish(name, state, dishes)
 
@@ -197,9 +217,17 @@ function MenuRequestForm() {
       fat: other.fat ?? 0,
       temperature: other.temperature ?? 0,
     })
-    setVisionParams(dish.vision)
-    setTexture(dish.texture)
-    setEmotions(dish.emotions)
+    setVisionParams({
+      colors: dish.vision.colors,
+      shapes: []
+    })
+    setTextures([])
+    setEmotions([])
+
+    colorObjects.forEach((colorObject, index) => {
+      colorObject.setCheck(index < dish.vision.colors.length)
+      colorObject.setColor(dish.vision.colors[index] ?? '#ffffff')
+    })
 
     // checkbuttons
     setSweetChecked(basic.sweet != null)
@@ -248,11 +276,22 @@ function MenuRequestForm() {
       description: menuDesc,
       dishes: dishes,
     }
+    openDrawer()
     console.log(menu)
   }
 
   return (
     <>
+      <SummaryDrawer
+        isOpen={isDrawerOpen}
+        closeDrawer={closeDrawer}
+        data={{
+          title: title,
+          description: menuDesc,
+          dishes: dishes,
+        }}
+      />
+
       <InputWrapper label={t("main.menuTitle")} isRequired>
         <Input value={title} onChange={(e) => { e.preventDefault(); setTitle(e.target.value) }} />
         <FormHelperText mb={3}>{t("main.formTitleCaption")}</FormHelperText>
@@ -265,6 +304,10 @@ function MenuRequestForm() {
           placeholder={t("main.descriptionPlaceholder")}
         />
       </InputWrapper>
+      
+      <Text m={3}>
+        {t("main.formDescription3")}
+      </Text>
 
       <Container maxW={'xl'} bg={'gray.300'} borderRadius={5} p={3} mt={6}>
         <Flex>
@@ -304,12 +347,6 @@ function MenuRequestForm() {
                 <Center>
                   <div>
                     <SectionSelect sectionHandler={setSection} />
-                    {/* <Select
-                      value={sectionSelect}
-                      options={sectionOptions}
-                      onChange={handleSectionSelect}
-                      size='sm'
-                    /> */}
                   </div>
                 </Center>
               </Stack>
@@ -329,8 +366,8 @@ function MenuRequestForm() {
                     return (
                       <TasteSlider
                         key={index}
-                        label={param.label}
-                        ariaLabel={`${param.label.toLowerCase()}-slider`}
+                        label={`base.${param.label}`}
+                        ariaLabel={`${param.label}-slider`}
                         value={basicTastes[param.label]}
                         setValueCallback={handleTasteChange}
                         isChecked={param.isChecked}
@@ -347,7 +384,7 @@ function MenuRequestForm() {
                     return (
                       <TasteSlider
                         key={index}
-                        label={param.label}
+                        label={`other.${param.label}`}
                         ariaLabel={`${param.label}-slider`}
                         value={otherTastes[param.label]}
                         setValueCallback={handleTasteChange}
@@ -359,28 +396,29 @@ function MenuRequestForm() {
                     )
                   })}
 
+                  <TextureSelect handler={setTextures} />
+
                 </Stack>
                 <Heading mt={4} mb={6} size='md'>{t('modal.sections.vision')}</Heading>
+                <ShapesSelect handler={handleVisionChange} />
 
-                {/* <Stack direction={'row'}>
-                  <Checkbox mr='5rem' isChecked={isActive} onChange={(e) => setIsActive(e.target.checked)}>Color</Checkbox>
-                  <input type='color' value={color} onChange={(e) => setColor(e.target.value)} />
-                </Stack> */}
+                <Stack direction='column' spacing='2.5rem'>
+                  {colorObjects.map((colorObject, index) => {
+                    return (
+                      <ColorSelector
+                        key={index}
+                        label={`${t('modal.sections.color')} ${index + 1}`}
+                        isChecked={colorObject.check}
+                        checkHandler={colorObject.setCheck}
+                        colorSetter={colorObject.setColor}
+                        value={colorObject.color}
+                      />
+                    )}
+                  )}
+                </Stack>
 
                 <Heading mt={4} mb={6} size='md'>{t('modal.sections.emotions')}</Heading>
                 <EmotionSelect handler={setEmotions} />
-
-                {/* <MultiSelect
-                  options={emotionOptions}
-                  value={emotions}
-                  label='Choose an item'
-                  onChange={(selection) => {
-                    if (Array.isArray(selection))
-                      setEmotions(selection.map((item) => item.value as Emotion))
-                    else
-                      setEmotions([selection.value as Emotion])
-                  }}
-                /> */}
 
               </ModalBody>
 
@@ -407,7 +445,7 @@ function MenuRequestForm() {
                     <Button
                       variant='outline'
                       colorScheme='red'
-                      onClick={() => setDishes(deleteListElement(dishes, dish.name))}
+                      onClick={() => setDishes(deleteListDish(dishes, dish.name))}
                     >
                       {t('main.delete')}
                     </Button>

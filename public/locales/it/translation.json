@@ -3,7 +3,9 @@
         "actions": "Azioni",
         "newMenuRequest": "Nuova richiesta di menu",
         "menuTitle": "Titolo del menu",
-        "formDescription": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum repellat laboriosam esse consectetur corporis magni, omnis unde sapiente aperiam culpa magnam quo quisquam sequi? Nesciunt inventore repellat placeat perspiciatis quas ea accusantium explicabo aspernatur impedit voluptatum ab numquam cum, perferendis enim libero? Unde est aliquid facilis porro voluptates error sapiente. Amet, est ullam! Corporis, doloremque architecto eius facere quo veritatis praesentium! Quos alias facere voluptatum doloremque at incidunt quibusdam debitis! Aspernatur non optio, alias amet perferendis expedita vero veniam eligendi? Earum quaerat culpa recusandae, at ducimus numquam, fugiat modi provident minus cumque veniam quam aliquam non voluptatem explicabo itaque nesciunt.",
+        "formDescription": "Benvenuto, da questa pagina puoi inviare una descrizione del menu che viene servito al tuo ristorante. Una volta inviato SoundFood s.r.l. prenderà in carico la tua richiesta creando la colonna sonora su misura per i tuoi piatti.",
+        "formDescription2": "Il menu deve obbligatoriamente avere un nome, la descrizione è opzionale. Tieni conto che più le informazioni saranno dettagliate, maggiore sarà l'affinità tra la musica e i piatti.",
+        "formDescription3": "Il menu è composto da un elenco di portate, premendo sul tasto \"Aggiungi\" nell'area sottostante si aprirà una finestra di dialogo per creare una nuova descrizione per una portata del menu. Ogni portata può essere descritta sotto diversi aspetti: gusti (più o meno semplici), colori, forme, consistenze, temperatura e aspetto emotivo. Anche la descrizione testuale del piatto non è obbligatoria (ma è comunque consigliato inserirla).",
         "formTitleCaption": "Il nome con cui verrà identificato il menu.",
         "description": "Descrizione",
         "descriptionPlaceholder": "Una descrizione qualitativa del menu.",
@@ -45,7 +47,36 @@
             "shape": "forma"
         }
     },
+    "shapes": {
+        "description": "Forma",
+        "select": "Scegli una forma o più dall'elenco...",
+        "sharp": "appuntito",
+        "round": "tondo",
+        "smooth": "liscio",
+        "symmetric": "simmetrico",
+        "asymmetric": "asimmetrico",
+        "compact": "compatto",
+        "loose": "disgregato"
+    },
+    "textures": {
+        "description": "Consistenza",
+        "select": "Scegli una consistenza o più dall'elenco...",
+        "crunchy": "croccante",
+        "soft": "morbido",
+        "creamy": "cremoso",
+        "liquid": "liquido",
+        "solid": "solido",
+        "rough": "ruvido",
+        "hard": "duro",
+        "viscous": "viscoso",
+        "airy": "aerato",
+        "hollow": "cavo",
+        "dense": "denso",
+        "porous": "poroso"
+    },
     "emotions": {
+        "description": "Emozioni",
+        "select": "Scegli un'emozione o più dell'elenco...",
         "joy": "gioia",
         "anger": "rabbia",
         "fear": "paura",
@@ -57,12 +88,13 @@
         "name": "Nome",
         "description": "Descrizione",
         "sections": {
-          "emotions": "Emozioni",
-          "tastes": {
-            "base": "Gusti base",
-            "other": "Altri sapori"
-          },
-          "vision": "Vista"
+            "emotions": "Emozioni",
+            "tastes": {
+                "base": "Gusti base",
+                "other": "Altri sapori"
+            },
+            "vision": "Vista",
+            "color": "Colore"
         },
         "submit": "Salva",
         "cancel": "Chiudi"

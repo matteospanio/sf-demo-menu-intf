@@ -31,6 +31,9 @@ function App() {
       <Text m={3}>
         {t("main.formDescription")}
       </Text>
+      <Text m={3}>
+        {t("main.formDescription2")}
+      </Text>
 
       <Divider my={5} orientation='horizontal' />
 

@@ -9,7 +9,7 @@ export type Dish = {
     basic: BasicTasteConfiguration
     other: OtherSlideableConfig
   }
-  texture: Optional<Texture>
+  textures: Texture[]
   vision: {
     colors: string[]
     shapes: Shape[]
@@ -29,12 +29,12 @@ export const makeSectionsList = (dishes: Dish[]): Map<Section, Dish[]> => {
   return res
 }
 
-export function updateListElement<T>(list: T[], id: string, element: T): T[] {
-  return list.map((el) => el === id ? element : el)
+export function updateDishList<T extends Dish>(list: T[], id: string, element: T): T[] {
+  return list.map((el) => el.name === id ? element : el)
 }
 
-export function deleteListElement<T>(list: T[], id: string): T[] {
-  return list.filter((el) => el !== id)
+export function deleteListDish<T extends Dish>(list: T[], id: string): T[] {
+  return list.filter((el) => el.name !== id)
 }
 
 enum SaveStatus {
@@ -52,7 +52,7 @@ export const saveDish = (id: string, state: Dish, dishes: Dish[]): [Dish[], Save
   }
 
   if (dishes.find((dish) => dish.name === id)) {
-    res = updateListElement(dishes, id, state)
+    res = updateDishList(dishes, id, state)
     status = SaveStatus.dishUpdated
   } else {
     res = [...dishes, state]

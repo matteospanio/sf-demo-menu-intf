@@ -16,6 +16,7 @@ interface TasteSliderProps {
 
 function TasteSlider({label, ariaLabel, value, max, min, setValueCallback, isChecked, checkCallback} : TasteSliderProps) {
   const {t} = useTranslation()
+  const propertyName = label.split('.').pop()
 
   return (
     <Stack direction={'row'} justifyContent='space-between'>
@@ -25,7 +26,7 @@ function TasteSlider({label, ariaLabel, value, max, min, setValueCallback, isChe
             checkCallback(e.target.checked)
         }}
     >
-        {capitalize(label)}
+        {capitalize(t(`tastes.${label}`))}
     </Checkbox>
     <Slider
         w={'250px'}
@@ -35,7 +36,7 @@ function TasteSlider({label, ariaLabel, value, max, min, setValueCallback, isChe
         max={max ?? 10}
         min={min ?? 0}
         aria-label={ariaLabel}
-        onChange={(val) => setValueCallback(label, val)}
+        onChange={(val) => setValueCallback(propertyName ?? label, val)}
     >
         <SliderMark
             hidden={!isChecked}
@@ -48,7 +49,7 @@ function TasteSlider({label, ariaLabel, value, max, min, setValueCallback, isChe
             ml='-6'
             w='14'
         >
-            {label == t('tastes.other.temperature') ? `${value}°C` : value}
+            {label == 'other.temperature' ? `${value}°C` : value}
         </SliderMark>
         <SliderTrack>
             <SliderFilledTrack />

@@ -3,7 +3,9 @@
         "actions": "Actions",
         "newMenuRequest": "New Menu Request",
         "menuTitle": "Menu Title",
-        "formDescription": "Welcome to the menu request form. Please fill out the following fields to request a new menu.\nFields marked with an asterisk (*) are required, and the form will not submit if they are left blank.\nThe most important part of the form is the menu composition, by clicking on the 'Add' button you can add as many menu items as you want, each with its description. The menu items can be reordered by dragging and dropping them.",
+        "formDescription": "Welcome, from this page you can send a description of the menu that is served at your restaurant. Once sent SoundFood s.r.l. will take care of your request by creating the tailor-made soundtrack for your dishes.",
+        "formDescription2": "The menu must have a name, the description is optional. Keep in mind that the more detailed the information, the greater the affinity between the music and the dishes.",
+        "formDescription3": "The menu is made up of a list of courses, pressing the \"Add\" button in the area below will open a dialogue box to create a new description for a course on the menu. Each course can be described from different aspects: tastes (more or less simple), colours, shapes, consistencies, temperature and emotional aspect. Even the textual description of the dish is not mandatory (but it is still recommended to include it).",
         "formTitleCaption": "The id you'll use to reference this menu.",
         "description": "Description",
         "descriptionPlaceholder": "A qualitative description of the menu.",
@@ -45,7 +47,36 @@
             "shape": "shape"
         }
     },
+    "shapes": {
+        "description": "Shape",
+        "select": "Select one shape or more...",
+        "sharp": "sharp",
+        "round": "round",
+        "smooth": "smooth",
+        "symmetric": "symmetric",
+        "asymmetric": "asymmetric",
+        "compact": "compact",
+        "loose": "loose"
+    },
+    "textures": {
+        "description": "Texture",
+        "select": "Select one texture or more...",
+        "crunchy": "crunchy",
+        "soft": "soft",
+        "creamy": "creamy",
+        "liquid": "liquid",
+        "solid": "solid",
+        "rough": "rough",
+        "hard": "hard",
+        "viscous": "viscous",
+        "airy": "airy",
+        "hollow": "hollow",
+        "dense": "dense",
+        "porous": "porous"
+    },
     "emotions": {
+        "description": "Emotions",
+        "select": "Select one emotion or more...",
         "joy": "joy",
         "anger": "anger",
         "fear": "fear",
@@ -57,12 +88,13 @@
         "name": "Name",
         "description": "Description",
         "sections": {
-          "emotions": "Emotions",
-          "tastes": {
-            "base": "Basic tastes",
-            "other": "Other parameters"
-          },
-          "vision": "Vision"
+            "emotions": "Emotions",
+            "tastes": {
+                "base": "Basic tastes",
+                "other": "Other parameters"
+            },
+            "vision": "Vision",
+            "color": "Color"
         },
         "submit": "Save",
         "cancel": "Close"
