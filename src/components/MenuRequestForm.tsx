@@ -276,8 +276,20 @@ function MenuRequestForm() {
       description: menuDesc,
       dishes: dishes,
     }
+
     openDrawer()
     console.log(menu)
+    fetch('https://spartacus990.pythonanywhere.com/api/menus', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(menu),
+    }).then((response) => {
+      console.log(response)
+    }).catch((error) => {
+      console.error(error)
+    })
   }
 
   return (

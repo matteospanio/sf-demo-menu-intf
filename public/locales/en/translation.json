@@ -81,7 +81,15 @@
         "anger": "anger",
         "fear": "fear",
         "sadness": "sadness",
-        "surprise": "surprise"
+        "surprise": "surprise",
+        "satisfaction": "satisfaction",
+        "gratitute": "gratitude",
+        "hope": "hope",
+        "love": "love",
+        "serenity": "serenity",
+        "euphoria": "euphoria",
+        "conviviality": "conviviality",
+        "playfulness": "playfulness"
     },
     "modal": {
         "title": "New Dish",

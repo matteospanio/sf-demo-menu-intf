@@ -81,7 +81,15 @@
         "anger": "rabbia",
         "fear": "paura",
         "sadness": "tristezza",
-        "surprise": "sorpresa"
+        "surprise": "sorpresa",
+        "satisfaction": "soddisfazione",
+        "gratitude": "gratitudine",
+        "hope": "speranza",
+        "love": "amore",
+        "serenity": "serenità",
+        "euphoria": "euforia",
+        "conviviality": "convivialità",
+        "playfulness": "giocosità"
     },
     "modal": {
         "title": "Nuova portata",

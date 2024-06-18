@@ -1,7 +1,6 @@
-import { Avatar, AvatarGroup, Card, CardBody, Center, Heading, ListItem, Stack, Text, UnorderedList } from '@chakra-ui/react'
+import { Avatar, Card, CardBody, Center, Heading, ListItem, Stack, Text, UnorderedList } from '@chakra-ui/react'
 import { Dish } from '../dish'
 import { useTranslation } from 'react-i18next'
-import { ViewIcon } from '@chakra-ui/icons'
 import { IoMdColorPalette } from 'react-icons/io'
 
 interface CardProps {

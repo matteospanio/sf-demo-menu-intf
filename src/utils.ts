@@ -8,8 +8,16 @@ export enum Emotion {
   Joy = 'joy',
   Anger = 'anger',
   Fear = 'fear',
-  Surprise = 'surprise',
   Sadness = 'sadness',
+  Surprise = 'surprise',
+  Satisfaction = 'satisfaction',
+  Gratitude = 'gratitude',
+  Hope = 'hope',
+  Love = 'love',
+  Serenity = 'serenity',
+  Euphoria = 'euphoria',
+  Conviviality = 'conviviality',
+  Playfulness = 'playfulness',
 }
 
 export enum Shape {

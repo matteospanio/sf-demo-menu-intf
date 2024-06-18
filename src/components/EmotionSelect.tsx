@@ -13,10 +13,12 @@ function EmotionSelect({handler}: EmotionSelectProps) {
 
   const emotionOptions = [
     { label: capitalize(t('emotions.joy')), value: Emotion.Joy },
-    { label: capitalize(t('emotions.anger')), value: Emotion.Anger },
-    { label: capitalize(t('emotions.fear')), value: Emotion.Fear },
-    { label: capitalize(t('emotions.sadness')), value: Emotion.Sadness },
     { label: capitalize(t('emotions.surprise')), value: Emotion.Surprise },
+    { label: capitalize(t('emotions.satisfaction')), value: Emotion.Satisfaction },
+    { label: capitalize(t('emotions.serenity')), value: Emotion.Serenity },
+    { label: capitalize(t('emotions.euphoria')), value: Emotion.Euphoria },
+    { label: capitalize(t('emotions.conviviality')), value: Emotion.Conviviality },
+    { label: capitalize(t('emotions.playfulness')), value: Emotion.Playfulness },
   ]
 
   const [emotionSelect, setEmoSelect] = useState()
