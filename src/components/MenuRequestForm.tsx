@@ -486,7 +486,7 @@ function MenuRequestForm() {
           <Button onClick={submitMenu} variant={'solid'} colorScheme='blue' leftIcon={<EmailIcon />}>
             {t('main.submit')}
           </Button>
-          <Button variant={'outline'} colorScheme='blue' leftIcon={<FaSave />}>
+          <Button variant={'outline'} colorScheme='blue' isDisabled leftIcon={<FaSave />}>
             {t('main.save')}
           </Button>
         </Stack>
