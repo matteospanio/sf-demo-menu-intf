@@ -42,7 +42,6 @@ describe('MenuDetailsPage', () => {
     vi.mocked(dishService.listByMenu).mockResolvedValue([
       {
         id: 1,
-        menu_id: 123,
         name: 'Dish 1',
         description: '',
         section: 'Appetizer',

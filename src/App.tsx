@@ -1,4 +1,4 @@
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, Container, Divider, Text, Spinner, Center } from '@chakra-ui/react'
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, Container, Divider, Spinner, Center } from '@chakra-ui/react'
 import { ChevronRightIcon } from '@chakra-ui/icons'
 import { MenuBar } from './shared/ui'
 import { MenuRequestForm } from './features/menu'
@@ -6,31 +6,57 @@ import MenuListPage from './features/menu/ui/MenuListPage'
 import MenuDetailsPage from './features/menu/ui/MenuDetailsPage'
 import { LoginPage, useAuth } from './features/auth'
 import { useTranslation } from 'react-i18next'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 type PageState =
   | { type: 'new' }
   | { type: 'list' }
-  | { type: 'details'; menuId: number }
-  | { type: 'edit'; menuId: number }
+  | { type: 'details'; menuId: number; menuTitle?: string }
+  | { type: 'edit'; menuId: number; menuTitle?: string }
 
 function App() {
 
   const { t } = useTranslation()
   const { isAuthenticated, isLoading } = useAuth()
 
-  const [page, setPage] = useState<PageState>({ type: 'new' })
+  const [page, setPage] = useState<PageState>({ type: 'list' })
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      setPage({ type: 'list' })
+    }
+  }, [isAuthenticated])
 
   const breadcrumbItems = useMemo(() => {
-    const items: string[] = [t('main.actions')]
+    const items: Array<{ label: string; onClick?: () => void }> = [
+      { label: t('menus.title'), onClick: () => setPage({ type: 'list' }) },
+    ]
 
-    if (page.type === 'new') items.push(t('main.newMenuRequest'))
-    if (page.type === 'list') items.push(t('menus.title'))
-    if (page.type === 'details') items.push(t('menus.detailsTitle'))
-    if (page.type === 'edit') items.push(t('menus.editTitle'))
+    if (page.type === 'list') {
+      return [{ label: t('menus.title') }]
+    }
+
+    if (page.type === 'new') {
+      items.push({ label: t('main.newMenuRequest') })
+      return items
+    }
+
+    if (page.type === 'details') {
+      items.push({ label: page.menuTitle ?? `Menu #${page.menuId}` })
+      return items
+    }
+
+    if (page.type === 'edit') {
+      items.push({
+        label: page.menuTitle ?? `Menu #${page.menuId}`,
+        onClick: () => setPage({ type: 'details', menuId: page.menuId, menuTitle: page.menuTitle }),
+      })
+      items.push({ label: t('menus.editTitle') })
+      return items
+    }
 
     return items
-  }, [page.type, t])
+  }, [page, t])
 
   if (isLoading) {
     return (
@@ -54,17 +80,20 @@ function App() {
     <Container mt='1.5rem' maxW='850px' p={3} borderRadius={5}>
 
       <Breadcrumb separator={<ChevronRightIcon color='gray..500' />}>
-        {breadcrumbItems.map((label, idx) => (
-          <BreadcrumbItem key={`${label}-${idx}`}>
-            <BreadcrumbLink>{label}</BreadcrumbLink>
+        {breadcrumbItems.map((item, idx) => (
+          <BreadcrumbItem key={`${item.label}-${idx}`}>
+            <BreadcrumbLink
+              onClick={item.onClick}
+              cursor={item.onClick ? 'pointer' : 'default'}
+            >
+              {item.label}
+            </BreadcrumbLink>
           </BreadcrumbItem>
         ))}
       </Breadcrumb>
 
       {page.type === 'new' && (
         <>
-          <Text m={3}>{t('main.formDescription')}</Text>
-          <Text m={3}>{t('main.formDescription2')}</Text>
           <Divider my={5} orientation='horizontal' />
           <MenuRequestForm onDone={() => setPage({ type: 'list' })} />
         </>
@@ -75,8 +104,8 @@ function App() {
           <Divider my={5} orientation='horizontal' />
           <MenuListPage
             onCreateNew={() => setPage({ type: 'new' })}
-            onViewMenu={(menuId) => setPage({ type: 'details', menuId })}
-            onEditMenu={(menuId) => setPage({ type: 'edit', menuId })}
+            onViewMenu={(menuId, menuTitle) => setPage({ type: 'details', menuId, menuTitle })}
+            onEditMenu={(menuId, menuTitle) => setPage({ type: 'edit', menuId, menuTitle })}
           />
         </>
       )}
@@ -87,7 +116,8 @@ function App() {
           <MenuDetailsPage
             menuId={page.menuId}
             onBack={() => setPage({ type: 'list' })}
-            onEdit={(menuId) => setPage({ type: 'edit', menuId })}
+            onMenuLoaded={(menuTitle) => setPage(prev => prev.type === 'details' && prev.menuId === page.menuId ? { ...prev, menuTitle } : prev)}
+            onEdit={(menuId, menuTitle) => setPage({ type: 'edit', menuId, menuTitle: menuTitle ?? page.menuTitle })}
             onDeleted={() => setPage({ type: 'list' })}
           />
         </>
@@ -98,7 +128,7 @@ function App() {
           <Divider my={5} orientation='horizontal' />
           <MenuRequestForm
             menuId={page.menuId}
-            onDone={() => setPage({ type: 'details', menuId: page.menuId })}
+            onDone={() => setPage({ type: 'details', menuId: page.menuId, menuTitle: page.menuTitle })}
           />
         </>
       )}

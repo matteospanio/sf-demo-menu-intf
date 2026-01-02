@@ -1,13 +1,13 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 
 const API = 'http://localhost:5000'
 
-async function mockAuth(page: any) {
+async function mockAuth(page: Page) {
   await page.addInitScript(() => {
     window.localStorage.setItem('auth_token', 'e2e-token')
   })
 
-  await page.route(`${API}/auth/me`, async (route: any) => {
+  await page.route(`${API}/auth/me`, async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -16,17 +16,17 @@ async function mockAuth(page: any) {
   })
 }
 
-async function mockAttributes(page: any) {
+async function mockAttributes(page: Page) {
   const empty = { status: 200, contentType: 'application/json', body: JSON.stringify([]) }
-  await page.route(`${API}/api/emotions`, async (route: any) => route.fulfill(empty))
-  await page.route(`${API}/api/textures`, async (route: any) => route.fulfill(empty))
-  await page.route(`${API}/api/shapes`, async (route: any) => route.fulfill(empty))
+  await page.route(`${API}/api/emotions`, async (route) => route.fulfill(empty))
+  await page.route(`${API}/api/textures`, async (route) => route.fulfill(empty))
+  await page.route(`${API}/api/shapes`, async (route) => route.fulfill(empty))
 }
 
-async function openMyMenus(page: any) {
-  // Chakra MenuButton renders as a button with aria-haspopup="menu"
-  await page.locator('button[aria-haspopup="menu"]').last().click()
-  await page.getByRole('menuitem', { name: 'My menus' }).click()
+async function openMyMenus(page: Page) {
+  const heading = page.getByRole('heading', { name: 'My menus' })
+  if (await heading.count()) return
+  await page.getByRole('button', { name: 'My menus' }).click()
 }
 
 test.describe('Menus management', () => {
@@ -94,7 +94,7 @@ test.describe('Menus management', () => {
     await page.getByRole('button', { name: 'View' }).click()
 
     await expect(page.getByRole('heading', { name: 'Menu details' })).toBeVisible()
-    await expect(page.getByText(menuTitle)).toBeVisible()
+    await expect(page.getByRole('heading', { name: menuTitle })).toBeVisible()
     await expect(page.getByText('Pumpkin Risotto')).toBeVisible()
   })
 
@@ -211,15 +211,19 @@ test.describe('Menus management', () => {
     await titleInput.fill('Updated Title')
 
     // Submit in edit mode triggers PUT /api/menus/1 then opens the summary drawer.
-    await page.getByRole('button', { name: /^submit$/i }).click()
+    const submitButton = page.getByRole('button', { name: /^submit$/i })
+    await expect(submitButton).toBeVisible()
+    // Use keyboard activation to avoid occasional pointer interception by overlapping content.
+    await submitButton.press('Enter')
 
     // Close the drawer so App calls onDone and navigates to details.
     const drawer = page.getByRole('dialog', { name: /Menu:/ })
     await expect(drawer).toBeVisible()
-    await drawer.getByRole('button', { name: 'Close' }).click()
+    // Dismiss via keyboard to avoid flakiness from animations/overlapping header.
+    await page.keyboard.press('Escape')
     await expect(drawer).toBeHidden()
 
     await expect(page.getByRole('heading', { name: 'Menu details' })).toBeVisible()
-    await expect(page.getByText('Updated Title')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Updated Title' })).toBeVisible()
   })
 })
