@@ -3,10 +3,16 @@ import { FaHouseUser } from 'react-icons/fa'
 import { MdLogout, MdSettings } from 'react-icons/md'
 import LanguageSelector from './LanguageSelector'
 import { useTranslation } from 'react-i18next'
+import { useAuth } from '../contexts'
 
 function MenuBar() {
 
   const {t} = useTranslation()
+  const { user, logout } = useAuth()
+
+  const handleLogout = async () => {
+    await logout()
+  }
 
   return (
     <Box w='100%' height='3.2em' bgGradient='linear(to-r, yellow, black)'>
@@ -27,17 +33,17 @@ function MenuBar() {
         <Center mr={3}>
           <LanguageSelector />
         </Center>
-        
+
         <Center>
           <Menu>
             <MenuButton>
-              <Avatar borderColor='yellow' borderWidth={2} size='sm' />
+              <Avatar borderColor='yellow' borderWidth={2} size='sm' name={user?.username} />
             </MenuButton>
             <MenuList>
-              <MenuItem icon={<FaHouseUser size={20} />}>{t("topLeft.profile")}</MenuItem>
+              <MenuItem icon={<FaHouseUser size={20} />}>{t("topLeft.profile")} ({user?.username})</MenuItem>
               <MenuItem icon={<MdSettings size={20} />}>{t("topLeft.settings")}</MenuItem>
               <MenuDivider />
-              <MenuItem icon={<MdLogout size={20} />}>{t("topLeft.logout")}</MenuItem>
+              <MenuItem icon={<MdLogout size={20} />} onClick={handleLogout}>{t("topLeft.logout")}</MenuItem>
             </MenuList>
           </Menu>
         </Center>

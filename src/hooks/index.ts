@@ -1,0 +1,1 @@
+export { useAttributes } from './useAttributes';

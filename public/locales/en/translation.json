@@ -1,4 +1,20 @@
 {
+    "auth": {
+        "welcome": "Sign in to manage your menus",
+        "login": "Login",
+        "register": "Register",
+        "username": "Username",
+        "password": "Password",
+        "confirmPassword": "Confirm Password",
+        "usernamePlaceholder": "Enter your username",
+        "passwordPlaceholder": "Enter your password",
+        "confirmPasswordPlaceholder": "Confirm your password",
+        "fieldsRequired": "Please fill in all required fields",
+        "passwordMismatch": "Passwords do not match",
+        "passwordTooShort": "Password must be at least 6 characters",
+        "loggingIn": "Logging in...",
+        "registering": "Registering..."
+    },
     "main": {
         "actions": "Actions",
         "newMenuRequest": "New Menu Request",
@@ -135,6 +151,26 @@
         "menuSubmitted": {
             "title": "Menu submitted",
             "description": "The menu has been submitted successfully."
+        },
+        "menuCreated": {
+            "title": "Menu created",
+            "description": "The menu has been created successfully."
+        },
+        "dishCreated": {
+            "title": "Dish created",
+            "description": "The dish has been added to the menu."
+        },
+        "dishDeleted": {
+            "title": "Dish deleted",
+            "description": "The dish has been removed from the menu."
+        },
+        "apiError": {
+            "title": "Error",
+            "description": "An error occurred while communicating with the server."
+        },
+        "loadingAttributes": {
+            "title": "Loading",
+            "description": "Loading attributes from server..."
         }
     }
 }

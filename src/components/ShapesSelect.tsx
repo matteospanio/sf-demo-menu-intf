@@ -43,5 +43,3 @@ function ShapesSelect({handler}: ShapeSelectProps) {
 }
 
 export default ShapesSelect
-
-

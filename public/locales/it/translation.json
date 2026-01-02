@@ -1,4 +1,20 @@
 {
+    "auth": {
+        "welcome": "Accedi per gestire i tuoi menu",
+        "login": "Accedi",
+        "register": "Registrati",
+        "username": "Nome utente",
+        "password": "Password",
+        "confirmPassword": "Conferma password",
+        "usernamePlaceholder": "Inserisci il tuo nome utente",
+        "passwordPlaceholder": "Inserisci la tua password",
+        "confirmPasswordPlaceholder": "Conferma la tua password",
+        "fieldsRequired": "Per favore compila tutti i campi richiesti",
+        "passwordMismatch": "Le password non corrispondono",
+        "passwordTooShort": "La password deve essere di almeno 6 caratteri",
+        "loggingIn": "Accesso in corso...",
+        "registering": "Registrazione in corso..."
+    },
     "main": {
         "actions": "Azioni",
         "newMenuRequest": "Nuova richiesta di menu",
@@ -135,6 +151,26 @@
         "menuSubmitted": {
             "title": "Menu inviato",
             "description": "Il menu è stato inviato con successo."
+        },
+        "menuCreated": {
+            "title": "Menu creato",
+            "description": "Il menu è stato creato con successo."
+        },
+        "dishCreated": {
+            "title": "Piatto creato",
+            "description": "Il piatto è stato aggiunto al menu."
+        },
+        "dishDeleted": {
+            "title": "Piatto eliminato",
+            "description": "Il piatto è stato rimosso dal menu."
+        },
+        "apiError": {
+            "title": "Errore",
+            "description": "Si è verificato un errore nella comunicazione con il server."
+        },
+        "loadingAttributes": {
+            "title": "Caricamento",
+            "description": "Caricamento attributi dal server..."
         }
     }
 }

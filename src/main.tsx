@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom/client'
 import "./i18n.ts"
 import App from './App.tsx'
 import Loader from './components/Loader.tsx'
+import { AuthProvider } from './contexts'
 
 const theme = extendTheme({
   components: {
@@ -17,7 +18,9 @@ ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
       <React.Suspense fallback={<Loader />}>
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </React.Suspense>
     </ChakraProvider>
   </React.StrictMode>,

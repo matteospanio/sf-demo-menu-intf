@@ -44,4 +44,3 @@ function EmotionSelect({handler}: EmotionSelectProps) {
 }
 
 export default EmotionSelect
-

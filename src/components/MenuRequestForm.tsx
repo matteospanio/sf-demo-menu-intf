@@ -20,81 +20,169 @@ import {
   Text,
   Textarea,
   useDisclosure,
-  useToast
+  useToast,
+  Spinner,
+  Alert,
+  AlertIcon,
 } from '@chakra-ui/react'
 import { AddIcon, EmailIcon } from '@chakra-ui/icons'
 import { FaSave } from 'react-icons/fa'
 import { RiRestaurantFill } from 'react-icons/ri'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import InputWrapper from './InputWrapper'
 import TasteSlider from './TasteSlider'
-import { BasicTasteConfiguration, Emotion, Optional, OtherSlideableConfig, Section, Shape, Texture } from '../utils'
+import { Optional, Section } from '../utils'
 import { Reorder } from "framer-motion"
 import { MdDragIndicator } from 'react-icons/md'
 import { useTranslation } from 'react-i18next'
-import { Dish, deleteListDish, saveDish } from '../dish'
 import { MODAL_TIMER, SLIDER_DEFAULT } from '../constants'
 import SectionSelect from './SectionSelect'
-import EmotionSelect from './EmotionSelect'
-import ShapesSelect from './ShapesSelect'
-import TextureSelect from './TextureSelect'
 import ColorSelector from './ColorSelector'
 import SummaryDrawer from './SummaryDrawer'
+import EmotionSelectApi from './EmotionSelectApi'
+import TextureSelectApi from './TextureSelectApi'
+import ShapesSelectApi from './ShapesSelectApi'
+import { useAttributes } from '../hooks'
+import {
+  menuService,
+  dishService,
+  ApiDish,
+  CreateDishRequest,
+  ApiError
+} from '../api'
+import { Dish } from '../dish'
 
+// Local dish state interface (for form)
+interface LocalDish {
+  id?: number;
+  name: string;
+  description: string;
+  section: Section;
+  sweet: number;
+  bitter: number;
+  sour: number;
+  salty: number;
+  umami: number;
+  piquant: number;
+  fat: number;
+  temperature: number;
+  color1: string;
+  color2: string;
+  color3: string;
+  emotion_ids: number[];
+  texture_ids: number[];
+  shape_ids: number[];
+}
+
+// Convert API dish to local format
+const apiDishToLocal = (dish: ApiDish): LocalDish => ({
+  id: dish.id,
+  name: dish.name,
+  description: dish.description || '',
+  section: dish.section as Section || Section.None,
+  sweet: dish.sweet || 0,
+  bitter: dish.bitter || 0,
+  sour: dish.sour || 0,
+  salty: dish.salty || 0,
+  umami: dish.umami || 0,
+  piquant: dish.piquant || 0,
+  fat: dish.fat || 0,
+  temperature: dish.temperature || 0,
+  color1: dish.colors?.[0] || '#ffffff',
+  color2: dish.colors?.[1] || '#ffffff',
+  color3: dish.colors?.[2] || '#ffffff',
+  emotion_ids: dish.emotions?.map(e => e.id) || [],
+  texture_ids: dish.textures?.map(t => t.id) || [],
+  shape_ids: dish.shapes?.map(s => s.id) || [],
+});
+
+// Convert local dish to API format
+const localDishToApi = (dish: LocalDish): CreateDishRequest => ({
+  name: dish.name,
+  description: dish.description || undefined,
+  section: dish.section,
+  sweet: dish.sweet,
+  bitter: dish.bitter,
+  sour: dish.sour,
+  salty: dish.salty,
+  umami: dish.umami,
+  piquant: dish.piquant,
+  fat: dish.fat,
+  temperature: dish.temperature,
+  color1: dish.color1 !== '#ffffff' ? dish.color1 : undefined,
+  color2: dish.color2 !== '#ffffff' ? dish.color2 : undefined,
+  color3: dish.color3 !== '#ffffff' ? dish.color3 : undefined,
+  emotion_ids: dish.emotion_ids,
+  texture_ids: dish.texture_ids,
+  shape_ids: dish.shape_ids,
+});
+
+// Convert to Dish format for SummaryDrawer
+const localDishToLegacy = (dish: LocalDish): Dish => ({
+  name: dish.name,
+  description: dish.description || null,
+  section: dish.section,
+  tastes: {
+    basic: {
+      sweet: dish.sweet,
+      bitter: dish.bitter,
+      sour: dish.sour,
+      salty: dish.salty,
+      umami: dish.umami,
+    },
+    other: {
+      piquant: dish.piquant,
+      fat: dish.fat,
+      temperature: dish.temperature,
+    },
+  },
+  vision: {
+    colors: [dish.color1, dish.color2, dish.color3].filter(c => c !== '#ffffff'),
+    shapes: [],
+  },
+  textures: [],
+  emotions: [],
+});
+
+const createEmptyDish = (): LocalDish => ({
+  name: '',
+  description: '',
+  section: Section.None,
+  sweet: SLIDER_DEFAULT,
+  bitter: SLIDER_DEFAULT,
+  sour: SLIDER_DEFAULT,
+  salty: SLIDER_DEFAULT,
+  umami: SLIDER_DEFAULT,
+  piquant: SLIDER_DEFAULT,
+  fat: SLIDER_DEFAULT,
+  temperature: SLIDER_DEFAULT,
+  color1: '#ffffff',
+  color2: '#ffffff',
+  color3: '#ffffff',
+  emotion_ids: [],
+  texture_ids: [],
+  shape_ids: [],
+});
 
 function MenuRequestForm() {
-  // translation hook
   const { t } = useTranslation()
+  const toast = useToast()
 
-  // main menu state
+  // Load attributes from API
+  const { emotions, textures, shapes, isLoading: attributesLoading, error: attributesError } = useAttributes()
+
+  // Menu state
   const [title, setTitle] = useState('')
   const [menuDesc, setMenuDesc] = useState('')
+  const [menuId, setMenuId] = useState<number | null>(null)
+  const [dishes, setDishes] = useState<LocalDish[]>([])
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // modal state
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [section, setSection] = useState(Section.None)
+  // Current dish being edited
+  const [currentDish, setCurrentDish] = useState<LocalDish>(createEmptyDish())
+  const [editingDishId, setEditingDishId] = useState<number | null>(null)
 
-  const [basicTastes, setBasicTastes] = useState<BasicTasteConfiguration>({
-    sweet: SLIDER_DEFAULT,
-    bitter: SLIDER_DEFAULT,
-    sour: SLIDER_DEFAULT,
-    salty: SLIDER_DEFAULT,
-    umami: SLIDER_DEFAULT,
-  })
-
-  const [otherTastes, setOtherTastes] = useState<OtherSlideableConfig>({
-    piquant: SLIDER_DEFAULT,
-    fat: SLIDER_DEFAULT,
-    temperature: SLIDER_DEFAULT,
-  })
-
-  const [visionParams, setVisionParams] = useState<{ colors: string[], shapes: Shape[] }>({
-    colors: [],
-    shapes: [],
-  })
-
-  const [emotions, setEmotions] = useState<Emotion[]>([])
-  const [textures, setTextures] = useState<Texture[]>([])
-
-  const handleTasteChange = (taste: string, value: Optional<number>) => {
-    if (taste in basicTastes)
-      setBasicTastes({ ...basicTastes, [taste]: value })
-    else if (taste in otherTastes)
-      setOtherTastes({ ...otherTastes, [taste]: value })
-    else
-      throw new Error('Invalid taste parameter')
-  }
-
-  const handleVisionChange = (param: string, values: string[] | Shape[]) => {
-    if (param == 'shapes')
-      setVisionParams({ ...visionParams, shapes: values as Shape[] })
-    else if (param == 'colors')
-      setVisionParams({ ...visionParams, colors: values as string[] })
-    else
-      throw new Error('Invalid vision parameter')
-  }
-
+  // Taste checkbox states
   const [sweetChecked, setSweetChecked] = useState(false)
   const [bitterChecked, setBitterChecked] = useState(false)
   const [sourChecked, setSourChecked] = useState(false)
@@ -103,18 +191,23 @@ function MenuRequestForm() {
   const [piquantChecked, setPiquantChecked] = useState(false)
   const [fatChecked, setFatChecked] = useState(false)
   const [temperatureChecked, setTemperatureChecked] = useState(false)
+
+  // Color checkbox states
   const [colorCheck1, setColorCheck1] = useState(false)
   const [colorCheck2, setColorCheck2] = useState(false)
   const [colorCheck3, setColorCheck3] = useState(false)
 
-  const [color1, setColor1] = useState('#ffffff')
-  const [color2, setColor2] = useState('#ffffff')
-  const [color3, setColor3] = useState('#ffffff')
+  const { isOpen: isModalOpen, onOpen: openModal, onClose: closeModal } = useDisclosure()
+  const { isOpen: isDrawerOpen, onOpen: openDrawer, onClose: closeDrawer } = useDisclosure()
 
-  let colorObjects = [
-    { color: color1, check: colorCheck1, setCheck: setColorCheck1, setColor: setColor1 },
-    { color: color2, check: colorCheck2, setCheck: setColorCheck2, setColor: setColor2 },
-    { color: color3, check: colorCheck3, setCheck: setColorCheck3, setColor: setColor3 },
+  const handleTasteChange = (taste: string, value: Optional<number>) => {
+    setCurrentDish(prev => ({ ...prev, [taste]: value ?? 0 }))
+  }
+
+  const colorObjects = [
+    { color: currentDish.color1, check: colorCheck1, setCheck: setColorCheck1, setColor: (c: string) => setCurrentDish(prev => ({ ...prev, color1: c })) },
+    { color: currentDish.color2, check: colorCheck2, setCheck: setColorCheck2, setColor: (c: string) => setCurrentDish(prev => ({ ...prev, color2: c })) },
+    { color: currentDish.color3, check: colorCheck3, setCheck: setColorCheck3, setColor: (c: string) => setCurrentDish(prev => ({ ...prev, color3: c })) },
   ]
 
   const baseParams = [
@@ -130,68 +223,44 @@ function MenuRequestForm() {
     { label: 'fat', isChecked: fatChecked, checkCallback: setFatChecked },
     { label: 'temperature', min: -10, max: 40, isChecked: temperatureChecked, checkCallback: setTemperatureChecked },
   ]
-  const [dishes, setDishes] = useState<Array<Dish>>([])
 
-  const toast = useToast()
-  const { isOpen: isModalOpen, onOpen: openModal, onClose: closeModal } = useDisclosure()
-  const { isOpen: isDrawerOpen, onOpen: openDrawer, onClose: closeDrawer } = useDisclosure()
-
-  const saveDishes = () => {
-    let state: Dish = {
-      name,
-      description,
-      section,
-      tastes: {
-        basic: {
-          sweet: sweetChecked ? basicTastes.sweet : null,
-          bitter: bitterChecked ? basicTastes.bitter : null,
-          sour: sourChecked ? basicTastes.sour : null,
-          salty: saltyChecked ? basicTastes.salty : null,
-          umami: umamiChecked ? basicTastes.umami : null,
-        },
-        other: {
-          piquant: piquantChecked ? otherTastes.piquant : null,
-          fat: fatChecked ? otherTastes.fat : null,
-          temperature: temperatureChecked ? otherTastes.temperature : null,
-        },
-      },
-      vision: {
-        colors: colorObjects
-          .filter((colorObject) => colorObject.check)
-          .map((colorObject) => colorObject.color),
-        shapes: visionParams.shapes,
-      },
-      textures,
-      emotions,
-    }
-
-    console.log(state)
-
-    const [newDishes, result] = saveDish(name, state, dishes)
-
-    setDishes(newDishes)
-    toast({
-      title: t(`toast.${result}.title`),
-      description: t(`toast.${result}.description`),
-      status: result === 'nameRequired' ? 'error' : 'success',
-      duration: MODAL_TIMER,
-      isClosable: true,
-    })
-
-    if (result === 'nameRequired') return
-
-    setName('')
-    setDescription('')
-
-    closeModal()
+  const resetDishForm = () => {
+    setCurrentDish(createEmptyDish())
+    setEditingDishId(null)
+    setSweetChecked(false)
+    setBitterChecked(false)
+    setSourChecked(false)
+    setSaltyChecked(false)
+    setUmamiChecked(false)
+    setPiquantChecked(false)
+    setFatChecked(false)
+    setTemperatureChecked(false)
+    setColorCheck1(false)
+    setColorCheck2(false)
+    setColorCheck3(false)
   }
 
-  const loadDish = (name: string) => {
-    const dish = dishes.find((dish) => dish.name === name)
-    if (!dish) {
+  const loadDishIntoForm = (dish: LocalDish) => {
+    setCurrentDish(dish)
+    setEditingDishId(dish.id ?? null)
+    setSweetChecked(dish.sweet !== 0)
+    setBitterChecked(dish.bitter !== 0)
+    setSourChecked(dish.sour !== 0)
+    setSaltyChecked(dish.salty !== 0)
+    setUmamiChecked(dish.umami !== 0)
+    setPiquantChecked(dish.piquant !== 0)
+    setFatChecked(dish.fat !== 0)
+    setTemperatureChecked(dish.temperature !== 0)
+    setColorCheck1(dish.color1 !== '#ffffff')
+    setColorCheck2(dish.color2 !== '#ffffff')
+    setColorCheck3(dish.color3 !== '#ffffff')
+  }
+
+  const saveDishLocal = async () => {
+    if (!currentDish.name) {
       toast({
-        title: t("toast.dishNotFound.title"),
-        description: t("toast.dishNotFound.description"),
+        title: t('toast.nameRequired.title'),
+        description: t('toast.nameRequired.description'),
         status: 'error',
         duration: MODAL_TIMER,
         isClosable: true,
@@ -199,52 +268,120 @@ function MenuRequestForm() {
       return
     }
 
-    const basic = dish.tastes.basic;
-    const other = dish.tastes.other;
+    // Apply checkbox states to dish values
+    const dishToSave: LocalDish = {
+      ...currentDish,
+      sweet: sweetChecked ? currentDish.sweet : 0,
+      bitter: bitterChecked ? currentDish.bitter : 0,
+      sour: sourChecked ? currentDish.sour : 0,
+      salty: saltyChecked ? currentDish.salty : 0,
+      umami: umamiChecked ? currentDish.umami : 0,
+      piquant: piquantChecked ? currentDish.piquant : 0,
+      fat: fatChecked ? currentDish.fat : 0,
+      temperature: temperatureChecked ? currentDish.temperature : 0,
+      color1: colorCheck1 ? currentDish.color1 : '#ffffff',
+      color2: colorCheck2 ? currentDish.color2 : '#ffffff',
+      color3: colorCheck3 ? currentDish.color3 : '#ffffff',
+    }
 
-    // dish state
-    setName(dish.name)
-    setDescription(dish.description ?? '')
-    setBasicTastes({
-      sweet: basic.sweet ?? 0,
-      bitter: basic.bitter ?? 0,
-      sour: basic.sour ?? 0,
-      salty: basic.salty ?? 0,
-      umami: basic.umami ?? 0,
-    })
-    setOtherTastes({
-      piquant: other.piquant ?? 0,
-      fat: other.fat ?? 0,
-      temperature: other.temperature ?? 0,
-    })
-    setVisionParams({
-      colors: dish.vision.colors,
-      shapes: []
-    })
-    setTextures([])
-    setEmotions([])
+    // If we have a menu already created, save to API
+    if (menuId) {
+      try {
+        setIsSubmitting(true)
+        if (editingDishId) {
+          // Update existing dish
+          await dishService.update(editingDishId, localDishToApi(dishToSave))
+          setDishes(prev => prev.map(d => d.id === editingDishId ? { ...dishToSave, id: editingDishId } : d))
+          toast({
+            title: t('toast.dishUpdated.title'),
+            description: t('toast.dishUpdated.description'),
+            status: 'success',
+            duration: MODAL_TIMER,
+            isClosable: true,
+          })
+        } else {
+          // Create new dish
+          const response = await dishService.create(menuId, localDishToApi(dishToSave))
+          setDishes(prev => [...prev, { ...dishToSave, id: response.id }])
+          toast({
+            title: t('toast.dishCreated.title'),
+            description: t('toast.dishCreated.description'),
+            status: 'success',
+            duration: MODAL_TIMER,
+            isClosable: true,
+          })
+        }
+      } catch (err) {
+        toast({
+          title: t('toast.apiError.title'),
+          description: err instanceof ApiError ? err.message : t('toast.apiError.description'),
+          status: 'error',
+          duration: MODAL_TIMER,
+          isClosable: true,
+        })
+        return
+      } finally {
+        setIsSubmitting(false)
+      }
+    } else {
+      // No menu yet, save locally
+      if (editingDishId !== null) {
+        setDishes(prev => prev.map(d => d.id === editingDishId ? dishToSave : d))
+        toast({
+          title: t('toast.dishUpdated.title'),
+          description: t('toast.dishUpdated.description'),
+          status: 'success',
+          duration: MODAL_TIMER,
+          isClosable: true,
+        })
+      } else {
+        // Generate a temporary local ID
+        const tempId = Date.now()
+        setDishes(prev => [...prev, { ...dishToSave, id: tempId }])
+        toast({
+          title: t('toast.dishSaved.title'),
+          description: t('toast.dishSaved.description'),
+          status: 'success',
+          duration: MODAL_TIMER,
+          isClosable: true,
+        })
+      }
+    }
 
-    colorObjects.forEach((colorObject, index) => {
-      colorObject.setCheck(index < dish.vision.colors.length)
-      colorObject.setColor(dish.vision.colors[index] ?? '#ffffff')
-    })
-
-    // checkbuttons
-    setSweetChecked(basic.sweet != null)
-    setBitterChecked(basic.bitter != null)
-    setSourChecked(basic.sour != null)
-    setSaltyChecked(basic.salty != null)
-    setUmamiChecked(basic.umami != null)
-    setPiquantChecked(other.piquant != null)
-    setFatChecked(other.fat != null)
-    setTemperatureChecked(other.temperature != null)
+    resetDishForm()
+    closeModal()
   }
 
-  const submitMenu = () => {
+  const deleteDish = async (dish: LocalDish) => {
+    if (dish.id && menuId) {
+      try {
+        await dishService.delete(dish.id)
+        toast({
+          title: t('toast.dishDeleted.title'),
+          description: t('toast.dishDeleted.description'),
+          status: 'success',
+          duration: MODAL_TIMER,
+          isClosable: true,
+        })
+      } catch (err) {
+        toast({
+          title: t('toast.apiError.title'),
+          description: err instanceof ApiError ? err.message : t('toast.apiError.description'),
+          status: 'error',
+          duration: MODAL_TIMER,
+          isClosable: true,
+        })
+        return
+      }
+    }
+    setDishes(prev => prev.filter(d => d.id !== dish.id))
+  }
+
+  const submitMenu = async () => {
     if (!title) {
       toast({
-        title: t("toast.menuTitleRequired.title"),
-        description: t("toast.menuTitleRequired.description"),
+        title: t('toast.menuTitleRequired.title'),
+        description: t('toast.menuTitleRequired.description'),
         status: 'error',
         duration: MODAL_TIMER,
         isClosable: true,
@@ -254,8 +391,8 @@ function MenuRequestForm() {
 
     if (dishes.length === 0) {
       toast({
-        title: t("toast.dishesRequired.title"),
-        description: t("toast.dishesRequired.description"),
+        title: t('toast.dishesRequired.title'),
+        description: t('toast.dishesRequired.description'),
         status: 'error',
         duration: MODAL_TIMER,
         isClosable: true,
@@ -263,33 +400,68 @@ function MenuRequestForm() {
       return
     }
 
-    toast({
-      title: t("toast.menuSubmitted.title"),
-      description: t("toast.menuSubmitted.description"),
-      status: 'success',
-      duration: MODAL_TIMER,
-      isClosable: true,
-    })
+    setIsSubmitting(true)
 
-    const menu = {
-      title: title,
-      description: menuDesc,
-      dishes: dishes,
+    try {
+      // Create menu if not already created
+      let currentMenuId = menuId
+      if (!currentMenuId) {
+        const menuResponse = await menuService.create({
+          title,
+          description: menuDesc || undefined,
+        })
+        currentMenuId = menuResponse.id
+        setMenuId(currentMenuId)
+
+        // Create all dishes
+        for (const dish of dishes) {
+          const response = await dishService.create(currentMenuId, localDishToApi(dish))
+          dish.id = response.id
+        }
+        setDishes([...dishes])
+      }
+
+      toast({
+        title: t('toast.menuSubmitted.title'),
+        description: t('toast.menuSubmitted.description'),
+        status: 'success',
+        duration: MODAL_TIMER,
+        isClosable: true,
+      })
+
+      openDrawer()
+    } catch (err) {
+      toast({
+        title: t('toast.apiError.title'),
+        description: err instanceof ApiError ? err.message : t('toast.apiError.description'),
+        status: 'error',
+        duration: MODAL_TIMER,
+        isClosable: true,
+      })
+    } finally {
+      setIsSubmitting(false)
     }
+  }
 
-    openDrawer()
-    console.log(menu)
-    fetch('https://spartacus990.pythonanywhere.com/api/menus', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(menu),
-    }).then((response) => {
-      console.log(response)
-    }).catch((error) => {
-      console.error(error)
-    })
+  // Show loading state while attributes load
+  if (attributesLoading) {
+    return (
+      <Center py={10}>
+        <Stack align="center">
+          <Spinner size="xl" color="blue.500" />
+          <Text>{t('toast.loadingAttributes.description')}</Text>
+        </Stack>
+      </Center>
+    )
+  }
+
+  if (attributesError) {
+    return (
+      <Alert status="error">
+        <AlertIcon />
+        {attributesError}
+      </Alert>
+    )
   }
 
   return (
@@ -300,7 +472,7 @@ function MenuRequestForm() {
         data={{
           title: title,
           description: menuDesc,
-          dishes: dishes,
+          dishes: dishes.map(localDishToLegacy),
         }}
       />
 
@@ -316,7 +488,7 @@ function MenuRequestForm() {
           placeholder={t("main.descriptionPlaceholder")}
         />
       </InputWrapper>
-      
+
       <Text m={3}>
         {t("main.formDescription3")}
       </Text>
@@ -330,11 +502,7 @@ function MenuRequestForm() {
           <Spacer />
           <Button
             onClick={() => {
-              if (dishes.length != 0) {
-                loadDish(dishes[dishes.length - 1]?.name ?? '')
-                setName('')
-                setDescription('')
-              }
+              resetDishForm()
               openModal()
             }}
             leftIcon={<AddIcon />}
@@ -358,84 +526,101 @@ function MenuRequestForm() {
                 </Center>
                 <Center>
                   <div>
-                    <SectionSelect sectionHandler={setSection} />
+                    <SectionSelect sectionHandler={(section: Section) => setCurrentDish(prev => ({ ...prev, section }))} />
                   </div>
                 </Center>
               </Stack>
               <ModalCloseButton />
               <ModalBody>
                 <InputWrapper label={t('modal.name')} isRequired>
-                  <Input value={name} onChange={(e) => setName(e.target.value)} />
+                  <Input
+                    value={currentDish.name}
+                    onChange={(e) => setCurrentDish(prev => ({ ...prev, name: e.target.value }))}
+                  />
                 </InputWrapper>
                 <InputWrapper label={t('modal.description')} isRequired={false}>
-                  <Textarea value={description} onChange={(e) => setDescription(e.target.value)} />
+                  <Textarea
+                    value={currentDish.description}
+                    onChange={(e) => setCurrentDish(prev => ({ ...prev, description: e.target.value }))}
+                  />
                 </InputWrapper>
 
                 <Heading mt={4} mb={6} size='md'>{t('modal.sections.tastes.base')}</Heading>
                 <Stack direction='column' spacing='2.5rem'>
-
-                  {baseParams.map((param, index) => {
-                    return (
-                      <TasteSlider
-                        key={index}
-                        label={`base.${param.label}`}
-                        ariaLabel={`${param.label}-slider`}
-                        value={basicTastes[param.label]}
-                        setValueCallback={handleTasteChange}
-                        isChecked={param.isChecked}
-                        checkCallback={param.checkCallback}
-                      />
-                    )
-                  })}
-
+                  {baseParams.map((param, index) => (
+                    <TasteSlider
+                      key={index}
+                      label={`base.${param.label}`}
+                      ariaLabel={`${param.label}-slider`}
+                      value={currentDish[param.label as keyof LocalDish] as number}
+                      setValueCallback={handleTasteChange}
+                      isChecked={param.isChecked}
+                      checkCallback={param.checkCallback}
+                    />
+                  ))}
                 </Stack>
+
                 <Heading mt={6} mb={6} size='md'>{t('modal.sections.tastes.other')}</Heading>
                 <Stack direction='column' spacing='2.5rem'>
+                  {otherParams.map((param, index) => (
+                    <TasteSlider
+                      key={index}
+                      label={`other.${param.label}`}
+                      ariaLabel={`${param.label}-slider`}
+                      value={currentDish[param.label as keyof LocalDish] as number}
+                      setValueCallback={handleTasteChange}
+                      min={param.min}
+                      max={param.max}
+                      isChecked={param.isChecked}
+                      checkCallback={param.checkCallback}
+                    />
+                  ))}
 
-                  {otherParams.map((param, index) => {
-                    return (
-                      <TasteSlider
-                        key={index}
-                        label={`other.${param.label}`}
-                        ariaLabel={`${param.label}-slider`}
-                        value={otherTastes[param.label]}
-                        setValueCallback={handleTasteChange}
-                        min={param.min}
-                        max={param.max}
-                        isChecked={param.isChecked}
-                        checkCallback={param.checkCallback}
-                      />
-                    )
-                  })}
-
-                  <TextureSelect handler={setTextures} />
-
+                  <TextureSelectApi
+                    textures={textures}
+                    selectedIds={currentDish.texture_ids}
+                    onChange={(ids) => setCurrentDish(prev => ({ ...prev, texture_ids: ids }))}
+                  />
                 </Stack>
+
                 <Heading mt={4} mb={6} size='md'>{t('modal.sections.vision')}</Heading>
-                <ShapesSelect handler={handleVisionChange} />
+                <ShapesSelectApi
+                  shapes={shapes}
+                  selectedIds={currentDish.shape_ids}
+                  onChange={(ids) => setCurrentDish(prev => ({ ...prev, shape_ids: ids }))}
+                />
 
                 <Stack direction='column' spacing='2.5rem'>
-                  {colorObjects.map((colorObject, index) => {
-                    return (
-                      <ColorSelector
-                        key={index}
-                        label={`${t('modal.sections.color')} ${index + 1}`}
-                        isChecked={colorObject.check}
-                        checkHandler={colorObject.setCheck}
-                        colorSetter={colorObject.setColor}
-                        value={colorObject.color}
-                      />
-                    )}
-                  )}
+                  {colorObjects.map((colorObject, index) => (
+                    <ColorSelector
+                      key={index}
+                      label={`${t('modal.sections.color')} ${index + 1}`}
+                      isChecked={colorObject.check}
+                      checkHandler={colorObject.setCheck}
+                      colorSetter={colorObject.setColor}
+                      value={colorObject.color}
+                    />
+                  ))}
                 </Stack>
 
                 <Heading mt={4} mb={6} size='md'>{t('modal.sections.emotions')}</Heading>
-                <EmotionSelect handler={setEmotions} />
+                <EmotionSelectApi
+                  emotions={emotions}
+                  selectedIds={currentDish.emotion_ids}
+                  onChange={(ids) => setCurrentDish(prev => ({ ...prev, emotion_ids: ids }))}
+                />
 
               </ModalBody>
 
               <ModalFooter justifyContent={'center'}>
-                <Button colorScheme='blue' mr={3} onClick={saveDishes}>{t('modal.submit')}</Button>
+                <Button
+                  colorScheme='blue'
+                  mr={3}
+                  onClick={saveDishLocal}
+                  isLoading={isSubmitting}
+                >
+                  {t('modal.submit')}
+                </Button>
                 <Button colorScheme='red' onClick={closeModal}>{t('modal.cancel')}</Button>
               </ModalFooter>
             </ModalContent>
@@ -445,9 +630,14 @@ function MenuRequestForm() {
 
         <Center>
           <Box minHeight='5rem'>
-            <Reorder.Group style={{ listStyleType: 'none', width: '24rem' }} axis='y' values={dishes} onReorder={setDishes}>
-              {dishes.length != 0 ? dishes.map((dish) => (
-                <Reorder.Item style={{ marginBottom: 6 }} key={dish.name} value={dish}>
+            <Reorder.Group
+              style={{ listStyleType: 'none', width: '24rem' }}
+              axis='y'
+              values={dishes}
+              onReorder={setDishes}
+            >
+              {dishes.length !== 0 ? dishes.map((dish) => (
+                <Reorder.Item style={{ marginBottom: 6 }} key={dish.id ?? dish.name} value={dish}>
                   <Stack direction='row'>
                     <Center>
                       <Icon as={MdDragIndicator} boxSize={6} />
@@ -457,14 +647,14 @@ function MenuRequestForm() {
                     <Button
                       variant='outline'
                       colorScheme='red'
-                      onClick={() => setDishes(deleteListDish(dishes, dish.name))}
+                      onClick={() => deleteDish(dish)}
                     >
                       {t('main.delete')}
                     </Button>
                     <Button
                       variant='outline'
                       colorScheme='blue'
-                      onClick={() => { loadDish(dish.name); openModal() }}
+                      onClick={() => { loadDishIntoForm(dish); openModal() }}
                     >
                       {t('main.edit')}
                     </Button>
@@ -483,7 +673,13 @@ function MenuRequestForm() {
 
       <Center mt={5}>
         <Stack direction={'row'}>
-          <Button onClick={submitMenu} variant={'solid'} colorScheme='blue' leftIcon={<EmailIcon />}>
+          <Button
+            onClick={submitMenu}
+            variant={'solid'}
+            colorScheme='blue'
+            leftIcon={<EmailIcon />}
+            isLoading={isSubmitting}
+          >
             {t('main.submit')}
           </Button>
           <Button variant={'outline'} colorScheme='blue' isDisabled leftIcon={<FaSave />}>

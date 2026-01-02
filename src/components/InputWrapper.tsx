@@ -2,17 +2,17 @@ import { FormControl, FormLabel } from "@chakra-ui/react"
 
 interface InputWrapperProps {
     label: string
-    isRequired: boolean 
+    isRequired: boolean
     children?: React.ReactNode
 }
 
-/** 
+/**
  * Wrapper for input fields
- * 
+ *
  * @param label
  * @param isRequired
- * @param children 
- * @returns 
+ * @param children
+ * @returns
  */
 function InputWrapper({label, isRequired, children} : InputWrapperProps) {
   return (

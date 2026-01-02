@@ -1,12 +1,27 @@
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, Container, Divider, Text } from '@chakra-ui/react'
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, Container, Divider, Text, Spinner, Center } from '@chakra-ui/react'
 import { ChevronRightIcon } from '@chakra-ui/icons'
 import MenuBar from './components/MenuBar'
 import MenuRequestForm from './components/MenuRequestForm'
+import LoginPage from './components/LoginPage'
 import { useTranslation } from 'react-i18next'
+import { useAuth } from './contexts'
 
 function App() {
 
   const { t } = useTranslation()
+  const { isAuthenticated, isLoading } = useAuth()
+
+  if (isLoading) {
+    return (
+      <Center h="100vh">
+        <Spinner size="xl" color="blue.500" />
+      </Center>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return <LoginPage />
+  }
 
   return (
     <>
