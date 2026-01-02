@@ -8,6 +8,7 @@ import {
   Spinner,
   Stack,
   Text,
+  useColorModeValue,
   useDisclosure,
   AlertDialog,
   AlertDialogBody,
@@ -36,6 +37,13 @@ export default function MenuListPage({ onCreateNew, onViewMenu, onEditMenu }: Me
   const [menuPendingDelete, setMenuPendingDelete] = useState<ApiMenu | null>(null)
   const { isOpen: isDeleteOpen, onOpen: openDelete, onClose: closeDelete } = useDisclosure()
   const cancelRef = useRef<HTMLButtonElement>(null)
+
+  // Color mode values
+  const cardBg = useColorModeValue('white', 'gray.800')
+  const cardBorder = useColorModeValue('gray.200', 'gray.700')
+  const headingColor = useColorModeValue('gray.800', 'white')
+  const textColor = useColorModeValue('gray.600', 'gray.400')
+  const mutedColor = useColorModeValue('gray.500', 'gray.500')
 
   const sortedMenus = useMemo(() => {
     return [...menus].sort((a, b) => b.id - a.id)
@@ -86,16 +94,16 @@ export default function MenuListPage({ onCreateNew, onViewMenu, onEditMenu }: Me
   return (
     <Box>
       <Flex align="center" justify="space-between" gap={3} mb={4}>
-        <Heading size="md">{t('menus.title')}</Heading>
-        <Button colorScheme="blue" onClick={onCreateNew}>
+        <Heading size="md" color={headingColor}>{t('menus.title')}</Heading>
+        <Button onClick={onCreateNew}>
           {t('menus.createNew')}
         </Button>
       </Flex>
 
       {isLoading && (
         <Flex align="center" gap={3}>
-          <Spinner />
-          <Text>{t('menus.loading')}</Text>
+          <Spinner color="brand.500" />
+          <Text color={textColor}>{t('menus.loading')}</Text>
         </Flex>
       )}
 
@@ -107,28 +115,38 @@ export default function MenuListPage({ onCreateNew, onViewMenu, onEditMenu }: Me
       )}
 
       {!isLoading && !error && sortedMenus.length === 0 && (
-        <Box borderWidth={1} borderRadius={6} p={4}>
-          <Heading size="sm" mb={1}>
+        <Box borderWidth={1} borderRadius="xl" p={6} bg={cardBg} borderColor={cardBorder} boxShadow="sm">
+          <Heading size="sm" mb={2} color={headingColor}>
             {t('menus.emptyTitle')}
           </Heading>
-          <Text color="gray.600">{t('menus.emptyDescription')}</Text>
+          <Text color={textColor}>{t('menus.emptyDescription')}</Text>
         </Box>
       )}
 
       {!isLoading && !error && sortedMenus.length > 0 && (
         <Stack spacing={3}>
           {sortedMenus.map(menu => (
-            <Box key={menu.id} borderWidth={1} borderRadius={6} p={4}>
+            <Box
+              key={menu.id}
+              borderWidth={1}
+              borderRadius="xl"
+              p={4}
+              bg={cardBg}
+              borderColor={cardBorder}
+              boxShadow="sm"
+              _hover={{ borderColor: 'brand.500', boxShadow: 'md' }}
+              transition="all 0.2s"
+            >
               <Flex justify="space-between" gap={4} align="start" wrap="wrap">
                 <Box>
-                  <Heading size="sm">{menu.title}</Heading>
+                  <Heading size="sm" color={headingColor}>{menu.title}</Heading>
                   {menu.description && (
-                    <Text mt={1} color="gray.600">
+                    <Text mt={1} color={textColor}>
                       {menu.description}
                     </Text>
                   )}
                   {typeof menu.dish_count === 'number' && (
-                    <Text mt={2} fontSize="sm" color="gray.500">
+                    <Text mt={2} fontSize="sm" color={mutedColor}>
                       {t('menus.dishCount', { count: menu.dish_count })}
                     </Text>
                   )}

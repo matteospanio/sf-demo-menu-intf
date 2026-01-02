@@ -28,6 +28,7 @@
         "menuItems": "Menu Items",
         "addItem": "Add",
         "emptyMenu": "No menu items yet.",
+        "dragToReorder": "Drag to reorder",
         "submit": "Submit",
         "save": "Save draft",
         "edit": "Edit",
@@ -38,7 +39,9 @@
         "myMenus": "My menus",
         "newMenuRequest": "New menu request",
         "logout": "Logout",
-        "settings": "Settings"
+        "settings": "Settings",
+        "openMenu": "Open menu",
+        "language": "Language"
     },
     "menus": {
         "title": "My menus",

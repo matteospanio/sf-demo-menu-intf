@@ -7,7 +7,7 @@ test.describe('Login Page', () => {
 
   test('should display login page when not authenticated', async ({ page }) => {
     // Should show the SoundFood title
-    await expect(page.getByText('🍽️ SoundFood')).toBeVisible()
+    await expect(page.getByText('SoundFood')).toBeVisible()
 
     // Should show login and register tabs
     await expect(page.getByRole('tab', { name: /login/i })).toBeVisible()

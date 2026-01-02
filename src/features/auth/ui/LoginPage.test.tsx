@@ -36,7 +36,8 @@ describe('LoginPage', () => {
   it('renders login form by default', () => {
     render(<LoginPage />)
 
-    expect(screen.getByText('🍽️ SoundFood')).toBeInTheDocument()
+    expect(screen.getByText('SoundFood')).toBeInTheDocument()
+    expect(screen.getByAltText('SoundFood')).toBeInTheDocument()
     // Use getAllByText since Login appears in both tab and button
     expect(screen.getAllByText('Login').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Register').length).toBeGreaterThan(0)

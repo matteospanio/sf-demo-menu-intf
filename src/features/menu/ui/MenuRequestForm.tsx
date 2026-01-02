@@ -7,6 +7,7 @@ import {
   FormHelperText,
   Heading,
   Icon,
+  IconButton,
   Input,
   Modal,
   ModalBody,
@@ -19,13 +20,16 @@ import {
   Stack,
   Text,
   Textarea,
+  useColorModeValue,
   useDisclosure,
   useToast,
   Spinner,
   Alert,
   AlertIcon,
+  Badge,
+  Tooltip,
 } from '@chakra-ui/react'
-import { AddIcon, EmailIcon } from '@chakra-ui/icons'
+import { AddIcon, DeleteIcon, EditIcon, EmailIcon } from '@chakra-ui/icons'
 import { FaSave } from 'react-icons/fa'
 import { RiRestaurantFill } from 'react-icons/ri'
 import { useEffect, useState } from 'react'
@@ -177,6 +181,16 @@ interface MenuRequestFormProps {
 function MenuRequestForm({ menuId: initialMenuId, onDone }: MenuRequestFormProps) {
   const { t } = useTranslation()
   const toast = useToast()
+
+  // Color mode values
+  const containerBg = useColorModeValue('white', 'gray.800')
+  const containerBorder = useColorModeValue('gray.200', 'gray.700')
+  const cardBg = useColorModeValue('gray.50', 'gray.700')
+  const cardBorder = useColorModeValue('gray.200', 'gray.600')
+  const textColor = useColorModeValue('gray.800', 'gray.100')
+  const mutedColor = useColorModeValue('gray.600', 'gray.400')
+  const iconColor = useColorModeValue('gray.500', 'gray.400')
+  const hoverBg = useColorModeValue('blackAlpha.50', 'whiteAlpha.100')
 
   // Load attributes from API
   const { emotions, textures, shapes, isLoading: attributesLoading, error: attributesError } = useAttributes()
@@ -503,8 +517,8 @@ function MenuRequestForm({ menuId: initialMenuId, onDone }: MenuRequestFormProps
     return (
       <Center py={10}>
         <Stack align="center">
-          <Spinner size="xl" color="blue.500" />
-          <Text>{t('toast.loadingAttributes.description')}</Text>
+          <Spinner size="xl" color="brand.500" />
+          <Text color="gray.300">{t('toast.loadingAttributes.description')}</Text>
         </Stack>
       </Center>
     )
@@ -557,7 +571,7 @@ function MenuRequestForm({ menuId: initialMenuId, onDone }: MenuRequestFormProps
         {t("main.formDescription3")}
       </Text>
 
-      <Container maxW={'xl'} bg={'gray.300'} borderRadius={5} p={3} mt={6}>
+      <Container maxW={'xl'} bg={containerBg} borderRadius='xl' p={4} mt={6} borderWidth={1} borderColor={containerBorder} boxShadow="sm">
         <Flex>
           <Center>
             <Icon boxSize={6} mr={2} as={RiRestaurantFill} />
@@ -678,14 +692,13 @@ function MenuRequestForm({ menuId: initialMenuId, onDone }: MenuRequestFormProps
 
               <ModalFooter justifyContent={'center'}>
                 <Button
-                  colorScheme='blue'
                   mr={3}
                   onClick={saveDishLocal}
                   isLoading={isSubmitting}
                 >
                   {t('modal.submit')}
                 </Button>
-                <Button colorScheme='red' onClick={closeModal}>{t('modal.cancel')}</Button>
+                <Button variant='outline' colorScheme='red' onClick={closeModal}>{t('modal.cancel')}</Button>
               </ModalFooter>
             </ModalContent>
           </Modal>
@@ -693,43 +706,136 @@ function MenuRequestForm({ menuId: initialMenuId, onDone }: MenuRequestFormProps
         </Flex>
 
         <Center>
-          <Box minHeight='5rem'>
-            <Reorder.Group
-              style={{ listStyleType: 'none', width: '24rem' }}
-              axis='y'
-              values={dishes}
-              onReorder={setDishes}
-            >
-              {dishes.length !== 0 ? dishes.map((dish) => (
-                <Reorder.Item style={{ marginBottom: 6 }} key={dish.id ?? dish.name} value={dish}>
-                  <Stack direction='row'>
-                    <Center>
-                      <Icon as={MdDragIndicator} boxSize={6} />
-                      <Text>{dish.name}</Text>
-                    </Center>
-                    <Spacer />
-                    <Button
-                      variant='outline'
-                      colorScheme='red'
-                      onClick={() => deleteDish(dish)}
+          <Box w="100%" minHeight="5rem">
+            {dishes.length !== 0 ? (
+              <Reorder.Group
+                style={{ listStyleType: 'none', padding: 0, margin: 0 }}
+                axis="y"
+                values={dishes}
+                onReorder={setDishes}
+              >
+                <Stack spacing={3}>
+                  {dishes.map((dish, index) => (
+                    <Reorder.Item
+                      key={dish.id ?? dish.name}
+                      value={dish}
+                      style={{ cursor: 'grab' }}
+                      whileDrag={{ cursor: 'grabbing', scale: 1.02 }}
                     >
-                      {t('main.delete')}
-                    </Button>
-                    <Button
-                      variant='outline'
-                      colorScheme='blue'
-                      onClick={() => { loadDishIntoForm(dish); openModal() }}
-                    >
-                      {t('main.edit')}
-                    </Button>
-                  </Stack>
-                </Reorder.Item>
-              )) :
-                <Text color={'gray.500'}>
-                  {t("main.emptyMenu")}
-                </Text>
-              }
-            </Reorder.Group>
+                      <Box
+                        bg={cardBg}
+                        borderRadius="xl"
+                        borderWidth={1}
+                        borderColor={cardBorder}
+                        p={4}
+                        transition="all 0.2s"
+                        _hover={{ borderColor: 'brand.500', boxShadow: 'md' }}
+                      >
+                        <Flex align="center" gap={3}>
+                          {/* Drag Handle */}
+                          <Tooltip label={t('main.dragToReorder')} placement="top">
+                            <Center
+                              p={2}
+                              borderRadius="md"
+                              color={iconColor}
+                              _hover={{ color: 'brand.500', bg: hoverBg }}
+                            >
+                              <Icon as={MdDragIndicator} boxSize={5} />
+                            </Center>
+                          </Tooltip>
+
+                          {/* Dish Info */}
+                          <Box flex={1} minW={0}>
+                            <Flex align="center" gap={2} mb={1}>
+                              <Text
+                                fontWeight="semibold"
+                                color={textColor}
+                                fontSize="md"
+                                noOfLines={1}
+                              >
+                                {dish.name}
+                              </Text>
+                              {dish.section && dish.section !== Section.None && (
+                                <Badge
+                                  colorScheme="yellow"
+                                  variant="subtle"
+                                  fontSize="xs"
+                                  textTransform="capitalize"
+                                >
+                                  {t(`cathegory.${dish.section}`)}
+                                </Badge>
+                              )}
+                            </Flex>
+                            {dish.description && (
+                              <Text color={mutedColor} fontSize="sm" noOfLines={1}>
+                                {dish.description}
+                              </Text>
+                            )}
+                            {/* Color indicators */}
+                            {[dish.color1, dish.color2, dish.color3].some(c => c !== '#ffffff') && (
+                              <Flex gap={1} mt={2}>
+                                {[dish.color1, dish.color2, dish.color3]
+                                  .filter(c => c !== '#ffffff')
+                                  .map((color, i) => (
+                                    <Box
+                                      key={i}
+                                      w={4}
+                                      h={4}
+                                      borderRadius="full"
+                                      bg={color}
+                                      borderWidth={1}
+                                      borderColor={cardBorder}
+                                    />
+                                  ))}
+                              </Flex>
+                            )}
+                          </Box>
+
+                          {/* Order number */}
+                          <Text color={mutedColor} fontSize="sm" fontWeight="medium" mr={2}>
+                            #{index + 1}
+                          </Text>
+
+                          {/* Actions */}
+                          <Flex gap={2}>
+                            <Tooltip label={t('main.edit')} placement="top">
+                              <IconButton
+                                aria-label={t('main.edit')}
+                                icon={<EditIcon />}
+                                size="sm"
+                                variant="ghost"
+                                colorScheme="gray"
+                                _hover={{ color: 'brand.500', bg: hoverBg }}
+                                onClick={() => { loadDishIntoForm(dish); openModal() }}
+                              />
+                            </Tooltip>
+                            <Tooltip label={t('main.delete')} placement="top">
+                              <IconButton
+                                aria-label={t('main.delete')}
+                                icon={<DeleteIcon />}
+                                size="sm"
+                                variant="ghost"
+                                colorScheme="red"
+                                onClick={() => deleteDish(dish)}
+                              />
+                            </Tooltip>
+                          </Flex>
+                        </Flex>
+                      </Box>
+                    </Reorder.Item>
+                  ))}
+                </Stack>
+              </Reorder.Group>
+            ) : (
+              <Center py={8}>
+                <Stack align="center" spacing={3}>
+                  <Icon as={RiRestaurantFill} boxSize={10} color="gray.500" />
+                  <Text color="gray.500" fontSize="sm">
+                    {t("main.emptyMenu")}
+                  </Text>
+                </Stack>
+              </Center>
+            )}
           </Box>
         </Center>
 
@@ -740,13 +846,12 @@ function MenuRequestForm({ menuId: initialMenuId, onDone }: MenuRequestFormProps
           <Button
             onClick={submitMenu}
             variant={'solid'}
-            colorScheme='blue'
             leftIcon={<EmailIcon />}
             isLoading={isSubmitting}
           >
             {t('main.submit')}
           </Button>
-          <Button variant={'outline'} colorScheme='blue' isDisabled leftIcon={<FaSave />}>
+          <Button variant={'outline'} isDisabled leftIcon={<FaSave />}>
             {t('main.save')}
           </Button>
         </Stack>

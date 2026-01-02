@@ -5,7 +5,6 @@ import {
   Container,
   FormControl,
   FormLabel,
-  Heading,
   Input,
   Stack,
   Tab,
@@ -20,10 +19,14 @@ import {
   InputRightElement,
   IconButton,
   Text,
+  Image,
+  VStack,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../model';
+import logoSoundfood from '../../../assets/logo-soundfood.png';
 
 function LoginPage() {
   const { t } = useTranslation();
@@ -90,26 +93,88 @@ function LoginPage() {
 
   const displayError = localError || error;
 
+  // Color mode values
+  const bgGradient = useColorModeValue(
+    'linear(to-br, brand.50, white, gray.50)',
+    'linear(to-br, gray.900, gray.800, gray.900)'
+  );
+  const cardBg = useColorModeValue(
+    'rgba(255, 255, 255, 0.8)',
+    'rgba(39, 39, 42, 0.8)'
+  );
+  const cardBorder = useColorModeValue('gray.200', 'gray.700');
+  const textColor = useColorModeValue('gray.600', 'gray.400');
+  const logoContainerBg = useColorModeValue('white', 'gray.800');
+
   if (isLoading) {
     return null;
   }
 
   return (
-    <Container maxW="md" py={12}>
+    <Box
+      minH="100vh"
+      bgGradient={bgGradient}
+      py={12}
+      position="relative"
+      overflow="hidden"
+    >
+      {/* Decorative gradient orbs */}
       <Box
-        bg="white"
-        p={8}
-        borderRadius="lg"
-        boxShadow="lg"
-        border="1px"
-        borderColor="gray.200"
-      >
-        <Heading mb={6} textAlign="center" size="lg">
-          🍽️ SoundFood
-        </Heading>
-        <Text mb={6} textAlign="center" color="gray.600">
-          {t('auth.welcome')}
-        </Text>
+        position="absolute"
+        top="-20%"
+        right="-10%"
+        w="500px"
+        h="500px"
+        bg="brand.200"
+        filter="blur(120px)"
+        opacity={0.4}
+        borderRadius="full"
+        pointerEvents="none"
+      />
+      <Box
+        position="absolute"
+        bottom="-10%"
+        left="-5%"
+        w="400px"
+        h="400px"
+        bg="brand.300"
+        filter="blur(100px)"
+        opacity={0.3}
+        borderRadius="full"
+        pointerEvents="none"
+      />
+
+      <Container maxW="md" position="relative" zIndex={1}>
+        <Box
+          bg={cardBg}
+          backdropFilter="blur(20px)"
+          p={8}
+          borderRadius="2xl"
+          boxShadow="xl"
+          border="1px"
+          borderColor={cardBorder}
+        >
+          <VStack spacing={4} mb={6}>
+            <Box
+              p={4}
+              borderRadius="2xl"
+              bg={logoContainerBg}
+              boxShadow="md"
+            >
+              <Image
+                src={logoSoundfood}
+                alt="SoundFood"
+                boxSize="80px"
+                objectFit="contain"
+              />
+            </Box>
+            <Text fontSize="2xl" fontWeight="bold" color="brand.500">
+              SoundFood
+            </Text>
+            <Text textAlign="center" color={textColor}>
+              {t('auth.welcome')}
+            </Text>
+          </VStack>
 
         {displayError && (
           <Alert status="error" mb={4} borderRadius="md">
@@ -161,7 +226,7 @@ function LoginPage() {
 
                   <Button
                     type="submit"
-                    colorScheme="blue"
+                    w="full"
                     isLoading={isSubmitting}
                     loadingText={t('auth.loggingIn')}
                   >
@@ -217,7 +282,7 @@ function LoginPage() {
 
                   <Button
                     type="submit"
-                    colorScheme="blue"
+                    w="full"
                     isLoading={isSubmitting}
                     loadingText={t('auth.registering')}
                   >
@@ -228,8 +293,9 @@ function LoginPage() {
             </TabPanel>
           </TabPanels>
         </Tabs>
-      </Box>
-    </Container>
+        </Box>
+      </Container>
+    </Box>
   );
 }
 

@@ -1,17 +1,11 @@
 import React from 'react'
-import { ChakraProvider, extendTheme } from '@chakra-ui/react'
-import {  MultiSelectTheme } from 'chakra-multiselect'
+import { ChakraProvider } from '@chakra-ui/react'
 import ReactDOM from 'react-dom/client'
 import "./i18n.ts"
 import App from './App.tsx'
 import { Loader } from './shared/ui'
 import { AuthProvider } from './features/auth'
-
-const theme = extendTheme({
-  components: {
-    MultiSelect: MultiSelectTheme
-  }
-})
+import theme from './theme.ts'
 
 const rootElement = document.getElementById('root')!
 ReactDOM.createRoot(rootElement).render(

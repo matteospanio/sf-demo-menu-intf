@@ -5,6 +5,8 @@ const API = 'http://localhost:5000'
 async function mockAuth(page: Page) {
   await page.addInitScript(() => {
     window.localStorage.setItem('auth_token', 'e2e-token')
+    // Stabilize E2E expectations that assert English UI strings.
+    window.localStorage.setItem('i18nextLng', 'en')
   })
 
   await page.route(`${API}/auth/me`, async (route) => {
@@ -24,9 +26,12 @@ async function mockAttributes(page: Page) {
 }
 
 async function openMyMenus(page: Page) {
-  const heading = page.getByRole('heading', { name: 'My menus' })
+  const heading = page.getByRole('heading', { name: /my menus|i miei menu/i })
   if (await heading.count()) return
-  await page.getByRole('button', { name: 'My menus' }).click()
+
+  // Navigation is responsive (desktop buttons vs mobile drawer). The logo action is stable.
+  await page.getByRole('button', { name: 'Go to menus list' }).click()
+  await expect(heading).toBeVisible()
 }
 
 test.describe('Menus management', () => {

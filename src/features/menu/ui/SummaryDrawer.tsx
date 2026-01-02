@@ -1,4 +1,4 @@
-import { Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Stack } from '@chakra-ui/react'
+import { Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Stack, Text, useColorModeValue } from '@chakra-ui/react'
 import { Dish } from '../model/dish'
 import { useTranslation } from 'react-i18next'
 import DishCard from './DishCard'
@@ -16,20 +16,22 @@ interface SummaryDrawerProps {
 function SummaryDrawer({isOpen, closeDrawer, data}: SummaryDrawerProps) {
 
   const {t} = useTranslation()
+  const drawerBg = useColorModeValue('gray.50', 'gray.800')
+  const textColor = useColorModeValue('gray.600', 'gray.300')
 
   return (
     <Drawer onClose={closeDrawer} isOpen={isOpen} size='full'>
-      <DrawerOverlay />
-      <DrawerContent>
+      <DrawerOverlay backdropFilter="blur(4px)" />
+      <DrawerContent bg={drawerBg}>
         <DrawerCloseButton />
-        <DrawerHeader>Menu: {data.title}</DrawerHeader>
+        <DrawerHeader color="brand.500" fontSize="2xl">Menu: {data.title}</DrawerHeader>
         <DrawerBody>
-          <p>
+          <Text color={textColor} mb={4}>
             {t('main.description')}: {data.description}
-          </p>
+          </Text>
           <Stack mt={5} direction='column' spacing={4}>
-            {data.dishes.map((dish) => {
-              return <DishCard dish={dish} />
+            {data.dishes.map((dish, index) => {
+              return <DishCard key={index} dish={dish} />
             })}
           </Stack>
 

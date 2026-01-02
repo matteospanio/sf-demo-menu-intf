@@ -25,11 +25,11 @@ function EmotionSelectApi({ emotions, selectedIds, onChange }: EmotionSelectApiP
 
   return (
     <FormControl>
-      <FormLabel ml={6}>{t('emotions.description')}</FormLabel>
+      <FormLabel ml={6} color="gray.200">{t('emotions.description')}</FormLabel>
       <Select
         isMulti
         placeholder={t('emotions.select')}
-        colorScheme="blue"
+        colorScheme="yellow"
         value={selectedOptions}
         options={options}
         onChange={(e) => handleChange(e as typeof options)}

@@ -43,19 +43,20 @@ function TasteSlider({label, ariaLabel, value, max, min, setValueCallback, isChe
             borderRadius={15}
             value={value}
             textAlign='center'
-            bg='blue.600'
-            color='white'
+            bg='brand.500'
+            color='gray.800'
             mt='-9'
             ml='-6'
             w='14'
+            fontWeight='semibold'
         >
             {label == 'other.temperature' ? `${value}°C` : value}
         </SliderMark>
-        <SliderTrack>
-            <SliderFilledTrack />
+        <SliderTrack bg='gray.600'>
+            <SliderFilledTrack bg='brand.500' />
         </SliderTrack>
-        <SliderThumb boxSize={5}>
-            <Box color='blue.600' as={RxValue} />
+        <SliderThumb boxSize={5} bg='brand.500'>
+            <Box color='gray.800' as={RxValue} />
         </SliderThumb>
     </Slider>
     </Stack>

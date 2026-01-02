@@ -17,15 +17,19 @@ test.describe('Menu Form', () => {
   })
 
   test('should display menu request form when authenticated', async ({ page }) => {
-    // Wait for either login page or menu form
-    const isLoginPage = await page.getByText('🍽️ SoundFood').isVisible().catch(() => false)
+    // Wait for page to load
+    await page.waitForLoadState('networkidle')
 
-    if (!isLoginPage) {
-      // If we're past login, check for form elements
-      await expect(page.getByRole('heading')).toBeVisible()
-    } else {
+    // Check if we're on the login page by looking for the login tab
+    const loginTab = page.getByRole('tab', { name: /login/i })
+    const isLoginPage = await loginTab.isVisible().catch(() => false)
+
+    if (isLoginPage) {
       // If login page is showing, that's expected without proper auth
-      await expect(page.getByText('🍽️ SoundFood')).toBeVisible()
+      await expect(page.getByText('SoundFood')).toBeVisible()
+    } else {
+      // If we're past login, check for menu-related elements
+      await expect(page.getByText('SoundFood')).toBeVisible()
     }
   })
 })

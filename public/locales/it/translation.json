@@ -28,6 +28,7 @@
         "menuItems": "Portate",
         "addItem": "Aggiungi",
         "emptyMenu": "Nessuna portata inserita.",
+        "dragToReorder": "Trascina per riordinare",
         "submit": "Invia",
         "save": "Salva bozza",
         "edit": "Modifica",
@@ -38,7 +39,9 @@
         "myMenus": "I miei menu",
         "newMenuRequest": "Nuova richiesta menu",
         "logout": "Esci",
-        "settings": "Impostazioni"
+        "settings": "Impostazioni",
+        "openMenu": "Apri menu",
+        "language": "Lingua"
     },
     "menus": {
         "title": "I miei menu",

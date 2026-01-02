@@ -15,6 +15,7 @@ import {
   Stack,
   Tag,
   Text,
+  useColorModeValue,
   useDisclosure,
   Wrap,
   WrapItem,
@@ -62,6 +63,15 @@ export default function MenuDetailsPage({ menuId, onBack, onEdit, onDeleted, onM
 
   const { isOpen: isDeleteOpen, onOpen: openDelete, onClose: closeDelete } = useDisclosure()
   const cancelRef = useRef<HTMLButtonElement>(null)
+
+  // Color mode values
+  const cardBg = useColorModeValue('white', 'gray.800')
+  const cardBorder = useColorModeValue('gray.200', 'gray.700')
+  const headingColor = useColorModeValue('gray.800', 'white')
+  const textColor = useColorModeValue('gray.600', 'gray.400')
+  const mutedColor = useColorModeValue('gray.500', 'gray.400')
+  const tagBg = useColorModeValue('gray.100', 'gray.700')
+  const tagColor = useColorModeValue('gray.700', 'gray.200')
 
   const onMenuLoadedRef = useRef<MenuDetailsPageProps['onMenuLoaded']>(onMenuLoaded)
   const tRef = useRef(t)
@@ -118,7 +128,7 @@ export default function MenuDetailsPage({ menuId, onBack, onEdit, onDeleted, onM
   return (
     <Box>
       <Flex align="center" justify="space-between" gap={3} mb={4} wrap="wrap">
-        <Heading size="md">{t('menus.detailsTitle')}</Heading>
+        <Heading size="md" color={headingColor}>{t('menus.detailsTitle')}</Heading>
         <Flex gap={2}>
           <Button variant="outline" onClick={onBack}>
             {t('menus.actions.back')}
@@ -134,8 +144,8 @@ export default function MenuDetailsPage({ menuId, onBack, onEdit, onDeleted, onM
 
       {isLoading && (
         <Flex align="center" gap={3}>
-          <Spinner />
-          <Text>{t('menus.loading')}</Text>
+          <Spinner color="brand.500" />
+          <Text color={textColor}>{t('menus.loading')}</Text>
         </Flex>
       )}
 
@@ -148,17 +158,17 @@ export default function MenuDetailsPage({ menuId, onBack, onEdit, onDeleted, onM
 
       {!isLoading && !error && menu && (
         <>
-          <Box borderWidth={1} borderRadius={6} p={4} mb={4}>
-            <Heading size="sm">{menu.title}</Heading>
-            {menu.description && <Text mt={1}>{menu.description}</Text>}
+          <Box borderWidth={1} borderRadius="xl" p={4} mb={4} bg={cardBg} borderColor={cardBorder} boxShadow="sm">
+            <Heading size="sm" color={headingColor}>{menu.title}</Heading>
+            {menu.description && <Text mt={1} color={textColor}>{menu.description}</Text>}
           </Box>
 
-          <Heading size="sm" mb={2}>
+          <Heading size="sm" mb={2} color={headingColor}>
             {t('menus.dishesTitle')}
           </Heading>
 
           {dishes.length === 0 ? (
-            <Text color="gray.600">{t('menus.noDishes')}</Text>
+            <Text color={mutedColor}>{t('menus.noDishes')}</Text>
           ) : (
             <Stack spacing={2}>
               {dishes.map(dish => {
@@ -171,15 +181,25 @@ export default function MenuDetailsPage({ menuId, onBack, onEdit, onDeleted, onM
                 ].filter(Boolean) as string[]
 
                 return (
-                  <Box key={dish.id} borderWidth={1} borderRadius={6} p={3}>
-                    <Text fontWeight="bold">{dish.name}</Text>
-                    {dish.description && <Text color="gray.600">{dish.description}</Text>}
-                    <Text fontSize="sm" color="gray.500">{dish.section}</Text>
+                  <Box
+                    key={dish.id}
+                    borderWidth={1}
+                    borderRadius="xl"
+                    p={3}
+                    bg={cardBg}
+                    borderColor={cardBorder}
+                    boxShadow="sm"
+                    _hover={{ borderColor: 'brand.500', boxShadow: 'md' }}
+                    transition="all 0.2s"
+                  >
+                    <Text fontWeight="bold" color={headingColor}>{dish.name}</Text>
+                    {dish.description && <Text color={textColor}>{dish.description}</Text>}
+                    <Text fontSize="sm" color="brand.500">{dish.section}</Text>
 
                     {(tasteSummary || attrCounts.length > 0 || colors.length > 0) && (
                       <Box mt={2}>
                         {tasteSummary && (
-                          <Text fontSize="sm" color="gray.600">
+                          <Text fontSize="sm" color={mutedColor}>
                             {tasteSummary}
                           </Text>
                         )}
@@ -188,7 +208,7 @@ export default function MenuDetailsPage({ menuId, onBack, onEdit, onDeleted, onM
                           <Wrap mt={2} spacing={2} aria-label="Dish attributes">
                             {attrCounts.map(value => (
                               <WrapItem key={value}>
-                                <Tag size="sm" variant="subtle">{value}</Tag>
+                                <Tag size="sm" variant="subtle" bg={tagBg} color={tagColor}>{value}</Tag>
                               </WrapItem>
                             ))}
                           </Wrap>
@@ -201,8 +221,9 @@ export default function MenuDetailsPage({ menuId, onBack, onEdit, onDeleted, onM
                                 key={`${dish.id}-c-${idx}`}
                                 w="16px"
                                 h="16px"
-                                borderRadius="3px"
+                                borderRadius="full"
                                 borderWidth={1}
+                                borderColor={cardBorder}
                                 bg={c}
                                 aria-label={`Color ${idx + 1} ${c}`}
                               />

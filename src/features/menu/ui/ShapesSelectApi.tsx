@@ -25,10 +25,10 @@ function ShapesSelectApi({ shapes, selectedIds, onChange }: ShapesSelectApiProps
 
   return (
     <FormControl>
-      <FormLabel ml={6}>{t('shapes.description')}</FormLabel>
+      <FormLabel ml={6} color="gray.200">{t('shapes.description')}</FormLabel>
       <Select
         isMulti
-        colorScheme="blue"
+        colorScheme="yellow"
         placeholder={t('shapes.select')}
         value={selectedOptions}
         options={options}

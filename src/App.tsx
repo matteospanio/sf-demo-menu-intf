@@ -1,4 +1,4 @@
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, Container, Divider, Spinner, Center } from '@chakra-ui/react'
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, Container, Divider, Spinner, Center, Box, useColorModeValue } from '@chakra-ui/react'
 import { ChevronRightIcon } from '@chakra-ui/icons'
 import { MenuBar } from './shared/ui'
 import { MenuRequestForm } from './features/menu'
@@ -58,10 +58,14 @@ function App() {
     return items
   }, [page, t])
 
+  // Color mode values
+  const bgColor = useColorModeValue('gray.50', 'gray.900')
+  const spinnerBg = useColorModeValue('gray.50', 'gray.900')
+
   if (isLoading) {
     return (
-      <Center h="100vh">
-        <Spinner size="xl" color="blue.500" />
+      <Center h="100vh" bg={spinnerBg}>
+        <Spinner size="xl" color="brand.500" />
       </Center>
     )
   }
@@ -71,15 +75,15 @@ function App() {
   }
 
   return (
-    <>
+    <Box minH="100vh" bg={bgColor}>
     <MenuBar
       onGoToMenus={() => setPage({ type: 'list' })}
       onGoToNewMenu={() => setPage({ type: 'new' })}
     />
 
-    <Container mt='1.5rem' maxW='850px' p={3} borderRadius={5}>
+    <Container mt='2rem' maxW='900px' p={4}>
 
-      <Breadcrumb separator={<ChevronRightIcon color='gray..500' />}>
+      <Breadcrumb separator={<ChevronRightIcon color='gray.500' />} mb={4}>
         {breadcrumbItems.map((item, idx) => (
           <BreadcrumbItem key={`${item.label}-${idx}`}>
             <BreadcrumbLink
@@ -134,7 +138,7 @@ function App() {
       )}
 
     </Container>
-    </>
+    </Box>
   )
 }
 
