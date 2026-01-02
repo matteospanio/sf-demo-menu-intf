@@ -1,5 +1,10 @@
 # SoundFood — Menu Intake Frontend
 
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![CI](https://github.com/matteospanio/sf-demo-menu-intf/actions/workflows/ci.yml/badge.svg)](https://github.com/matteospanio/sf-demo-menu-intf/actions/workflows/ci.yml)
+[![Node](https://img.shields.io/badge/node-20%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+
 This repository contains a **React + TypeScript** web interface used to **collect restaurant menu data** and send it to the **SoundFood API**.
 
 SoundFood creates tailored music experiences for restaurants to enhance the perceived flavors of dishes. This app focuses on *data collection*: menus, dishes, and dish-specific sensory attributes (tastes, colors, textures, shapes, emotions, etc.).
@@ -255,4 +260,4 @@ stateDiagram-v2
 
 ## License
 
-No `LICENSE` file is currently present in this repository. If this project is intended to be open-sourced, add a license file (e.g., MIT/Apache-2.0). If it is internal/proprietary, consider adding a brief license notice clarifying usage and distribution.
+This project is licensed under the Apache-2.0 License - see the [LICENSE](LICENSE) file for details.

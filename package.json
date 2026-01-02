@@ -1,9 +1,9 @@
 {
   "name": "create-menu",
-  "private": true,
-  "version": "0.0.0",
+  "private": false,
+  "version": "0.2.0",
   "type": "module",
-  "homepage": "httos://matteospanio.github.io/sf-demo-menu-intf/",
+  "homepage": "https://matteospanio.github.io/sf-demo-menu-intf/",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
