@@ -5,7 +5,12 @@ import LanguageSelector from './LanguageSelector'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../features/auth'
 
-function MenuBar() {
+export interface MenuBarProps {
+  onGoToMenus?: () => void
+  onGoToNewMenu?: () => void
+}
+
+function MenuBar({ onGoToMenus, onGoToNewMenu }: MenuBarProps) {
 
   const {t} = useTranslation()
   const { user, logout } = useAuth()
@@ -41,6 +46,16 @@ function MenuBar() {
             </MenuButton>
             <MenuList>
               <MenuItem icon={<FaHouseUser size={20} />}>{t("topLeft.profile")} ({user?.username})</MenuItem>
+              {onGoToMenus && (
+                <MenuItem onClick={onGoToMenus}>
+                  {t('topLeft.myMenus')}
+                </MenuItem>
+              )}
+              {onGoToNewMenu && (
+                <MenuItem onClick={onGoToNewMenu}>
+                  {t('topLeft.newMenuRequest')}
+                </MenuItem>
+              )}
               <MenuItem icon={<MdSettings size={20} />}>{t("topLeft.settings")}</MenuItem>
               <MenuDivider />
               <MenuItem icon={<MdLogout size={20} />} onClick={handleLogout}>{t("topLeft.logout")}</MenuItem>

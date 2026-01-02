@@ -18,6 +18,11 @@ SoundFood creates tailored music experiences for restaurants to enhance the perc
   - Create a menu (title required, description optional)
   - Add multiple dishes to the menu
   - Reorder dishes via drag & drop
+- **Menu request management**
+  - View the list of your created menus
+  - Open menu details
+  - Update an existing menu request
+  - Delete a menu
 - **Dish description (modal editor)**
   - Section/category selection (e.g., appetizer, first course, …)
   - Taste sliders (sweet/bitter/sour/salty/umami + piquant/fat/temperature)
@@ -147,6 +152,7 @@ See [.github/workflows/ci.yml](.github/workflows/ci.yml).
 - As a restaurant user, I can **reorder dishes** to match the menu order.
 - As a restaurant user, I can **submit** the menu request, sending menu + dishes to the SoundFood API.
 - As a restaurant user, I can **review a summary** of what was submitted.
+- As a restaurant user, I can **see the list of my created menus**, open details, **edit**, and **delete** a menu.
 - As a user, I can **switch language** (EN/IT) from the top bar.
 - As a user, I can **log out**.
 
@@ -160,10 +166,12 @@ flowchart LR
 
   UI --> Auth[Auth Feature]
   UI --> Menu[Menu Feature]
+  UI --> MenusMgmt[Menus Management UI]
   UI --> Shared[Shared UI/Lib]
 
   Auth --> Api[API Client]
   Menu --> Api
+  MenusMgmt --> Api
   Menu --> Attr[Attributes Loader]
   Attr --> Api
 
@@ -198,6 +206,45 @@ sequenceDiagram
   end
 
   FE-->>U: Show success toast + open summary drawer
+```
+
+### Sequence diagram — manage menus (list / view / edit / delete)
+
+```mermaid
+sequenceDiagram
+  autonumber
+  actor U as Restaurant user
+  participant FE as Frontend
+  participant A as API Client
+  participant API as SoundFood API
+
+  U->>FE: Open "My menus"
+  FE->>A: GET /api/menus
+  A->>API: GET /api/menus
+  API-->>A: ApiMenu[]
+  A-->>FE: menus list
+
+  U->>FE: View menu details
+  FE->>A: GET /api/menus/{id}
+  A->>API: GET /api/menus/{id}
+  API-->>A: ApiMenu
+  A-->>FE: menu
+  FE->>A: GET /api/menus/{id}/dishes
+  A->>API: GET /api/menus/{id}/dishes
+  API-->>A: ApiDish[]
+  A-->>FE: dishes
+
+  U->>FE: Edit menu request (title/description)
+  FE->>A: PUT /api/menus/{id}
+  A->>API: PUT /api/menus/{id}
+  API-->>A: { message }
+  A-->>FE: ok
+
+  U->>FE: Delete menu
+  FE->>A: DELETE /api/menus/{id}
+  A->>API: DELETE /api/menus/{id}
+  API-->>A: { message }
+  A-->>FE: ok
 ```
 
 ### Class diagram — API domain types

@@ -35,8 +35,34 @@
     },
     "topLeft": {
         "profile": "Profilo",
+        "myMenus": "I miei menu",
+        "newMenuRequest": "Nuova richiesta menu",
         "logout": "Esci",
         "settings": "Impostazioni"
+    },
+    "menus": {
+        "title": "I miei menu",
+        "detailsTitle": "Dettagli menu",
+        "editTitle": "Modifica richiesta menu",
+        "createNew": "Nuova richiesta menu",
+        "loading": "Caricamento menu...",
+        "emptyTitle": "Nessun menu",
+        "emptyDescription": "Crea la tua prima richiesta menu per vederla qui.",
+        "dishCount": "{{count}} portate",
+        "dishesTitle": "Portate",
+        "noDishes": "Nessuna portata per questo menu.",
+        "actions": {
+            "view": "Vedi",
+            "edit": "Modifica",
+            "delete": "Elimina",
+            "back": "Indietro"
+        },
+        "delete": {
+            "title": "Elimina menu",
+            "description": "Eliminare \"{{title}}\"? Questa azione non può essere annullata.",
+            "cancel": "Annulla",
+            "confirm": "Elimina"
+        }
     },
     "cathegory": {
         "appetizer": "Antipasto",

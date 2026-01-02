@@ -28,7 +28,7 @@ import {
 import { AddIcon, EmailIcon } from '@chakra-ui/icons'
 import { FaSave } from 'react-icons/fa'
 import { RiRestaurantFill } from 'react-icons/ri'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { InputWrapper, ColorSelector } from '../../../shared/ui'
 import TasteSlider from './TasteSlider'
 import { Optional, Section } from '../../../shared/lib'
@@ -46,6 +46,7 @@ import {
   menuService,
   dishService,
   CreateDishRequest,
+  ApiDish,
   ApiError
 } from '../../../api'
 import { Dish } from '../model/dish'
@@ -140,7 +141,40 @@ const createEmptyDish = (): LocalDish => ({
   shape_ids: [],
 });
 
-function MenuRequestForm() {
+const apiDishToLocal = (dish: ApiDish): LocalDish => {
+  const colors = dish.colors ?? []
+  const c1 = colors[0] ?? '#ffffff'
+  const c2 = colors[1] ?? '#ffffff'
+  const c3 = colors[2] ?? '#ffffff'
+
+  return {
+    id: dish.id,
+    name: dish.name,
+    description: dish.description ?? '',
+    section: dish.section as Section,
+    sweet: dish.sweet,
+    bitter: dish.bitter,
+    sour: dish.sour,
+    salty: dish.salty,
+    umami: dish.umami,
+    piquant: dish.piquant,
+    fat: dish.fat,
+    temperature: dish.temperature,
+    color1: c1,
+    color2: c2,
+    color3: c3,
+    emotion_ids: dish.emotions.map(e => e.id),
+    texture_ids: dish.textures.map(t => t.id),
+    shape_ids: dish.shapes.map(s => s.id),
+  }
+}
+
+interface MenuRequestFormProps {
+  menuId?: number
+  onDone?: () => void
+}
+
+function MenuRequestForm({ menuId: initialMenuId, onDone }: MenuRequestFormProps) {
   const { t } = useTranslation()
   const toast = useToast()
 
@@ -150,9 +184,11 @@ function MenuRequestForm() {
   // Menu state
   const [title, setTitle] = useState('')
   const [menuDesc, setMenuDesc] = useState('')
-  const [menuId, setMenuId] = useState<number | null>(null)
+  const [menuId, setMenuId] = useState<number | null>(initialMenuId ?? null)
   const [dishes, setDishes] = useState<LocalDish[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoadingExistingMenu, setIsLoadingExistingMenu] = useState(false)
+  const [existingMenuError, setExistingMenuError] = useState<string | null>(null)
 
   // Current dish being edited
   const [currentDish, setCurrentDish] = useState<LocalDish>(createEmptyDish())
@@ -175,6 +211,44 @@ function MenuRequestForm() {
 
   const { isOpen: isModalOpen, onOpen: openModal, onClose: closeModal } = useDisclosure()
   const { isOpen: isDrawerOpen, onOpen: openDrawer, onClose: closeDrawer } = useDisclosure()
+
+  const handleCloseDrawer = () => {
+    closeDrawer()
+    onDone?.()
+  }
+
+  useEffect(() => {
+    if (!initialMenuId) return
+
+    let isMounted = true
+
+    const loadExisting = async () => {
+      setIsLoadingExistingMenu(true)
+      setExistingMenuError(null)
+      try {
+        const [menuResponse, dishesResponse] = await Promise.all([
+          menuService.get(initialMenuId),
+          dishService.listByMenu(initialMenuId),
+        ])
+        if (isMounted) {
+          setMenuId(initialMenuId)
+          setTitle(menuResponse.title)
+          setMenuDesc(menuResponse.description ?? '')
+          setDishes(dishesResponse.map(apiDishToLocal))
+        }
+      } catch (err) {
+        if (isMounted) setExistingMenuError(err instanceof ApiError ? err.message : t('toast.apiError.description'))
+      } finally {
+        if (isMounted) setIsLoadingExistingMenu(false)
+      }
+    }
+
+    loadExisting()
+
+    return () => {
+      isMounted = false
+    }
+  }, [initialMenuId, t])
 
   const handleTasteChange = (taste: string, value: Optional<number>) => {
     setCurrentDish(prev => ({ ...prev, [taste]: value ?? 0 }))
@@ -395,6 +469,11 @@ function MenuRequestForm() {
           dish.id = response.id
         }
         setDishes([...dishes])
+      } else {
+        await menuService.update(currentMenuId, {
+          title,
+          description: menuDesc || undefined,
+        })
       }
 
       toast({
@@ -420,7 +499,7 @@ function MenuRequestForm() {
   }
 
   // Show loading state while attributes load
-  if (attributesLoading) {
+  if (attributesLoading || isLoadingExistingMenu) {
     return (
       <Center py={10}>
         <Stack align="center">
@@ -428,6 +507,15 @@ function MenuRequestForm() {
           <Text>{t('toast.loadingAttributes.description')}</Text>
         </Stack>
       </Center>
+    )
+  }
+
+  if (existingMenuError) {
+    return (
+      <Alert status="error">
+        <AlertIcon />
+        {existingMenuError}
+      </Alert>
     )
   }
 
@@ -444,7 +532,7 @@ function MenuRequestForm() {
     <>
       <SummaryDrawer
         isOpen={isDrawerOpen}
-        closeDrawer={closeDrawer}
+        closeDrawer={handleCloseDrawer}
         data={{
           title: title,
           description: menuDesc,

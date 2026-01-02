@@ -35,8 +35,34 @@
     },
     "topLeft": {
         "profile": "Profile",
+        "myMenus": "My menus",
+        "newMenuRequest": "New menu request",
         "logout": "Logout",
         "settings": "Settings"
+    },
+    "menus": {
+        "title": "My menus",
+        "detailsTitle": "Menu details",
+        "editTitle": "Edit menu request",
+        "createNew": "New menu request",
+        "loading": "Loading menus...",
+        "emptyTitle": "No menus yet",
+        "emptyDescription": "Create your first menu request to see it here.",
+        "dishCount": "{{count}} dishes",
+        "dishesTitle": "Dishes",
+        "noDishes": "No dishes for this menu.",
+        "actions": {
+            "view": "View",
+            "edit": "Edit",
+            "delete": "Delete",
+            "back": "Back"
+        },
+        "delete": {
+            "title": "Delete menu",
+            "description": "Delete \"{{title}}\"? This action cannot be undone.",
+            "cancel": "Cancel",
+            "confirm": "Delete"
+        }
     },
     "cathegory": {
         "appetizer": "Appetizer",
