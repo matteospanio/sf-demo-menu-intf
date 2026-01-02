@@ -92,6 +92,10 @@ This app reads the API base URL from a Vite env var.
 
 - `VITE_API_BASE_URL` — SoundFood API base URL (default: `http://localhost:5000`)
 
+Optional (production build only):
+
+- `VITE_BASE_PATH` — base path where the app is hosted (examples: `/` for Docker, `/sf-demo-menu-intf/` for GitHub Pages)
+
 Create a local `.env` file (starting from `.env.example`):
 
 ```bash
@@ -100,8 +104,38 @@ cp .env.example .env
 
 ### GitHub Pages base path
 
-The project is configured with Vite `base: "/sf-demo-menu-intf/"` for GitHub Pages deployments.
-Translations are loaded via i18next from `/sf-demo-menu-intf/locales/...`.
+For GitHub Pages deployments, the production build defaults to `VITE_BASE_PATH=/sf-demo-menu-intf/`.
+Translations are loaded via i18next from `${BASE_URL}locales/...` (Vite `import.meta.env.BASE_URL`).
+
+To serve the app at the domain root (e.g. Docker), build with `VITE_BASE_PATH=/`.
+
+## Docker
+
+This project builds a static bundle (Vite) and serves it via Nginx.
+
+Build:
+
+```bash
+docker build \
+  -t sf-demo-menu-intf \
+  --build-arg VITE_BASE_PATH=/ \
+  --build-arg VITE_API_BASE_URL=http://localhost:5000 \
+  .
+```
+
+Run:
+
+```bash
+docker run --rm -p 8080:80 sf-demo-menu-intf
+```
+
+Then open `http://localhost:8080`.
+
+Alternatively, using Compose:
+
+```bash
+docker compose up --build
+```
 
 ## Tests
 
