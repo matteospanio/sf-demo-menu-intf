@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen } from '../test/test-utils'
+import { render, screen } from '../../../test/test-utils'
 import DishCard from './DishCard'
-import { Dish } from '../dish'
-import { Section } from '../utils'
+import { Dish } from '../model/dish'
+import { Emotion, Section, Shape, Texture } from '../../../shared/lib'
 
 describe('DishCard', () => {
   const createMockDish = (overrides?: Partial<Dish>): Dish => ({
@@ -25,10 +25,10 @@ describe('DishCard', () => {
     },
     vision: {
       colors: ['#ff0000', '#00ff00'],
-      shapes: ['round', 'smooth'],
+      shapes: [Shape.Round, Shape.Smooth],
     },
-    textures: ['crunchy', 'soft'],
-    emotions: ['joy', 'satisfaction'],
+    textures: [Texture.Crunchy, Texture.Soft],
+    emotions: [Emotion.Joy, Emotion.Satisfaction],
     ...overrides,
   })
 
@@ -79,17 +79,17 @@ describe('DishCard', () => {
 
   it('renders emotions when present', () => {
     const dish = createMockDish({
-      emotions: ['joy', 'happiness'],
+      emotions: [Emotion.Joy, Emotion.Gratitude],
     })
     render(<DishCard dish={dish} />)
 
     expect(screen.getByText('joy')).toBeInTheDocument()
-    expect(screen.getByText('happiness')).toBeInTheDocument()
+    expect(screen.getByText('gratitude')).toBeInTheDocument()
   })
 
   it('renders textures when present', () => {
     const dish = createMockDish({
-      textures: ['crunchy', 'soft'],
+      textures: [Texture.Crunchy, Texture.Soft],
     })
     render(<DishCard dish={dish} />)
 
@@ -99,7 +99,7 @@ describe('DishCard', () => {
 
   it('renders shapes when present', () => {
     const dish = createMockDish({
-      vision: { colors: [], shapes: ['round', 'smooth'] },
+      vision: { colors: [], shapes: [Shape.Round, Shape.Smooth] },
     })
     render(<DishCard dish={dish} />)
 

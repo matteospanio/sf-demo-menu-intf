@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { attributeService, ApiEmotion, ApiTexture, ApiShape } from '../api';
+import { attributeService, ApiEmotion, ApiTexture, ApiShape } from '../../../api';
 
 interface AttributesState {
   emotions: ApiEmotion[];

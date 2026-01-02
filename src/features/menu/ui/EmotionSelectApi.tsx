@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Select } from "chakra-react-select";
 import { FormControl, FormLabel } from '@chakra-ui/react';
-import { ApiEmotion } from '../api';
+import { ApiEmotion } from '../../../api';
 
 interface EmotionSelectApiProps {
   emotions: ApiEmotion[];

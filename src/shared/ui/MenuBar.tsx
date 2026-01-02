@@ -3,7 +3,7 @@ import { FaHouseUser } from 'react-icons/fa'
 import { MdLogout, MdSettings } from 'react-icons/md'
 import LanguageSelector from './LanguageSelector'
 import { useTranslation } from 'react-i18next'
-import { useAuth } from '../contexts'
+import { useAuth } from '../../features/auth'
 
 function MenuBar() {
 

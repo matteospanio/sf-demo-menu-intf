@@ -1,6 +1,6 @@
 import { Box, Checkbox, Slider, SliderFilledTrack, SliderMark, SliderThumb, SliderTrack, Stack } from "@chakra-ui/react"
 import { RxValue } from "react-icons/rx"
-import { capitalize, Optional } from "../utils"
+import { capitalize, Optional } from "../../../shared/lib"
 import { useTranslation } from "react-i18next"
 
 interface TasteSliderProps {

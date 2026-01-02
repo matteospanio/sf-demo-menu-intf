@@ -4,8 +4,8 @@ import {  MultiSelectTheme } from 'chakra-multiselect'
 import ReactDOM from 'react-dom/client'
 import "./i18n.ts"
 import App from './App.tsx'
-import Loader from './components/Loader.tsx'
-import { AuthProvider } from './contexts'
+import { Loader } from './shared/ui'
+import { AuthProvider } from './features/auth'
 
 const theme = extendTheme({
   components: {

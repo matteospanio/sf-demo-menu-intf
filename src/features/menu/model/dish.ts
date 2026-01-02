@@ -1,4 +1,4 @@
-import { BasicTasteConfiguration, Emotion, Optional, OtherSlideableConfig, Section, Shape, Texture } from "./utils"
+import { BasicTasteConfiguration, Emotion, Optional, OtherSlideableConfig, Section, Shape, Texture } from "../../../shared/lib"
 
 export type Dish = {
   description: Optional<string>

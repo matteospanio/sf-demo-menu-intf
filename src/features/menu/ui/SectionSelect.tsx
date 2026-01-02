@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Select } from "chakra-react-select";
-import { Section } from '../utils';
+import { Section } from '../../../shared/lib';
 import type { SingleValue } from 'react-select'
 
 interface SectionSelectProps {

@@ -1,5 +1,5 @@
 import { Avatar, Card, CardBody, Center, Heading, ListItem, Stack, Text, UnorderedList } from '@chakra-ui/react'
-import { Dish } from '../dish'
+import { Dish } from '../model/dish'
 import { useTranslation } from 'react-i18next'
 import { IoMdColorPalette } from 'react-icons/io'
 
@@ -41,9 +41,9 @@ function DishCard({dish}: CardProps) {
               <ListItem>Umami: {dish.tastes.basic.umami ?? 'ND'}</ListItem>
             </UnorderedList>
             <UnorderedList>
-              <ListItem>Piquant: {dish.tastes.basic.sweet ?? 'ND'}</ListItem>
-              <ListItem>Fat: {dish.tastes.basic.fat ?? 'ND'}</ListItem>
-              <ListItem>Temperature: {dish.tastes.basic.sweet ?? 'ND'} °C</ListItem>
+              <ListItem>Piquant: {dish.tastes.other.piquant ?? 'ND'}</ListItem>
+              <ListItem>Fat: {dish.tastes.other.fat ?? 'ND'}</ListItem>
+              <ListItem>Temperature: {dish.tastes.other.temperature ?? 'ND'} °C</ListItem>
             </UnorderedList>
             {dish.emotions.length != 0
             ? <UnorderedList>

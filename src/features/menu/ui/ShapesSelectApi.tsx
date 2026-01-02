@@ -1,20 +1,20 @@
 import { useTranslation } from 'react-i18next'
 import { Select } from "chakra-react-select";
 import { FormControl, FormLabel } from '@chakra-ui/react';
-import { ApiTexture } from '../api';
+import { ApiShape } from '../../../api';
 
-interface TextureSelectApiProps {
-  textures: ApiTexture[];
+interface ShapesSelectApiProps {
+  shapes: ApiShape[];
   selectedIds: number[];
   onChange: (ids: number[]) => void;
 }
 
-function TextureSelectApi({ textures, selectedIds, onChange }: TextureSelectApiProps) {
+function ShapesSelectApi({ shapes, selectedIds, onChange }: ShapesSelectApiProps) {
   const { t } = useTranslation()
 
-  const options = textures.map(texture => ({
-    label: texture.description,
-    value: texture.id,
+  const options = shapes.map(shape => ({
+    label: shape.description,
+    value: shape.id,
   }));
 
   const selectedOptions = options.filter(opt => selectedIds.includes(opt.value));
@@ -25,11 +25,11 @@ function TextureSelectApi({ textures, selectedIds, onChange }: TextureSelectApiP
 
   return (
     <FormControl>
-      <FormLabel ml={6}>{t('textures.description')}</FormLabel>
+      <FormLabel ml={6}>{t('shapes.description')}</FormLabel>
       <Select
         isMulti
         colorScheme="blue"
-        placeholder={t('textures.select')}
+        placeholder={t('shapes.select')}
         value={selectedOptions}
         options={options}
         onChange={(e) => handleChange(e as typeof options)}
@@ -38,4 +38,4 @@ function TextureSelectApi({ textures, selectedIds, onChange }: TextureSelectApiP
   )
 }
 
-export default TextureSelectApi;
+export default ShapesSelectApi;

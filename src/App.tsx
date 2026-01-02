@@ -1,10 +1,9 @@
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, Container, Divider, Text, Spinner, Center } from '@chakra-ui/react'
 import { ChevronRightIcon } from '@chakra-ui/icons'
-import MenuBar from './components/MenuBar'
-import MenuRequestForm from './components/MenuRequestForm'
-import LoginPage from './components/LoginPage'
+import { MenuBar } from './shared/ui'
+import { MenuRequestForm } from './features/menu'
+import { LoginPage, useAuth } from './features/auth'
 import { useTranslation } from 'react-i18next'
-import { useAuth } from './contexts'
 
 function App() {
 

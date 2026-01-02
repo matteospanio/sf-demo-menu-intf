@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '../test/test-utils'
+import { render, screen } from '../../../test/test-utils'
 import SectionSelect from './SectionSelect'
 
 describe('SectionSelect', () => {

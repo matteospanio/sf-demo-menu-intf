@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '../test/test-utils'
+import { render, screen, fireEvent, waitFor } from '../../../test/test-utils'
 import LoginPage from './LoginPage'
 
 // Mock the useAuth hook
-vi.mock('../contexts', () => ({
+vi.mock('../model', () => ({
   useAuth: vi.fn(() => ({
     login: vi.fn(),
     register: vi.fn(),
@@ -13,7 +13,7 @@ vi.mock('../contexts', () => ({
   })),
 }))
 
-import { useAuth } from '../contexts'
+import { useAuth } from '../model'
 
 describe('LoginPage', () => {
   const mockLogin = vi.fn()

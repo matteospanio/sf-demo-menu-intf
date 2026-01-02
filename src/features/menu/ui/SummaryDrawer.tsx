@@ -1,5 +1,5 @@
 import { Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Stack } from '@chakra-ui/react'
-import { Dish } from '../dish'
+import { Dish } from '../model/dish'
 import { useTranslation } from 'react-i18next'
 import DishCard from './DishCard'
 

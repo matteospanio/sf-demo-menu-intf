@@ -23,7 +23,7 @@ import {
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../contexts';
+import { useAuth } from '../model';
 
 function LoginPage() {
   const { t } = useTranslation();

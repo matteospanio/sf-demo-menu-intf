@@ -17,7 +17,11 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['src/contexts/**/*.{ts,tsx}', 'src/test/**/*.{ts,tsx}'],
+      files: [
+        'src/contexts/**/*.{ts,tsx}',
+        'src/features/**/model/**/*.{ts,tsx}',
+        'src/test/**/*.{ts,tsx}',
+      ],
       rules: {
         'react-refresh/only-export-components': 'off',
       },

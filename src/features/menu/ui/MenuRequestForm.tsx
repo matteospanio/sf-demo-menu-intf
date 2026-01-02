@@ -29,15 +29,14 @@ import { AddIcon, EmailIcon } from '@chakra-ui/icons'
 import { FaSave } from 'react-icons/fa'
 import { RiRestaurantFill } from 'react-icons/ri'
 import { useState } from 'react'
-import InputWrapper from './InputWrapper'
+import { InputWrapper, ColorSelector } from '../../../shared/ui'
 import TasteSlider from './TasteSlider'
-import { Optional, Section } from '../utils'
+import { Optional, Section } from '../../../shared/lib'
 import { Reorder } from "framer-motion"
 import { MdDragIndicator } from 'react-icons/md'
 import { useTranslation } from 'react-i18next'
-import { MODAL_TIMER, SLIDER_DEFAULT } from '../constants'
+import { MODAL_TIMER, SLIDER_DEFAULT } from '../../../shared/config'
 import SectionSelect from './SectionSelect'
-import ColorSelector from './ColorSelector'
 import SummaryDrawer from './SummaryDrawer'
 import EmotionSelectApi from './EmotionSelectApi'
 import TextureSelectApi from './TextureSelectApi'
@@ -48,8 +47,8 @@ import {
   dishService,
   CreateDishRequest,
   ApiError
-} from '../api'
-import { Dish } from '../dish'
+} from '../../../api'
+import { Dish } from '../model/dish'
 
 // Local dish state interface (for form)
 interface LocalDish {
