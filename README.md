@@ -163,7 +163,7 @@ flowchart LR
   Attr --> Api
 
   Api --> SoundFoodAPI[(SoundFood API)]
-  UI --> I18n[i18n (EN/IT)]
+  UI --> I18n["i18n (EN/IT)"]
 ```
 
 ### Sequence diagram — submit menu
