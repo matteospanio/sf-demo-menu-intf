@@ -28,7 +28,7 @@ import {
 import { AddIcon, EmailIcon } from '@chakra-ui/icons'
 import { FaSave } from 'react-icons/fa'
 import { RiRestaurantFill } from 'react-icons/ri'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import InputWrapper from './InputWrapper'
 import TasteSlider from './TasteSlider'
 import { Optional, Section } from '../utils'
@@ -46,7 +46,6 @@ import { useAttributes } from '../hooks'
 import {
   menuService,
   dishService,
-  ApiDish,
   CreateDishRequest,
   ApiError
 } from '../api'
@@ -73,28 +72,6 @@ interface LocalDish {
   texture_ids: number[];
   shape_ids: number[];
 }
-
-// Convert API dish to local format
-const apiDishToLocal = (dish: ApiDish): LocalDish => ({
-  id: dish.id,
-  name: dish.name,
-  description: dish.description || '',
-  section: dish.section as Section || Section.None,
-  sweet: dish.sweet || 0,
-  bitter: dish.bitter || 0,
-  sour: dish.sour || 0,
-  salty: dish.salty || 0,
-  umami: dish.umami || 0,
-  piquant: dish.piquant || 0,
-  fat: dish.fat || 0,
-  temperature: dish.temperature || 0,
-  color1: dish.colors?.[0] || '#ffffff',
-  color2: dish.colors?.[1] || '#ffffff',
-  color3: dish.colors?.[2] || '#ffffff',
-  emotion_ids: dish.emotions?.map(e => e.id) || [],
-  texture_ids: dish.textures?.map(t => t.id) || [],
-  shape_ids: dish.shapes?.map(s => s.id) || [],
-});
 
 // Convert local dish to API format
 const localDishToApi = (dish: LocalDish): CreateDishRequest => ({

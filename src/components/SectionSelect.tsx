@@ -2,9 +2,10 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Select } from "chakra-react-select";
 import { Section } from '../utils';
+import type { SingleValue } from 'react-select'
 
 interface SectionSelectProps {
-  sectionHandler: any
+  sectionHandler: (section: Section) => void
 }
 
 function SectionSelect({sectionHandler}: SectionSelectProps) {
@@ -20,9 +21,10 @@ function SectionSelect({sectionHandler}: SectionSelectProps) {
 
   const [sectionSelect, setSecSelect] = useState(sectionOptions[4])
 
-  const handleSectionSelect = (e: any) => {
-    setSecSelect(e)
-    sectionHandler(e.value)
+  const handleSectionSelect = (value: SingleValue<(typeof sectionOptions)[number]>) => {
+    if (!value) return
+    setSecSelect(value)
+    sectionHandler(value.value)
   }
 
   return (

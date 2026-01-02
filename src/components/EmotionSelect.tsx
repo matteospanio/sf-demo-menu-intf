@@ -1,11 +1,12 @@
-import {useState} from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Select } from "chakra-react-select";
 import { Emotion, SelectOption, capitalize } from '../utils'
 import { FormControl, FormLabel } from '@chakra-ui/react';
+import type { MultiValue } from 'react-select'
 
 interface EmotionSelectProps {
-  handler: any
+  handler: (values: Emotion[]) => void
 }
 
 function EmotionSelect({handler}: EmotionSelectProps) {
@@ -21,11 +22,12 @@ function EmotionSelect({handler}: EmotionSelectProps) {
     { label: capitalize(t('emotions.playfulness')), value: Emotion.Playfulness },
   ]
 
-  const [emotionSelect, setEmoSelect] = useState()
+  type EmotionOption = SelectOption<Emotion>
+  const [emotionSelect, setEmoSelect] = useState<MultiValue<EmotionOption>>([])
 
-  const handleSectionSelect = (e: any) => {
-    setEmoSelect(e)
-    handler(e.map((el: SelectOption<Emotion>) => el.value))
+  const handleSectionSelect = (value: MultiValue<EmotionOption>) => {
+    setEmoSelect(value)
+    handler(value.map((el) => el.value))
   }
 
   return (

@@ -1,11 +1,12 @@
-import {useState} from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Select } from "chakra-react-select";
 import { Texture, SelectOption, capitalize } from '../utils'
 import { FormControl, FormLabel } from '@chakra-ui/react';
+import type { MultiValue } from 'react-select'
 
 interface TextureSelectProps {
-  handler: any
+  handler: (values: Texture[]) => void
 }
 
 function TextureSelect({handler}: TextureSelectProps) {
@@ -25,11 +26,12 @@ function TextureSelect({handler}: TextureSelectProps) {
     { label: capitalize(t('textures.airy')), value: Texture.Airy},
   ]
 
-  const [selected, setSelected] = useState()
+  type TextureOption = SelectOption<Texture>
+  const [selected, setSelected] = useState<MultiValue<TextureOption>>([])
 
-  const handleSelect = (e: any) => {
-    setSelected(e)
-    handler(e.map((el: SelectOption<Texture>) => el.value))
+  const handleSelect = (value: MultiValue<TextureOption>) => {
+    setSelected(value)
+    handler(value.map((el) => el.value))
   }
 
   return (

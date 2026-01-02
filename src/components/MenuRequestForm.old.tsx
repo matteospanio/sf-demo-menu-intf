@@ -111,7 +111,7 @@ function MenuRequestForm() {
   const [color2, setColor2] = useState('#ffffff')
   const [color3, setColor3] = useState('#ffffff')
 
-  let colorObjects = [
+  const colorObjects = [
     { color: color1, check: colorCheck1, setCheck: setColorCheck1, setColor: setColor1 },
     { color: color2, check: colorCheck2, setCheck: setColorCheck2, setColor: setColor2 },
     { color: color3, check: colorCheck3, setCheck: setColorCheck3, setColor: setColor3 },
@@ -137,7 +137,7 @@ function MenuRequestForm() {
   const { isOpen: isDrawerOpen, onOpen: openDrawer, onClose: closeDrawer } = useDisclosure()
 
   const saveDishes = () => {
-    let state: Dish = {
+    const state: Dish = {
       name,
       description,
       section,

@@ -126,7 +126,7 @@ function LoginPage() {
 
           <TabPanels>
             <TabPanel p={0}>
-              <form onSubmit={handleLogin}>
+              <form onSubmit={handleLogin} noValidate>
                 <Stack spacing={4}>
                   <FormControl isRequired>
                     <FormLabel>{t('auth.username')}</FormLabel>
@@ -172,7 +172,7 @@ function LoginPage() {
             </TabPanel>
 
             <TabPanel p={0}>
-              <form onSubmit={handleRegister}>
+              <form onSubmit={handleRegister} noValidate>
                 <Stack spacing={4}>
                   <FormControl isRequired>
                     <FormLabel>{t('auth.username')}</FormLabel>

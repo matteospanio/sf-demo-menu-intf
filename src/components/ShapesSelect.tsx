@@ -1,11 +1,12 @@
-import {useState} from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Select } from "chakra-react-select";
 import { Shape, SelectOption, capitalize } from '../utils'
 import { FormControl, FormLabel } from '@chakra-ui/react';
+import type { MultiValue } from 'react-select'
 
 interface ShapeSelectProps {
-  handler: any
+  handler: (param: 'shapes', values: Shape[]) => void
 }
 
 function ShapesSelect({handler}: ShapeSelectProps) {
@@ -20,11 +21,12 @@ function ShapesSelect({handler}: ShapeSelectProps) {
     { label: capitalize(t('shapes.loose')), value: Shape.Loose }
   ]
 
-  const [selected, setSelected] = useState()
+  type ShapeOption = SelectOption<Shape>
+  const [selected, setSelected] = useState<MultiValue<ShapeOption>>([])
 
-  const handleSectionSelect = (e: any) => {
-    setSelected(e)
-    handler('shapes', e.map((el: SelectOption<Shape>) => el.value))
+  const handleSectionSelect = (value: MultiValue<ShapeOption>) => {
+    setSelected(value)
+    handler('shapes', value.map((el) => el.value))
   }
 
   return (

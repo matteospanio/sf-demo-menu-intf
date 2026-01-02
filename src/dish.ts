@@ -17,7 +17,7 @@ export type Dish = {
 }
 
 export const makeSectionsList = (dishes: Dish[]): Map<Section, Dish[]> => {
-  let res: Map<Section, Dish[]> = new Map();
+  const res: Map<Section, Dish[]> = new Map();
 
   dishes.forEach(dish => {
     if (!res.has(dish.section)) {

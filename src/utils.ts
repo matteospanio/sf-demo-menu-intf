@@ -1,7 +1,7 @@
 export type Optional<T> = T | null
 
 export interface Indexable {
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export enum Emotion {
