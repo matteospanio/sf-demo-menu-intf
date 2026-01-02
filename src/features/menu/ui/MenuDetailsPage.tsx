@@ -13,8 +13,11 @@ import {
   Heading,
   Spinner,
   Stack,
+  Tag,
   Text,
   useDisclosure,
+  Wrap,
+  WrapItem,
 } from '@chakra-ui/react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -23,11 +26,33 @@ import { ApiError, type ApiDish, type ApiMenu, dishService, menuService } from '
 export interface MenuDetailsPageProps {
   menuId: number
   onBack: () => void
-  onEdit: (menuId: number) => void
+  onEdit: (menuId: number, menuTitle?: string) => void
   onDeleted: () => void
+  onMenuLoaded?: (menuTitle: string) => void
 }
 
-export default function MenuDetailsPage({ menuId, onBack, onEdit, onDeleted }: MenuDetailsPageProps) {
+const buildTasteSummary = (dish: ApiDish, t: (key: string) => string): string => {
+  const entries: Array<[string, number]> = [
+    [t('tastes.base.sweet'), dish.sweet],
+    [t('tastes.base.salty'), dish.salty],
+    [t('tastes.base.bitter'), dish.bitter],
+    [t('tastes.base.sour'), dish.sour],
+    [t('tastes.base.umami'), dish.umami],
+    [t('tastes.other.piquant'), dish.piquant],
+    [t('tastes.other.fat'), dish.fat],
+    [t('tastes.other.temperature'), dish.temperature],
+  ]
+
+  const nonZero = entries.filter(([, value]) => typeof value === 'number' && value !== 0)
+  if (nonZero.length === 0) return ''
+
+  return nonZero
+    .slice(0, 6)
+    .map(([label, value]) => `${label}: ${value}`)
+    .join(' · ')
+}
+
+export default function MenuDetailsPage({ menuId, onBack, onEdit, onDeleted, onMenuLoaded }: MenuDetailsPageProps) {
   const { t } = useTranslation()
 
   const [menu, setMenu] = useState<ApiMenu | null>(null)
@@ -37,6 +62,17 @@ export default function MenuDetailsPage({ menuId, onBack, onEdit, onDeleted }: M
 
   const { isOpen: isDeleteOpen, onOpen: openDelete, onClose: closeDelete } = useDisclosure()
   const cancelRef = useRef<HTMLButtonElement>(null)
+
+  const onMenuLoadedRef = useRef<MenuDetailsPageProps['onMenuLoaded']>(onMenuLoaded)
+  const tRef = useRef(t)
+
+  useEffect(() => {
+    onMenuLoadedRef.current = onMenuLoaded
+  }, [onMenuLoaded])
+
+  useEffect(() => {
+    tRef.current = t
+  }, [t])
 
   useEffect(() => {
     let isMounted = true
@@ -52,9 +88,10 @@ export default function MenuDetailsPage({ menuId, onBack, onEdit, onDeleted }: M
         if (isMounted) {
           setMenu(menuResponse)
           setDishes(dishesResponse)
+          onMenuLoadedRef.current?.(menuResponse.title)
         }
       } catch (err) {
-        if (isMounted) setError(err instanceof ApiError ? err.message : t('toast.apiError.description'))
+        if (isMounted) setError(err instanceof ApiError ? err.message : tRef.current('toast.apiError.description'))
       } finally {
         if (isMounted) setIsLoading(false)
       }
@@ -65,7 +102,7 @@ export default function MenuDetailsPage({ menuId, onBack, onEdit, onDeleted }: M
     return () => {
       isMounted = false
     }
-  }, [menuId, t])
+  }, [menuId])
 
   const confirmDeleteMenu = async () => {
     try {
@@ -86,7 +123,7 @@ export default function MenuDetailsPage({ menuId, onBack, onEdit, onDeleted }: M
           <Button variant="outline" onClick={onBack}>
             {t('menus.actions.back')}
           </Button>
-          <Button variant="outline" onClick={() => onEdit(menuId)}>
+          <Button variant="outline" onClick={() => onEdit(menuId, menu?.title)}>
             {t('menus.actions.edit')}
           </Button>
           <Button colorScheme="red" variant="outline" onClick={openDelete}>
@@ -124,13 +161,59 @@ export default function MenuDetailsPage({ menuId, onBack, onEdit, onDeleted }: M
             <Text color="gray.600">{t('menus.noDishes')}</Text>
           ) : (
             <Stack spacing={2}>
-              {dishes.map(dish => (
-                <Box key={dish.id} borderWidth={1} borderRadius={6} p={3}>
-                  <Text fontWeight="bold">{dish.name}</Text>
-                  {dish.description && <Text color="gray.600">{dish.description}</Text>}
-                  <Text fontSize="sm" color="gray.500">{dish.section}</Text>
-                </Box>
-              ))}
+              {dishes.map(dish => {
+                const tasteSummary = buildTasteSummary(dish, t)
+                const colors = dish.colors ?? []
+                const attrCounts = [
+                  dish.textures.length ? `${t('textures.description')}: ${dish.textures.length}` : null,
+                  dish.shapes.length ? `${t('shapes.description')}: ${dish.shapes.length}` : null,
+                  dish.emotions.length ? `${t('emotions.description')}: ${dish.emotions.length}` : null,
+                ].filter(Boolean) as string[]
+
+                return (
+                  <Box key={dish.id} borderWidth={1} borderRadius={6} p={3}>
+                    <Text fontWeight="bold">{dish.name}</Text>
+                    {dish.description && <Text color="gray.600">{dish.description}</Text>}
+                    <Text fontSize="sm" color="gray.500">{dish.section}</Text>
+
+                    {(tasteSummary || attrCounts.length > 0 || colors.length > 0) && (
+                      <Box mt={2}>
+                        {tasteSummary && (
+                          <Text fontSize="sm" color="gray.600">
+                            {tasteSummary}
+                          </Text>
+                        )}
+
+                        {attrCounts.length > 0 && (
+                          <Wrap mt={2} spacing={2} aria-label="Dish attributes">
+                            {attrCounts.map(value => (
+                              <WrapItem key={value}>
+                                <Tag size="sm" variant="subtle">{value}</Tag>
+                              </WrapItem>
+                            ))}
+                          </Wrap>
+                        )}
+
+                        {colors.length > 0 && (
+                          <Flex mt={2} gap={2} align="center" aria-label="Dish colors">
+                            {colors.slice(0, 3).map((c, idx) => (
+                              <Box
+                                key={`${dish.id}-c-${idx}`}
+                                w="16px"
+                                h="16px"
+                                borderRadius="3px"
+                                borderWidth={1}
+                                bg={c}
+                                aria-label={`Color ${idx + 1} ${c}`}
+                              />
+                            ))}
+                          </Flex>
+                        )}
+                      </Box>
+                    )}
+                  </Box>
+                )
+              })}
             </Stack>
           )}
         </>

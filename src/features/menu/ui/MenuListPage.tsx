@@ -22,8 +22,8 @@ import { ApiError, type ApiMenu, menuService } from '../../../api'
 
 export interface MenuListPageProps {
   onCreateNew: () => void
-  onViewMenu: (menuId: number) => void
-  onEditMenu: (menuId: number) => void
+  onViewMenu: (menuId: number, menuTitle: string) => void
+  onEditMenu: (menuId: number, menuTitle: string) => void
 }
 
 export default function MenuListPage({ onCreateNew, onViewMenu, onEditMenu }: MenuListPageProps) {
@@ -135,10 +135,10 @@ export default function MenuListPage({ onCreateNew, onViewMenu, onEditMenu }: Me
                 </Box>
 
                 <Flex gap={2}>
-                  <Button size="sm" variant="outline" onClick={() => onViewMenu(menu.id)}>
+                  <Button size="sm" variant="outline" onClick={() => onViewMenu(menu.id, menu.title)}>
                     {t('menus.actions.view')}
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => onEditMenu(menu.id)}>
+                  <Button size="sm" variant="outline" onClick={() => onEditMenu(menu.id, menu.title)}>
                     {t('menus.actions.edit')}
                   </Button>
                   <Button size="sm" colorScheme="red" variant="outline" onClick={() => requestDeleteMenu(menu)}>

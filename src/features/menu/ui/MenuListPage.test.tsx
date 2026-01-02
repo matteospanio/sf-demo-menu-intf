@@ -61,11 +61,11 @@ describe('MenuListPage', () => {
 
     const viewButtons = screen.getAllByRole('button', { name: 'View' })
     await userEvent.click(viewButtons[0])
-    expect(onViewMenu).toHaveBeenCalledWith(10)
+    expect(onViewMenu).toHaveBeenCalledWith(10, 'Menu A')
 
     const editButtons = screen.getAllByRole('button', { name: 'Edit' })
     await userEvent.click(editButtons[0])
-    expect(onEditMenu).toHaveBeenCalledWith(10)
+    expect(onEditMenu).toHaveBeenCalledWith(10, 'Menu A')
   })
 
   it('deletes a menu after confirmation', async () => {
