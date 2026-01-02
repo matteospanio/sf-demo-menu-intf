@@ -583,6 +583,7 @@ function MenuRequestForm({ menuId: initialMenuId, onDone }: MenuRequestFormProps
               resetDishForm()
               openModal()
             }}
+            style={{ marginBottom: '1rem'}}
             leftIcon={<AddIcon />}
           >
             {t("main.addItem")}

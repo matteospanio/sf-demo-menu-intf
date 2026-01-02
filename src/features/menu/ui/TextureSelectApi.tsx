@@ -25,7 +25,7 @@ function TextureSelectApi({ textures, selectedIds, onChange }: TextureSelectApiP
 
   return (
     <FormControl>
-      <FormLabel ml={6} color="gray.200">{t('textures.description')}</FormLabel>
+      <FormLabel ml={6}>{t('textures.description')}</FormLabel>
       <Select
         isMulti
         colorScheme="yellow"
