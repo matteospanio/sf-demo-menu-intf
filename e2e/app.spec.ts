@@ -66,19 +66,24 @@ test.describe('Accessibility', () => {
   })
 
   test('should be keyboard navigable', async ({ page, isMobile }) => {
-    // Skip on mobile browsers as they handle focus differently
-    test.skip(isMobile, 'Mobile browsers handle keyboard navigation differently')
-
     await page.goto('/')
+
+    const usernameInput = page.getByRole('textbox', { name: /username/i })
+    await expect(usernameInput).toBeVisible()
+
+    // Mobile browsers handle focus/Tab semantics differently; still assert that
+    // the primary input can be focused via user interaction.
+    if (isMobile) {
+      await usernameInput.tap()
+      await expect(usernameInput).toBeFocused()
+      return
+    }
 
     // Click on the page body first to ensure the page has focus
     await page.locator('body').click()
 
     // Tab through the page until we reach the Username input.
     // The first focusable element may be in the header (e.g. language/menu controls).
-    const usernameInput = page.getByRole('textbox', { name: /username/i })
-    await expect(usernameInput).toBeVisible()
-
     let focused = false
     for (let i = 0; i < 12; i++) {
       await page.keyboard.press('Tab')
