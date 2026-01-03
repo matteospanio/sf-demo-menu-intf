@@ -61,10 +61,12 @@ i18n.use(initReactI18next).init({
           register: 'Register',
           logout: 'Logout',
           username: 'Username',
+          email: 'Email',
           password: 'Password',
           confirmPassword: 'Confirm Password',
           welcome: 'Welcome to SoundFood',
           fieldsRequired: 'All fields are required',
+          invalidEmail: 'Please enter a valid email address',
           passwordMismatch: 'Passwords do not match',
           passwordTooShort: 'Password must be at least 6 characters',
         },
@@ -179,7 +181,7 @@ interface MockAuthContextType {
   isAuthenticated: boolean
   isLoading: boolean
   login: (username: string, password: string) => Promise<void>
-  register: (username: string, password: string) => Promise<void>
+  register: (username: string, email: string, password: string) => Promise<void>
   logout: () => Promise<void>
   error: string | null
   clearError: () => void

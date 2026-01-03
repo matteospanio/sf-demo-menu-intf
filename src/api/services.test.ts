@@ -61,17 +61,18 @@ describe('authService', () => {
   });
 
   describe('register', () => {
-    it('should call POST /auth/register with credentials', async () => {
+    it('should call POST /auth/register with credentials including email', async () => {
       const mockResponse: RegisterResponse = {
         message: 'User created successfully',
         user_id: 1,
       };
       vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
 
-      const result = await authService.register('testuser', 'password123');
+      const result = await authService.register('testuser', 'test@example.com', 'password123');
 
       expect(apiClient.post).toHaveBeenCalledWith('/auth/register', {
         username: 'testuser',
+        email: 'test@example.com',
         password: 'password123',
       });
       expect(result).toEqual(mockResponse);

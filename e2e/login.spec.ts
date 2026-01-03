@@ -35,13 +35,15 @@ test.describe('Login Page', () => {
     // Click on register tab
     await page.getByRole('tab', { name: /register/i }).click()
 
-    // Should show confirm password field
+    // Should show email and confirm password fields
+    await expect(page.getByLabel(/email/i)).toBeVisible()
     await expect(page.getByLabel(/confirm password/i)).toBeVisible()
 
     // Click back on login tab
     await page.getByRole('tab', { name: /login/i }).click()
 
-    // Confirm password should not be visible
+    // Email and confirm password should not be visible
+    await expect(page.getByLabel(/email/i)).not.toBeVisible()
     await expect(page.getByLabel(/confirm password/i)).not.toBeVisible()
   })
 
@@ -61,6 +63,7 @@ test.describe('Login Page', () => {
 
     // Fill form with mismatched passwords
     await registerPanel.getByLabel(/username/i).fill('testuser')
+    await registerPanel.getByLabel(/email/i).fill('test@example.com')
     await registerPanel.getByLabel(/^password/i).fill('password123')
     await registerPanel.getByLabel(/confirm password/i).fill('differentpassword')
 
@@ -79,6 +82,7 @@ test.describe('Login Page', () => {
 
     // Fill form with short password
     await registerPanel.getByLabel(/username/i).fill('testuser')
+    await registerPanel.getByLabel(/email/i).fill('test@example.com')
     await registerPanel.getByLabel(/^password/i).fill('12345')
     await registerPanel.getByLabel(/confirm password/i).fill('12345')
 
@@ -87,5 +91,24 @@ test.describe('Login Page', () => {
 
     // Should show error
     await expect(page.getByText(/password must be at least 6 characters/i)).toBeVisible()
+  })
+
+  test('should validate email format in register', async ({ page }) => {
+    // Switch to register tab
+    await page.getByRole('tab', { name: /register/i }).click()
+
+    const registerPanel = page.getByRole('tabpanel', { name: /register/i })
+
+    // Fill form with invalid email
+    await registerPanel.getByLabel(/username/i).fill('testuser')
+    await registerPanel.getByLabel(/email/i).fill('invalid-email')
+    await registerPanel.getByLabel(/^password/i).fill('password123')
+    await registerPanel.getByLabel(/confirm password/i).fill('password123')
+
+    // Submit
+    await registerPanel.getByRole('button', { name: /^register$/i }).click()
+
+    // Should show error
+    await expect(page.getByText(/valid email/i)).toBeVisible()
   })
 })

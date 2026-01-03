@@ -59,8 +59,10 @@ describe('LoginPage', () => {
     const registerTab = screen.getByRole('tab', { name: /register/i })
     fireEvent.click(registerTab)
 
-    // Should show confirm password field in register tab
+    // Should show email and confirm password fields in register tab
+    const emailField = screen.getByLabelText(/email/i)
     const confirmPasswordField = screen.getByLabelText(/confirm password/i)
+    expect(emailField).toBeInTheDocument()
     expect(confirmPasswordField).toBeInTheDocument()
   })
 
@@ -128,11 +130,13 @@ describe('LoginPage', () => {
 
     // Fill in the form with mismatched passwords
     const usernameInputs = screen.getAllByLabelText(/username/i)
+    const emailInput = screen.getByLabelText(/email/i)
     const passwordInputs = screen.getAllByLabelText(/password/i)
     const confirmPasswordInput = screen.getByLabelText(/confirm password/i)
 
     // Use the second set of inputs (register form)
     fireEvent.change(usernameInputs[1], { target: { value: 'newuser' } })
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
     fireEvent.change(passwordInputs[1], { target: { value: 'password123' } })
     fireEvent.change(confirmPasswordInput, { target: { value: 'differentpassword' } })
 
@@ -153,10 +157,12 @@ describe('LoginPage', () => {
 
     // Fill in the form with short password
     const usernameInputs = screen.getAllByLabelText(/username/i)
+    const emailInput = screen.getByLabelText(/email/i)
     const passwordInputs = screen.getAllByLabelText(/password/i)
     const confirmPasswordInput = screen.getByLabelText(/confirm password/i)
 
     fireEvent.change(usernameInputs[1], { target: { value: 'newuser' } })
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
     fireEvent.change(passwordInputs[1], { target: { value: '12345' } })
     fireEvent.change(confirmPasswordInput, { target: { value: '12345' } })
 
@@ -165,6 +171,32 @@ describe('LoginPage', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/password must be at least 6 characters/i)).toBeInTheDocument()
+    })
+  })
+
+  it('validates email format in register form', async () => {
+    render(<LoginPage />)
+
+    // Switch to register tab
+    const registerTab = screen.getByRole('tab', { name: /register/i })
+    fireEvent.click(registerTab)
+
+    // Fill in the form with invalid email
+    const usernameInputs = screen.getAllByLabelText(/username/i)
+    const emailInput = screen.getByLabelText(/email/i)
+    const passwordInputs = screen.getAllByLabelText(/password/i)
+    const confirmPasswordInput = screen.getByLabelText(/confirm password/i)
+
+    fireEvent.change(usernameInputs[1], { target: { value: 'newuser' } })
+    fireEvent.change(emailInput, { target: { value: 'invalid-email' } })
+    fireEvent.change(passwordInputs[1], { target: { value: 'password123' } })
+    fireEvent.change(confirmPasswordInput, { target: { value: 'password123' } })
+
+    const registerButton = screen.getAllByRole('button', { name: /register/i })[0]
+    fireEvent.click(registerButton)
+
+    await waitFor(() => {
+      expect(screen.getByText(/please enter a valid email address/i)).toBeInTheDocument()
     })
   })
 

@@ -35,6 +35,7 @@ function LoginPage() {
   const [loginUsername, setLoginUsername] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [registerUsername, setRegisterUsername] = useState('');
+  const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -66,8 +67,15 @@ function LoginPage() {
     setLocalError(null);
     clearError();
 
-    if (!registerUsername || !registerPassword) {
+    if (!registerUsername || !registerEmail || !registerPassword) {
       setLocalError(t('auth.fieldsRequired'));
+      return;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(registerEmail)) {
+      setLocalError(t('auth.invalidEmail'));
       return;
     }
 
@@ -83,7 +91,7 @@ function LoginPage() {
 
     setIsSubmitting(true);
     try {
-      await register(registerUsername, registerPassword);
+      await register(registerUsername, registerEmail, registerPassword);
     } catch {
       // Error is handled by auth context
     } finally {
@@ -246,6 +254,16 @@ function LoginPage() {
                       value={registerUsername}
                       onChange={(e) => setRegisterUsername(e.target.value)}
                       placeholder={t('auth.usernamePlaceholder')}
+                    />
+                  </FormControl>
+
+                  <FormControl isRequired>
+                    <FormLabel>{t('auth.email')}</FormLabel>
+                    <Input
+                      type="email"
+                      value={registerEmail}
+                      onChange={(e) => setRegisterEmail(e.target.value)}
+                      placeholder={t('auth.emailPlaceholder')}
                     />
                   </FormControl>
 

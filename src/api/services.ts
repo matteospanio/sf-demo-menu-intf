@@ -27,8 +27,8 @@ export const healthService = {
 
 // Authentication services
 export const authService = {
-  register: (username: string, password: string) =>
-    apiClient.post<RegisterResponse>(API_ENDPOINTS.register, { username, password }),
+  register: (username: string, email: string, password: string) =>
+    apiClient.post<RegisterResponse>(API_ENDPOINTS.register, { username, email, password }),
 
   login: async (username: string, password: string) => {
     const response = await apiClient.post<AuthResponse>(API_ENDPOINTS.login, { username, password });
