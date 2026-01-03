@@ -1,4 +1,46 @@
 {
+    "auth": {
+        "welcome": "Sign in to manage your menus",
+        "login": "Login",
+        "register": "Register",
+        "username": "Username",
+        "email": "Email",
+        "password": "Password",
+        "confirmPassword": "Confirm Password",
+        "usernamePlaceholder": "Enter your username",
+        "emailPlaceholder": "Enter your email",
+        "passwordPlaceholder": "Enter your password",
+        "confirmPasswordPlaceholder": "Confirm your password",
+        "fieldsRequired": "Please fill in all required fields",
+        "invalidEmail": "Please enter a valid email address",
+        "passwordMismatch": "Passwords do not match",
+        "passwordTooShort": "Password must be at least 6 characters",
+        "loggingIn": "Logging in...",
+        "registering": "Registering..."
+    },
+    "profile": {
+        "title": "Profile",
+        "memberSince": "Member since {{date}}",
+        "emailHidden": "Email is hidden for security",
+        "changeEmail": "Change email",
+        "changePassword": "Change password",
+        "newEmail": "New email",
+        "emailRequired": "Email is required",
+        "currentPassword": "Current password",
+        "currentPasswordPlaceholder": "Enter your current password",
+        "newPassword": "New password",
+        "newPasswordPlaceholder": "Enter your new password",
+        "showPassword": "Show password",
+        "hidePassword": "Hide password",
+        "emailUpdated": {
+            "title": "Email updated",
+            "description": "Your email has been updated successfully."
+        },
+        "passwordUpdated": {
+            "title": "Password updated",
+            "description": "Your password has been updated successfully."
+        }
+    },
     "main": {
         "actions": "Actions",
         "newMenuRequest": "New Menu Request",
@@ -12,6 +54,7 @@
         "menuItems": "Menu Items",
         "addItem": "Add",
         "emptyMenu": "No menu items yet.",
+        "dragToReorder": "Drag to reorder",
         "submit": "Submit",
         "save": "Save draft",
         "edit": "Edit",
@@ -19,8 +62,48 @@
     },
     "topLeft": {
         "profile": "Profile",
+        "myMenus": "My menus",
+        "newMenuRequest": "New menu request",
+        "adminArea": "Admin area",
         "logout": "Logout",
-        "settings": "Settings"
+        "settings": "Settings",
+        "openMenu": "Open menu",
+        "language": "Language"
+    },
+    "menus": {
+        "title": "My menus",
+        "detailsTitle": "Menu details",
+        "editTitle": "Edit menu request",
+        "createNew": "New menu request",
+        "loading": "Loading menus...",
+        "emptyTitle": "No menus yet",
+        "emptyDescription": "Create your first menu request to see it here.",
+        "dishCount": "{{count}} dishes",
+        "dishesTitle": "Dishes",
+        "noDishes": "No dishes for this menu.",
+        "lastModified": "Modified {{time}}",
+        "justSent": "Just sent",
+        "status": {
+            "draft": "Draft",
+            "submitted": "Submitted"
+        },
+        "actions": {
+            "view": "View",
+            "edit": "Edit",
+            "delete": "Delete",
+            "back": "Back"
+        },
+        "delete": {
+            "title": "Delete menu",
+            "description": "Delete \"{{title}}\"? This action cannot be undone.",
+            "cancel": "Cancel",
+            "confirm": "Delete"
+        }
+    },
+    "settings": {
+        "title": "Settings",
+        "themeDark": "Dark mode",
+        "language": "Language"
     },
     "cathegory": {
         "appetizer": "Appetizer",
@@ -133,8 +216,32 @@
             "description": "Please provide at least one menu item."
         },
         "menuSubmitted": {
-            "title": "Menu submitted",
-            "description": "The menu has been submitted successfully."
+            "title": "Menu sent successfully",
+            "description": ""
+        },
+        "draftSaved": {
+            "title": "Draft saved",
+            "description": "Your menu has been saved as draft."
+        },
+        "menuCreated": {
+            "title": "Menu created",
+            "description": "The menu has been created successfully."
+        },
+        "dishCreated": {
+            "title": "Dish created",
+            "description": "The dish has been added to the menu."
+        },
+        "dishDeleted": {
+            "title": "Dish deleted",
+            "description": "The dish has been removed from the menu."
+        },
+        "apiError": {
+            "title": "Error",
+            "description": "An error occurred while communicating with the server."
+        },
+        "loadingAttributes": {
+            "title": "Loading",
+            "description": "Loading attributes from server..."
         }
     }
 }

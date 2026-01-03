@@ -1,4 +1,46 @@
 {
+    "auth": {
+        "welcome": "Accedi per gestire i tuoi menu",
+        "login": "Accedi",
+        "register": "Registrati",
+        "username": "Nome utente",
+        "email": "Email",
+        "password": "Password",
+        "confirmPassword": "Conferma password",
+        "usernamePlaceholder": "Inserisci il tuo nome utente",
+        "emailPlaceholder": "Inserisci la tua email",
+        "passwordPlaceholder": "Inserisci la tua password",
+        "confirmPasswordPlaceholder": "Conferma la tua password",
+        "fieldsRequired": "Per favore compila tutti i campi richiesti",
+        "invalidEmail": "Inserisci un indirizzo email valido",
+        "passwordMismatch": "Le password non corrispondono",
+        "passwordTooShort": "La password deve essere di almeno 6 caratteri",
+        "loggingIn": "Accesso in corso...",
+        "registering": "Registrazione in corso..."
+    },
+    "profile": {
+        "title": "Profilo",
+        "memberSince": "Membro dal {{date}}",
+        "emailHidden": "L'email è nascosta per sicurezza",
+        "changeEmail": "Cambia email",
+        "changePassword": "Cambia password",
+        "newEmail": "Nuova email",
+        "emailRequired": "L'email è obbligatoria",
+        "currentPassword": "Password attuale",
+        "currentPasswordPlaceholder": "Inserisci la password attuale",
+        "newPassword": "Nuova password",
+        "newPasswordPlaceholder": "Inserisci la nuova password",
+        "showPassword": "Mostra password",
+        "hidePassword": "Nascondi password",
+        "emailUpdated": {
+            "title": "Email aggiornata",
+            "description": "La tua email è stata aggiornata con successo."
+        },
+        "passwordUpdated": {
+            "title": "Password aggiornata",
+            "description": "La tua password è stata aggiornata con successo."
+        }
+    },
     "main": {
         "actions": "Azioni",
         "newMenuRequest": "Nuova richiesta di menu",
@@ -12,6 +54,7 @@
         "menuItems": "Portate",
         "addItem": "Aggiungi",
         "emptyMenu": "Nessuna portata inserita.",
+        "dragToReorder": "Trascina per riordinare",
         "submit": "Invia",
         "save": "Salva bozza",
         "edit": "Modifica",
@@ -19,8 +62,48 @@
     },
     "topLeft": {
         "profile": "Profilo",
+        "myMenus": "I miei menu",
+        "newMenuRequest": "Nuova richiesta menu",
+        "adminArea": "Area admin",
         "logout": "Esci",
-        "settings": "Impostazioni"
+        "settings": "Impostazioni",
+        "openMenu": "Apri menu",
+        "language": "Lingua"
+    },
+    "menus": {
+        "title": "I miei menu",
+        "detailsTitle": "Dettagli menu",
+        "editTitle": "Modifica richiesta menu",
+        "createNew": "Nuova richiesta menu",
+        "loading": "Caricamento menu...",
+        "emptyTitle": "Nessun menu",
+        "emptyDescription": "Crea la tua prima richiesta menu per vederla qui.",
+        "dishCount": "{{count}} portate",
+        "dishesTitle": "Portate",
+        "noDishes": "Nessuna portata per questo menu.",
+        "lastModified": "Modificato {{time}}",
+        "justSent": "Appena inviato",
+        "status": {
+            "draft": "Bozza",
+            "submitted": "Inviato"
+        },
+        "actions": {
+            "view": "Vedi",
+            "edit": "Modifica",
+            "delete": "Elimina",
+            "back": "Indietro"
+        },
+        "delete": {
+            "title": "Elimina menu",
+            "description": "Eliminare \"{{title}}\"? Questa azione non può essere annullata.",
+            "cancel": "Annulla",
+            "confirm": "Elimina"
+        }
+    },
+    "settings": {
+        "title": "Impostazioni",
+        "themeDark": "Modalità scura",
+        "language": "Lingua"
     },
     "cathegory": {
         "appetizer": "Antipasto",
@@ -133,8 +216,32 @@
             "description": "Per favore inserisci almeno una portata."
         },
         "menuSubmitted": {
-            "title": "Menu inviato",
-            "description": "Il menu è stato inviato con successo."
+            "title": "Menu inviato correttamente",
+            "description": ""
+        },
+        "draftSaved": {
+            "title": "Bozza salvata",
+            "description": "Il menu è stato salvato come bozza."
+        },
+        "menuCreated": {
+            "title": "Menu creato",
+            "description": "Il menu è stato creato con successo."
+        },
+        "dishCreated": {
+            "title": "Piatto creato",
+            "description": "Il piatto è stato aggiunto al menu."
+        },
+        "dishDeleted": {
+            "title": "Piatto eliminato",
+            "description": "Il piatto è stato rimosso dal menu."
+        },
+        "apiError": {
+            "title": "Errore",
+            "description": "Si è verificato un errore nella comunicazione con il server."
+        },
+        "loadingAttributes": {
+            "title": "Caricamento",
+            "description": "Caricamento attributi dal server..."
         }
     }
 }
