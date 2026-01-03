@@ -10,9 +10,14 @@ import {
   RegisterResponse,
   User,
   CreateMenuRequest,
+  UpdateMenuRequest,
   CreateDishRequest,
   UpdateDishRequest,
   HealthResponse,
+  MessageResponse,
+  UpdateEmailRequest,
+  UpdatePasswordRequest,
+  DeleteAccountRequest,
 } from './types';
 
 // Health check
@@ -32,12 +37,21 @@ export const authService = {
   },
 
   logout: async () => {
-    const response = await apiClient.post<{ message: string }>(API_ENDPOINTS.logout);
+    const response = await apiClient.post<MessageResponse>(API_ENDPOINTS.logout);
     apiClient.setToken(null);
     return response;
   },
 
   me: () => apiClient.get<User>(API_ENDPOINTS.me),
+
+  updateEmail: (data: UpdateEmailRequest) =>
+    apiClient.patch<MessageResponse>(API_ENDPOINTS.meEmail, data),
+
+  updatePassword: (data: UpdatePasswordRequest) =>
+    apiClient.patch<MessageResponse>(API_ENDPOINTS.mePassword, data),
+
+  deleteAccount: (data: DeleteAccountRequest) =>
+    apiClient.delete<MessageResponse>(API_ENDPOINTS.me, data),
 
   getStoredToken: () => apiClient.getToken(),
 
@@ -55,11 +69,14 @@ export const menuService = {
   create: (data: CreateMenuRequest) =>
     apiClient.post<{ message: string; id: number }>(API_ENDPOINTS.menus, data),
 
-  update: (id: number, data: Partial<CreateMenuRequest>) =>
-    apiClient.put<{ message: string }>(API_ENDPOINTS.menu(id), data),
+  update: (id: number, data: UpdateMenuRequest) =>
+    apiClient.put<MessageResponse>(API_ENDPOINTS.menu(id), data),
+
+  submit: (id: number) =>
+    apiClient.post<MessageResponse>(API_ENDPOINTS.menuSubmit(id)),
 
   delete: (id: number) =>
-    apiClient.delete<{ message: string }>(API_ENDPOINTS.menu(id)),
+    apiClient.delete<MessageResponse>(API_ENDPOINTS.menu(id)),
 };
 
 // Dish services
@@ -71,10 +88,10 @@ export const dishService = {
     apiClient.post<{ message: string; id: number }>(API_ENDPOINTS.menuDishes(menuId), data),
 
   update: (dishId: number, data: UpdateDishRequest) =>
-    apiClient.put<{ message: string }>(API_ENDPOINTS.dish(dishId), data),
+    apiClient.put<MessageResponse>(API_ENDPOINTS.dish(dishId), data),
 
   delete: (dishId: number) =>
-    apiClient.delete<{ message: string }>(API_ENDPOINTS.dish(dishId)),
+    apiClient.delete<MessageResponse>(API_ENDPOINTS.dish(dishId)),
 };
 
 // Attribute services

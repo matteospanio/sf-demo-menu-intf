@@ -42,8 +42,8 @@ describe('MenuListPage', () => {
 
   it('renders menus and triggers view/edit callbacks', async () => {
     vi.mocked(menuService.list).mockResolvedValue([
-      { id: 10, title: 'Menu A', description: 'Desc A', dish_count: 2 },
-      { id: 2, title: 'Menu B', description: '', dish_count: 0 },
+      { id: 10, title: 'Menu A', description: 'Desc A', dish_count: 2, status: 'draft', created_at: '2026-01-03T10:30:00+00:00', updated_at: '2026-01-03T12:45:00+00:00' },
+      { id: 2, title: 'Menu B', description: '', dish_count: 0, status: 'submitted', created_at: '2026-01-03T10:30:00+00:00', updated_at: '2026-01-03T12:45:00+00:00' },
     ])
 
     const onViewMenu = vi.fn()
@@ -70,7 +70,7 @@ describe('MenuListPage', () => {
 
   it('deletes a menu after confirmation', async () => {
     vi.mocked(menuService.list).mockResolvedValue([
-      { id: 7, title: 'Menu X', description: 'Desc', dish_count: 1 },
+      { id: 7, title: 'Menu X', description: 'Desc', dish_count: 1, status: 'draft', created_at: '2026-01-03T10:30:00+00:00', updated_at: '2026-01-03T12:45:00+00:00' },
     ])
     vi.mocked(menuService.delete).mockResolvedValue({ message: 'ok' })
 

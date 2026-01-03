@@ -37,6 +37,9 @@ describe('MenuDetailsPage', () => {
       title: 'Menu A',
       description: 'Desc A',
       dish_count: 1,
+      status: 'draft',
+      created_at: '2026-01-03T10:30:00+00:00',
+      updated_at: '2026-01-03T12:45:00+00:00',
     })
 
     vi.mocked(dishService.listByMenu).mockResolvedValue([
@@ -57,6 +60,8 @@ describe('MenuDetailsPage', () => {
         textures: [],
         shapes: [],
         colors: [],
+        created_at: '2026-01-03T10:30:00+00:00',
+        updated_at: '2026-01-03T12:45:00+00:00',
       },
     ])
 

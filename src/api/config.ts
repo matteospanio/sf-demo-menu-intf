@@ -11,10 +11,13 @@ export const API_ENDPOINTS = {
   login: '/auth/login',
   logout: '/auth/logout',
   me: '/auth/me',
+  meEmail: '/auth/me/email',
+  mePassword: '/auth/me/password',
 
   // Menus
   menus: '/api/menus',
   menu: (id: number) => `/api/menus/${id}`,
+  menuSubmit: (id: number) => `/api/menus/${id}/submit`,
 
   // Dishes
   menuDishes: (menuId: number) => `/api/menus/${menuId}/dishes`,

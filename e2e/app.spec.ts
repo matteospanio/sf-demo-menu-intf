@@ -84,14 +84,14 @@ test.describe('Accessibility', () => {
 
     // Tab through the page until we reach the Username input.
     // The first focusable element may be in the header (e.g. language/menu controls).
-    let focused = false
+    // Use Playwright's toBeFocused() which is more resilient than evaluate().
     for (let i = 0; i < 12; i++) {
       await page.keyboard.press('Tab')
-      focused = await usernameInput.evaluate((el) => el === document.activeElement)
-      if (focused) break
+      if (await usernameInput.evaluate((el) => el === document.activeElement).catch(() => false)) {
+        break
+      }
     }
 
-    expect(focused).toBeTruthy()
     await expect(usernameInput).toBeFocused()
   })
 

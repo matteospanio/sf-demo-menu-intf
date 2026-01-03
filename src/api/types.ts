@@ -1,9 +1,13 @@
-// API Types matching the new SoundFood API
+// API Types matching the SoundFood API
+
+export type MenuStatus = 'draft' | 'submitted';
 
 export interface User {
   id: number;
   username: string;
   role: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface AuthResponse {
@@ -16,12 +20,32 @@ export interface RegisterResponse {
   user_id: number;
 }
 
+export interface MessageResponse {
+  message: string;
+}
+
+export interface UpdateEmailRequest {
+  email: string;
+}
+
+export interface UpdatePasswordRequest {
+  current_password: string;
+  new_password: string;
+}
+
+export interface DeleteAccountRequest {
+  password: string;
+}
+
 export interface ApiMenu {
   id: number;
   title: string;
   description: string;
+  status: MenuStatus;
   dish_count?: number;
   dishes?: ApiDish[];
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ApiEmotion {
@@ -56,6 +80,8 @@ export interface ApiDish {
   piquant: number;
   temperature: number;
   colors: string[];
+  created_at: string;
+  updated_at: string;
 }
 
 export interface CreateDishRequest {
@@ -101,6 +127,12 @@ export interface UpdateDishRequest {
 export interface CreateMenuRequest {
   title: string;
   description?: string;
+}
+
+export interface UpdateMenuRequest {
+  title?: string;
+  description?: string;
+  status?: MenuStatus;
 }
 
 export interface ApiError {
