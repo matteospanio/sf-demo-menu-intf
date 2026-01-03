@@ -196,8 +196,10 @@ i18n.use(initReactI18next).init({
           profile: 'Profile',
           myMenus: 'My menus',
           newMenuRequest: 'New menu request',
+          adminArea: 'Admin area',
           logout: 'Logout',
           settings: 'Settings',
+          openMenu: 'Open menu',
         },
         menus: {
           title: 'My menus',

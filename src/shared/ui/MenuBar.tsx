@@ -24,10 +24,11 @@ import {
   VStack,
 } from '@chakra-ui/react'
 import { FaHouseUser } from 'react-icons/fa'
-import { MdLogout, MdMenu, MdSettings } from 'react-icons/md'
+import { MdAdminPanelSettings, MdLogout, MdMenu, MdSettings } from 'react-icons/md'
 import LanguageSelector from './LanguageSelector'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../features/auth'
+import { API_BASE_URL } from '../../api'
 import logoSoundfood from '../../assets/logo-soundfood.png'
 
 export interface MenuBarProps {
@@ -40,6 +41,9 @@ function MenuBar({ onGoToMenus, onGoToNewMenu, onGoToProfile }: MenuBarProps) {
   const { t } = useTranslation()
   const { user, logout } = useAuth()
   const { isOpen, onOpen, onClose } = useDisclosure()
+
+  const canAccessAdmin = user?.role === 'admin' || user?.role === 'manager'
+  const adminUrl = new URL('/admin', API_BASE_URL).toString()
 
   // Color mode values
   const navBg = useColorModeValue(
@@ -151,6 +155,17 @@ function MenuBar({ onGoToMenus, onGoToNewMenu, onGoToProfile }: MenuBarProps) {
                 {t('topLeft.profile')} ({user?.username})
               </MenuItem>
               <MenuItem icon={<MdSettings size={20} />}>{t('topLeft.settings')}</MenuItem>
+              {canAccessAdmin && (
+                <MenuItem
+                  as="a"
+                  href={adminUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  icon={<MdAdminPanelSettings size={20} />}
+                >
+                  {t('topLeft.adminArea')}
+                </MenuItem>
+              )}
               <MenuDivider />
               <MenuItem icon={<MdLogout size={20} />} onClick={handleLogout}>
                 {t('topLeft.logout')}
@@ -232,6 +247,24 @@ function MenuBar({ onGoToMenus, onGoToNewMenu, onGoToProfile }: MenuBarProps) {
                 >
                   {t('topLeft.settings')}
                 </Button>
+
+                {/* Admin */}
+                {canAccessAdmin && (
+                  <Button
+                    as="a"
+                    href={adminUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    variant="ghost"
+                    justifyContent="flex-start"
+                    color={textColor}
+                    _hover={{ color: 'brand.500', bg: hoverBg }}
+                    leftIcon={<MdAdminPanelSettings size={18} />}
+                    onClick={onClose}
+                  >
+                    {t('topLeft.adminArea')}
+                  </Button>
+                )}
 
                 {/* Language Selector */}
                 <Flex align="center" justify="space-between" px={4}>

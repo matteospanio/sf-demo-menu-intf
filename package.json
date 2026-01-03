@@ -3,7 +3,14 @@
   "private": false,
   "version": "0.2.0",
   "type": "module",
-  "homepage": "https://matteospanio.github.io/sf-demo-menu-intf/",
+  "homepage": "https://soundfoodphygital.github.io/menu-client/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SoundFoodPhygital/menu-client.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SoundFoodPhygital/menu-client/issues"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

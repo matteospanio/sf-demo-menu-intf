@@ -7,11 +7,11 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_');
 
   // In dev we want a root-served app. In production the base path may vary:
-  // - GitHub Pages: "/sf-demo-menu-intf/" (default)
+  // - GitHub Pages: "/menu-client/" (default)
   // - Docker / generic hosting at domain root: "/" (set VITE_BASE_PATH="/")
   const base =
     mode === 'production'
-      ? env.VITE_BASE_PATH || process.env.VITE_BASE_PATH || '/sf-demo-menu-intf/'
+      ? env.VITE_BASE_PATH || process.env.VITE_BASE_PATH || '/menu-client/'
       : '/';
 
   return {

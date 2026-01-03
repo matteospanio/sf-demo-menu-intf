@@ -1,7 +1,7 @@
 # SoundFood — Menu Intake Frontend
 
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-[![CI](https://github.com/matteospanio/sf-demo-menu-intf/actions/workflows/ci.yml/badge.svg)](https://github.com/matteospanio/sf-demo-menu-intf/actions/workflows/ci.yml)
+[![CI](https://github.com/SoundFoodPhygital/menu-client/actions/workflows/ci.yml/badge.svg)](https://github.com/SoundFoodPhygital/menu-client/actions/workflows/ci.yml)
 [![Node](https://img.shields.io/badge/node-20%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
@@ -98,7 +98,7 @@ This app reads the API base URL from a Vite env var.
 
 Optional (production build only):
 
-- `VITE_BASE_PATH` — base path where the app is hosted (examples: `/` for Docker, `/sf-demo-menu-intf/` for GitHub Pages)
+- `VITE_BASE_PATH` — base path where the app is hosted (examples: `/` for Docker, `/menu-client/` for GitHub Pages)
 
 Create a local `.env` file (starting from `.env.example`):
 
@@ -108,7 +108,7 @@ cp .env.example .env
 
 ### GitHub Pages base path
 
-For GitHub Pages deployments, the production build defaults to `VITE_BASE_PATH=/sf-demo-menu-intf/`.
+For GitHub Pages deployments, the production build defaults to `VITE_BASE_PATH=/menu-client/`.
 Translations are loaded via i18next from `${BASE_URL}locales/...` (Vite `import.meta.env.BASE_URL`).
 
 To serve the app at the domain root (e.g. Docker), build with `VITE_BASE_PATH=/`.
@@ -121,7 +121,7 @@ Build:
 
 ```bash
 docker build \
-  -t sf-demo-menu-intf \
+  -t menu-client \
   --build-arg VITE_BASE_PATH=/ \
   --build-arg VITE_API_BASE_URL=http://localhost:5000 \
   .
@@ -130,7 +130,7 @@ docker build \
 Run:
 
 ```bash
-docker run --rm -p 8080:80 sf-demo-menu-intf
+docker run --rm -p 8080:80 menu-client
 ```
 
 Then open `http://localhost:8080`.
