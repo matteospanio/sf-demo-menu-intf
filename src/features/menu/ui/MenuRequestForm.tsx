@@ -41,7 +41,6 @@ import { MdDragIndicator } from 'react-icons/md'
 import { useTranslation } from 'react-i18next'
 import { MODAL_TIMER, SLIDER_DEFAULT } from '../../../shared/config'
 import SectionSelect from './SectionSelect'
-import SummaryDrawer from './SummaryDrawer'
 import EmotionSelectApi from './EmotionSelectApi'
 import TextureSelectApi from './TextureSelectApi'
 import ShapesSelectApi from './ShapesSelectApi'
@@ -54,7 +53,7 @@ import {
   ApiError,
   MenuStatus
 } from '../../../api'
-import { Dish } from '../model/dish'
+
 
 // Local dish state interface (for form)
 interface LocalDish {
@@ -99,32 +98,10 @@ const localDishToApi = (dish: LocalDish): CreateDishRequest => ({
   shape_ids: dish.shape_ids,
 });
 
-// Convert to Dish format for SummaryDrawer
-const localDishToLegacy = (dish: LocalDish): Dish => ({
-  name: dish.name,
-  description: dish.description || null,
-  section: dish.section,
-  tastes: {
-    basic: {
-      sweet: dish.sweet,
-      bitter: dish.bitter,
-      sour: dish.sour,
-      salty: dish.salty,
-      umami: dish.umami,
-    },
-    other: {
-      piquant: dish.piquant,
-      fat: dish.fat,
-      temperature: dish.temperature,
-    },
-  },
-  vision: {
-    colors: [dish.color1, dish.color2, dish.color3].filter(c => c !== '#ffffff'),
-    shapes: [],
-  },
-  textures: [],
-  emotions: [],
-});
+export type MenuRequestFormDoneResult = {
+  menuId: number
+  submittedAt: number
+}
 
 const createEmptyDish = (): LocalDish => ({
   name: '',
@@ -176,7 +153,7 @@ const apiDishToLocal = (dish: ApiDish): LocalDish => {
 
 interface MenuRequestFormProps {
   menuId?: number
-  onDone?: () => void
+  onDone?: (result?: MenuRequestFormDoneResult) => void
 }
 
 function MenuRequestForm({ menuId: initialMenuId, onDone }: MenuRequestFormProps) {
@@ -227,12 +204,6 @@ function MenuRequestForm({ menuId: initialMenuId, onDone }: MenuRequestFormProps
   const [colorCheck3, setColorCheck3] = useState(false)
 
   const { isOpen: isModalOpen, onOpen: openModal, onClose: closeModal } = useDisclosure()
-  const { isOpen: isDrawerOpen, onOpen: openDrawer, onClose: closeDrawer } = useDisclosure()
-
-  const handleCloseDrawer = () => {
-    closeDrawer()
-    onDone?.()
-  }
 
   useEffect(() => {
     if (!initialMenuId) return
@@ -576,7 +547,10 @@ function MenuRequestForm({ menuId: initialMenuId, onDone }: MenuRequestFormProps
         isClosable: true,
       })
 
-      openDrawer()
+      onDone?.({
+        menuId: currentMenuId,
+        submittedAt: Date.now(),
+      })
     } catch (err) {
       toast({
         title: t('toast.apiError.title'),
@@ -622,16 +596,6 @@ function MenuRequestForm({ menuId: initialMenuId, onDone }: MenuRequestFormProps
 
   return (
     <>
-      <SummaryDrawer
-        isOpen={isDrawerOpen}
-        closeDrawer={handleCloseDrawer}
-        data={{
-          title: title,
-          description: menuDesc,
-          dishes: dishes.map(localDishToLegacy),
-        }}
-      />
-
       {/* Show current status badge when editing an existing menu */}
       {menuId && (
         <Flex mb={4}>

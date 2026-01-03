@@ -82,6 +82,7 @@
         "dishesTitle": "Portate",
         "noDishes": "Nessuna portata per questo menu.",
         "lastModified": "Modificato {{time}}",
+        "justSent": "Appena inviato",
         "status": {
             "draft": "Bozza",
             "submitted": "Inviato"
@@ -210,8 +211,8 @@
             "description": "Per favore inserisci almeno una portata."
         },
         "menuSubmitted": {
-            "title": "Menu inviato",
-            "description": "Il menu è stato inviato con successo."
+            "title": "Menu inviato correttamente",
+            "description": ""
         },
         "draftSaved": {
             "title": "Bozza salvata",

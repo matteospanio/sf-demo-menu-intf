@@ -46,8 +46,8 @@ i18n.use(initReactI18next).init({
             description: 'Please provide at least one menu item.',
           },
           menuSubmitted: {
-            title: 'Menu submitted',
-            description: 'The menu has been submitted successfully.',
+            title: 'Menu sent successfully',
+            description: '',
           },
           draftSaved: {
             title: 'Draft saved',
@@ -213,6 +213,7 @@ i18n.use(initReactI18next).init({
           dishesTitle: 'Dishes',
           noDishes: 'No dishes for this menu.',
           lastModified: 'Modified {{time}}',
+          justSent: 'Just sent',
           status: {
             draft: 'Draft',
             submitted: 'Submitted',

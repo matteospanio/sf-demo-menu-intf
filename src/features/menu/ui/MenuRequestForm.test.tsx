@@ -206,6 +206,64 @@ describe('MenuRequestForm', () => {
         expect(screen.getByText('Menu title is required')).toBeInTheDocument()
       })
     })
+
+    it('submits menu and calls onDone with menu id', async () => {
+      const user = userEvent.setup()
+      const onDone = vi.fn()
+      vi.mocked(menuService.get).mockResolvedValue({
+        id: 1,
+        title: 'My Menu',
+        description: '',
+        status: 'draft',
+        dish_count: 1,
+        created_at: '2026-01-03T10:30:00+00:00',
+        updated_at: '2026-01-03T12:45:00+00:00',
+      })
+      vi.mocked(dishService.listByMenu).mockResolvedValue([
+        {
+          id: 99,
+          name: 'Existing Dish',
+          description: '',
+          section: 'appetizer',
+          emotions: [],
+          textures: [],
+          shapes: [],
+          bitter: 0,
+          salty: 0,
+          sour: 0,
+          sweet: 0,
+          umami: 0,
+          fat: 0,
+          piquant: 0,
+          temperature: 0,
+          colors: ['#ffffff'],
+          created_at: '2026-01-03T10:30:00+00:00',
+          updated_at: '2026-01-03T12:45:00+00:00',
+        },
+      ])
+
+      render(<MenuRequestForm menuId={1} onDone={onDone} />)
+
+      // Wait for attributes to load
+      await waitFor(() => {
+        expect(screen.queryByText('Loading attributes from server...')).not.toBeInTheDocument()
+      })
+
+      // Submit
+      await user.click(screen.getByRole('button', { name: /^submit$/i }))
+
+      await waitFor(() => {
+        expect(menuService.submit).toHaveBeenCalledWith(1)
+      })
+
+      await waitFor(() => {
+        expect(screen.getByText('Menu sent successfully')).toBeInTheDocument()
+      })
+
+      await waitFor(() => {
+        expect(onDone).toHaveBeenCalledWith(expect.objectContaining({ menuId: 1 }))
+      })
+    })
   })
 
   describe('Draft vs Submission difference', () => {

@@ -194,7 +194,6 @@ See [.github/workflows/ci.yml](.github/workflows/ci.yml).
 - As a restaurant user, I can **save a menu as draft** (only title required, no dishes needed).
 - As a restaurant user, I can **submit** the menu request (title and at least one dish required), sending menu + dishes to the SoundFood API.
 - As a restaurant user, I can **edit a submitted menu** (menus remain editable after submission).
-- As a restaurant user, I can **review a summary** of what was submitted.
 - As a restaurant user, I can **see the list of my created menus** with their status (Draft/Submitted) and last modification time.
 - As a restaurant user, I can open menu details, **edit**, and **delete** a menu.
 - As a user, I can **switch language** (EN/IT) from the top bar.
@@ -257,7 +256,9 @@ sequenceDiagram
   A-->>FE: ok
   Note over FE: Menu status changes to 'submitted'
 
-  FE-->>U: Show success toast + open summary drawer
+  FE-->>U: Show success toast
+  FE-->>U: Redirect to menus list
+  FE-->>U: Highlight new item + "Just sent" badge
 ```
 
 ### Sequence diagram — save menu as draft

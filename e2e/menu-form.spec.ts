@@ -162,31 +162,59 @@ test.describe('Menu Form', () => {
     await colorPicker.fill('#ff0000')
   })
 
-  test('should show summary drawer with dishes', async ({ page }) => {
+  test('should submit menu then redirect to list with highlight', async ({ page }) => {
     // Add a dish locally.
     await createLocalDish(page, 'Test Pasta')
 
     // Close toast to prevent pointer interception on mobile viewports.
     await closeToastIfPresent(page)
 
-    // Fill menu title and submit (this triggers API calls and opens the drawer).
+    // Fill menu title and submit (this triggers API calls and redirects to list).
     const titleInput = page.getByRole('textbox', { name: 'Menu Title' })
     await titleInput.click()
     await titleInput.type('Test Menu')
     await expect(titleInput).toHaveValue('Test Menu')
 
-    // Mock menu + dish creation endpoints.
-    // Replace the list mock with a single handler so POST doesn't depend on route ordering.
+    // Mock menu + dish creation endpoints and keep an in-memory list
+    // for the redirect back to the menus list.
     await page.unroute('**/api/menus')
+    const nowIso = new Date().toISOString()
+    type MenuListItem = {
+      id: number
+      title: string
+      description: string
+      dish_count: number
+      status: 'draft' | 'submitted'
+      created_at: string
+      updated_at: string
+    }
+
+    const menus: MenuListItem[] = []
     await page.route('**/api/menus', async (route) => {
       const method = route.request().method()
       if (method === 'OPTIONS') return fulfillPreflight(route)
       if (method === 'GET') {
-        await fulfillJson(route, [])
+        await fulfillJson(route, menus)
         return
       }
 
       if (method === 'POST') {
+        let body: { title?: string; description?: string } = {}
+        try {
+          body = route.request().postDataJSON() as { title?: string; description?: string }
+        } catch {
+          body = {}
+        }
+        const created = {
+          id: 123,
+          title: body.title ?? 'Test Menu',
+          description: body.description ?? '',
+          dish_count: 1,
+          status: 'draft',
+          created_at: nowIso,
+          updated_at: nowIso,
+        }
+        menus.unshift(created)
         await fulfillJson(route, { message: 'ok', id: 123 })
         return
       }
@@ -207,6 +235,9 @@ test.describe('Menu Form', () => {
       const method = route.request().method()
       if (method === 'OPTIONS') return fulfillPreflight(route)
       if (method !== 'POST') return route.fallback()
+      if (menus[0] && menus[0].id === 123) {
+        menus[0] = { ...menus[0], status: 'submitted', updated_at: new Date().toISOString() }
+      }
       await fulfillJson(route, { message: 'ok' })
     })
 
@@ -214,10 +245,14 @@ test.describe('Menu Form', () => {
     await submit.scrollIntoViewIfNeeded()
     await submit.click()
 
-    await expect(page.getByText('Menu submitted')).toBeVisible({ timeout: 10_000 })
-    await expect(page.getByText('Menu: Test Menu')).toBeVisible({ timeout: 10_000 })
-    const drawer = page.getByRole('dialog', { name: 'Menu: Test Menu' })
-    await expect(drawer.getByRole('heading', { name: 'Test Pasta' })).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByText('Menu sent successfully')).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByRole('heading', { name: 'My menus' })).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByText('Test Menu')).toBeVisible({ timeout: 10_000 })
+
+    const justSent = page.getByText('Just sent')
+    await expect(justSent.first()).toBeVisible({ timeout: 10_000 })
+    await page.waitForTimeout(2600)
+    await expect(justSent).toHaveCount(0)
   })
 
   test('should allow reordering dishes', async ({ page, isMobile }) => {

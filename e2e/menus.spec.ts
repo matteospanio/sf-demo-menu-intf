@@ -168,6 +168,7 @@ test.describe('Menus management', () => {
 
   test('can edit a menu title (update request)', async ({ page }) => {
     let currentTitle = 'Original Title'
+    const nowIso = new Date().toISOString()
 
     await page.route(`${API}/api/menus`, async (route) => {
       if (route.request().method() !== 'GET') return route.fallback()
@@ -175,7 +176,7 @@ test.describe('Menus management', () => {
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify([
-          { id: 1, title: currentTitle, description: 'Desc', dish_count: 1 },
+          { id: 1, title: currentTitle, description: 'Desc', dish_count: 1, status: 'draft', created_at: nowIso, updated_at: nowIso },
         ]),
       })
     })
@@ -241,20 +242,16 @@ test.describe('Menus management', () => {
 
     await titleInput.fill('Updated Title')
 
-    // Submit in edit mode triggers PUT /api/menus/1 then opens the summary drawer.
+    // Submit in edit mode triggers PUT /api/menus/1 then redirects back to the list.
     const submitButton = page.getByRole('button', { name: /^submit$/i })
     await expect(submitButton).toBeVisible()
     // Use keyboard activation to avoid occasional pointer interception by overlapping content.
     await submitButton.press('Enter')
 
-    // Close the drawer so App calls onDone and navigates to details.
-    const drawer = page.getByRole('dialog', { name: /Menu:/ })
-    await expect(drawer).toBeVisible()
-    // Dismiss via keyboard to avoid flakiness from animations/overlapping header.
-    await page.keyboard.press('Escape')
-    await expect(drawer).toBeHidden()
-
-    await expect(page.getByRole('heading', { name: 'Menu details' })).toBeVisible()
-    await expect(page.getByRole('heading', { name: 'Updated Title' })).toBeVisible()
+    await expect(page.getByText('Menu sent successfully')).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByRole('heading', { name: 'My menus' })).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByText('Updated Title')).toBeVisible({ timeout: 10_000 })
+    const justSent = page.getByText('Just sent')
+    await expect(justSent.first()).toBeVisible({ timeout: 10_000 })
   })
 })

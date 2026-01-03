@@ -7,6 +7,7 @@ import MenuDetailsPage from './features/menu/ui/MenuDetailsPage'
 import { LoginPage, useAuth, ProfilePage } from './features/auth'
 import { useTranslation } from 'react-i18next'
 import { useEffect, useMemo, useState } from 'react'
+import type { MenuRequestFormDoneResult } from './features/menu/ui/MenuRequestForm'
 
 type PageState =
   | { type: 'new' }
@@ -21,6 +22,7 @@ function App() {
   const { isAuthenticated, isLoading } = useAuth()
 
   const [page, setPage] = useState<PageState>({ type: 'list' })
+  const [recentSubmission, setRecentSubmission] = useState<MenuRequestFormDoneResult | null>(null)
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -108,7 +110,10 @@ function App() {
       {page.type === 'new' && (
         <>
           <Divider my={5} orientation='horizontal' />
-          <MenuRequestForm onDone={() => setPage({ type: 'list' })} />
+          <MenuRequestForm onDone={(result) => {
+            if (result) setRecentSubmission(result)
+            setPage({ type: 'list' })
+          }} />
         </>
       )}
 
@@ -119,6 +124,7 @@ function App() {
             onCreateNew={() => setPage({ type: 'new' })}
             onViewMenu={(menuId, menuTitle) => setPage({ type: 'details', menuId, menuTitle })}
             onEditMenu={(menuId, menuTitle) => setPage({ type: 'edit', menuId, menuTitle })}
+            recentSubmission={recentSubmission}
           />
         </>
       )}
@@ -141,7 +147,10 @@ function App() {
           <Divider my={5} orientation='horizontal' />
           <MenuRequestForm
             menuId={page.menuId}
-            onDone={() => setPage({ type: 'details', menuId: page.menuId, menuTitle: page.menuTitle })}
+            onDone={(result) => {
+              if (result) setRecentSubmission(result)
+              setPage({ type: 'list' })
+            }}
           />
         </>
       )}

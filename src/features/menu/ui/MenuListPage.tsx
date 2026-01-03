@@ -28,9 +28,13 @@ export interface MenuListPageProps {
   onCreateNew: () => void
   onViewMenu: (menuId: number, menuTitle: string) => void
   onEditMenu: (menuId: number, menuTitle: string) => void
+  recentSubmission?: {
+    menuId: number
+    submittedAt: number
+  } | null
 }
 
-export default function MenuListPage({ onCreateNew, onViewMenu, onEditMenu }: MenuListPageProps) {
+export default function MenuListPage({ onCreateNew, onViewMenu, onEditMenu, recentSubmission }: MenuListPageProps) {
   const { t, i18n } = useTranslation()
 
   const [menus, setMenus] = useState<ApiMenu[]>([])
@@ -41,12 +45,17 @@ export default function MenuListPage({ onCreateNew, onViewMenu, onEditMenu }: Me
   const { isOpen: isDeleteOpen, onOpen: openDelete, onClose: closeDelete } = useDisclosure()
   const cancelRef = useRef<HTMLButtonElement>(null)
 
+  const [justSubmitted, setJustSubmitted] = useState<{ menuId: number; expiresAt: number } | null>(null)
+  const recentMenuId = recentSubmission?.menuId
+  const recentSubmittedAt = recentSubmission?.submittedAt
+
   // Color mode values
   const cardBg = useColorModeValue('white', 'gray.800')
   const cardBorder = useColorModeValue('gray.200', 'gray.700')
   const headingColor = useColorModeValue('gray.800', 'white')
   const textColor = useColorModeValue('gray.600', 'gray.400')
   const mutedColor = useColorModeValue('gray.500', 'gray.500')
+  const highlightBg = useColorModeValue('brand.50', 'whiteAlpha.100')
 
   const sortedMenus = useMemo(() => {
     return [...menus].sort((a, b) => b.id - a.id)
@@ -74,6 +83,22 @@ export default function MenuListPage({ onCreateNew, onViewMenu, onEditMenu }: Me
       isMounted = false
     }
   }, [t])
+
+  useEffect(() => {
+    if (!recentMenuId || !recentSubmittedAt) return
+
+    const expiresAt = recentSubmittedAt + 2500
+    setJustSubmitted({ menuId: recentMenuId, expiresAt })
+
+    const remainingMs = Math.max(0, expiresAt - Date.now())
+    const timer = window.setTimeout(() => {
+      setJustSubmitted(null)
+    }, remainingMs)
+
+    return () => {
+      window.clearTimeout(timer)
+    }
+  }, [recentMenuId, recentSubmittedAt])
 
   const requestDeleteMenu = (menu: ApiMenu) => {
     setMenuPendingDelete(menu)
@@ -128,63 +153,79 @@ export default function MenuListPage({ onCreateNew, onViewMenu, onEditMenu }: Me
 
       {!isLoading && !error && sortedMenus.length > 0 && (
         <Stack spacing={3}>
-          {sortedMenus.map(menu => (
-            <Box
-              key={menu.id}
-              borderWidth={1}
-              borderRadius="xl"
-              p={4}
-              bg={cardBg}
-              borderColor={cardBorder}
-              boxShadow="sm"
-              _hover={{ borderColor: 'brand.500', boxShadow: 'md' }}
-              transition="all 0.2s"
-            >
-              <Flex justify="space-between" gap={4} align="start" wrap="wrap">
-                <Box>
-                  <Flex align="center" gap={2} mb={1}>
-                    <Heading size="sm" color={headingColor}>{menu.title}</Heading>
-                    <Badge
-                      colorScheme={menu.status === 'submitted' ? 'green' : 'yellow'}
-                      variant="subtle"
-                      fontSize="xs"
-                    >
-                      {t(`menus.status.${menu.status}`)}
-                    </Badge>
-                  </Flex>
-                  {menu.description && (
-                    <Text mt={1} color={textColor}>
-                      {menu.description}
-                    </Text>
-                  )}
-                  <Flex mt={2} gap={4} wrap="wrap">
-                    {typeof menu.dish_count === 'number' && (
-                      <Text fontSize="sm" color={mutedColor}>
-                        {t('menus.dishCount', { count: menu.dish_count })}
+          {sortedMenus.map(menu => {
+            const isJustSent = justSubmitted?.menuId === menu.id && Date.now() < justSubmitted.expiresAt
+
+            return (
+              <Box
+                key={menu.id}
+                borderWidth={1}
+                borderRadius="xl"
+                p={4}
+                bg={isJustSent ? highlightBg : cardBg}
+                borderColor={isJustSent ? 'brand.500' : cardBorder}
+                boxShadow="sm"
+                _hover={{ borderColor: 'brand.500', boxShadow: 'md' }}
+                transition="all 0.2s"
+              >
+                <Flex justify="space-between" gap={4} align="start" wrap="wrap">
+                  <Box>
+                    <Flex align="center" gap={2} mb={1}>
+                      <Heading size="sm" color={headingColor}>{menu.title}</Heading>
+                      <Badge
+                        colorScheme={menu.status === 'submitted' ? 'green' : 'yellow'}
+                        variant="subtle"
+                        fontSize="xs"
+                      >
+                        {t(`menus.status.${menu.status}`)}
+                      </Badge>
+
+                      {isJustSent && (
+                        <Badge
+                          colorScheme="brand"
+                          variant="subtle"
+                          fontSize="xs"
+                        >
+                          {t('menus.justSent')}
+                        </Badge>
+                      )}
+                    </Flex>
+                    {menu.description && (
+                      <Text mt={1} color={textColor}>
+                        {menu.description}
                       </Text>
                     )}
-                    <Tooltip label={new Date(menu.updated_at).toLocaleString(i18n.language)} placement="top">
-                      <Text fontSize="sm" color={mutedColor}>
-                        {t('menus.lastModified', { time: formatRelativeTime(menu.updated_at, i18n.language) })}
-                      </Text>
-                    </Tooltip>
-                  </Flex>
-                </Box>
+                    <Flex mt={2} gap={4} wrap="wrap">
+                      {typeof menu.dish_count === 'number' && (
+                        <Text fontSize="sm" color={mutedColor}>
+                          {t('menus.dishCount', { count: menu.dish_count })}
+                        </Text>
+                      )}
+                      <Tooltip label={new Date(menu.updated_at).toLocaleString(i18n.language)} placement="top">
+                        <Text fontSize="sm" color={mutedColor}>
+                          {isJustSent
+                            ? t('menus.justSent')
+                            : t('menus.lastModified', { time: formatRelativeTime(menu.updated_at, i18n.language) })}
+                        </Text>
+                      </Tooltip>
+                    </Flex>
+                  </Box>
 
-                <Flex gap={2}>
-                  <Button size="sm" variant="outline" onClick={() => onViewMenu(menu.id, menu.title)}>
-                    {t('menus.actions.view')}
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => onEditMenu(menu.id, menu.title)}>
-                    {t('menus.actions.edit')}
-                  </Button>
-                  <Button size="sm" colorScheme="red" variant="outline" onClick={() => requestDeleteMenu(menu)}>
-                    {t('menus.actions.delete')}
-                  </Button>
+                  <Flex gap={2}>
+                    <Button size="sm" variant="outline" onClick={() => onViewMenu(menu.id, menu.title)}>
+                      {t('menus.actions.view')}
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => onEditMenu(menu.id, menu.title)}>
+                      {t('menus.actions.edit')}
+                    </Button>
+                    <Button size="sm" colorScheme="red" variant="outline" onClick={() => requestDeleteMenu(menu)}>
+                      {t('menus.actions.delete')}
+                    </Button>
+                  </Flex>
                 </Flex>
-              </Flex>
-            </Box>
-          ))}
+              </Box>
+            )
+          })}
         </Stack>
       )}
 

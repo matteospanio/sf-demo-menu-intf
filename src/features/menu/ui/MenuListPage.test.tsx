@@ -97,4 +97,37 @@ describe('MenuListPage', () => {
       expect(screen.queryByText('Menu X')).not.toBeInTheDocument()
     })
   })
+
+  it('highlights a recently submitted menu for a short time', async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-01-03T12:00:00.000Z'))
+
+    vi.mocked(menuService.list).mockResolvedValue([
+      { id: 10, title: 'Menu A', description: 'Desc A', dish_count: 2, status: 'submitted', created_at: '2026-01-03T10:30:00+00:00', updated_at: '2026-01-03T12:00:00+00:00' },
+      { id: 2, title: 'Menu B', description: '', dish_count: 0, status: 'draft', created_at: '2026-01-03T10:30:00+00:00', updated_at: '2026-01-03T11:45:00+00:00' },
+    ])
+
+    render(
+      <MenuListPage
+        onCreateNew={() => {}}
+        onViewMenu={() => {}}
+        onEditMenu={() => {}}
+        recentSubmission={{ menuId: 10, submittedAt: Date.now() }}
+      />
+    )
+
+    // Flush the async menu load effect.
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(screen.getByText('Menu A')).toBeInTheDocument()
+    expect(screen.getAllByText('Just sent').length).toBeGreaterThan(0)
+
+    vi.advanceTimersByTime(2600)
+    await Promise.resolve()
+
+    expect(screen.queryAllByText('Just sent')).toHaveLength(0)
+
+    vi.useRealTimers()
+  })
 })
