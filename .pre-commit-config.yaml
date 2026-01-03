@@ -17,11 +17,11 @@ repos:
         entry: sh bin/precommit-lint.sh
         language: system
         pass_filenames: false
-        types: [file]
+        files: '\\.(ts|tsx)$'
 
     -   id: yarn-tsc-noemit
         name: yarn tsc --noEmit
         entry: sh bin/precommit-tsc-noemit.sh
         language: system
         pass_filenames: false
-        types: [file]
+        files: '\\.(ts|tsx)$'
