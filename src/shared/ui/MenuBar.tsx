@@ -33,9 +33,10 @@ import logoSoundfood from '../../assets/logo-soundfood.png'
 export interface MenuBarProps {
   onGoToMenus: () => void
   onGoToNewMenu: () => void
+  onGoToProfile: () => void
 }
 
-function MenuBar({ onGoToMenus, onGoToNewMenu }: MenuBarProps) {
+function MenuBar({ onGoToMenus, onGoToNewMenu, onGoToProfile }: MenuBarProps) {
   const { t } = useTranslation()
   const { user, logout } = useAuth()
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -63,6 +64,11 @@ function MenuBar({ onGoToMenus, onGoToNewMenu }: MenuBarProps) {
 
   const handleGoToNewMenu = () => {
     onGoToNewMenu()
+    onClose()
+  }
+
+  const handleGoToProfile = () => {
+    onGoToProfile()
     onClose()
   }
 
@@ -141,7 +147,7 @@ function MenuBar({ onGoToMenus, onGoToNewMenu }: MenuBarProps) {
               />
             </MenuButton>
             <MenuList>
-              <MenuItem icon={<FaHouseUser size={20} />}>
+              <MenuItem icon={<FaHouseUser size={20} />} onClick={onGoToProfile}>
                 {t('topLeft.profile')} ({user?.username})
               </MenuItem>
               <MenuItem icon={<MdSettings size={20} />}>{t('topLeft.settings')}</MenuItem>
@@ -203,6 +209,18 @@ function MenuBar({ onGoToMenus, onGoToNewMenu }: MenuBarProps) {
 
                 {/* Divider */}
                 <Box borderTop="1px" borderColor={drawerBorder} my={2} />
+
+                {/* Profile */}
+                <Button
+                  variant="ghost"
+                  justifyContent="flex-start"
+                  color={textColor}
+                  _hover={{ color: 'brand.500', bg: hoverBg }}
+                  leftIcon={<FaHouseUser size={18} />}
+                  onClick={handleGoToProfile}
+                >
+                  {t('topLeft.profile')}
+                </Button>
 
                 {/* Settings */}
                 <Button

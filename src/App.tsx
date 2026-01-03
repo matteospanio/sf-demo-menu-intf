@@ -4,7 +4,7 @@ import { MenuBar } from './shared/ui'
 import { MenuRequestForm } from './features/menu'
 import MenuListPage from './features/menu/ui/MenuListPage'
 import MenuDetailsPage from './features/menu/ui/MenuDetailsPage'
-import { LoginPage, useAuth } from './features/auth'
+import { LoginPage, useAuth, ProfilePage } from './features/auth'
 import { useTranslation } from 'react-i18next'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -13,6 +13,7 @@ type PageState =
   | { type: 'list' }
   | { type: 'details'; menuId: number; menuTitle?: string }
   | { type: 'edit'; menuId: number; menuTitle?: string }
+  | { type: 'profile' }
 
 function App() {
 
@@ -34,6 +35,13 @@ function App() {
 
     if (page.type === 'list') {
       return [{ label: t('menus.title') }]
+    }
+
+    if (page.type === 'profile') {
+      return [
+        { label: t('menus.title'), onClick: () => setPage({ type: 'list' }) },
+        { label: t('profile.title') },
+      ]
     }
 
     if (page.type === 'new') {
@@ -79,6 +87,7 @@ function App() {
     <MenuBar
       onGoToMenus={() => setPage({ type: 'list' })}
       onGoToNewMenu={() => setPage({ type: 'new' })}
+      onGoToProfile={() => setPage({ type: 'profile' })}
     />
 
     <Container mt='2rem' maxW='900px' p={4}>
@@ -134,6 +143,13 @@ function App() {
             menuId={page.menuId}
             onDone={() => setPage({ type: 'details', menuId: page.menuId, menuTitle: page.menuTitle })}
           />
+        </>
+      )}
+
+      {page.type === 'profile' && (
+        <>
+          <Divider my={5} orientation='horizontal' />
+          <ProfilePage onBack={() => setPage({ type: 'list' })} />
         </>
       )}
 

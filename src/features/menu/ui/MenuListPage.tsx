@@ -1,6 +1,7 @@
 import {
   Alert,
   AlertIcon,
+  Badge,
   Box,
   Button,
   Flex,
@@ -8,6 +9,7 @@ import {
   Spinner,
   Stack,
   Text,
+  Tooltip,
   useColorModeValue,
   useDisclosure,
   AlertDialog,
@@ -20,6 +22,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ApiError, type ApiMenu, menuService } from '../../../api'
+import { formatRelativeTime } from '../../../shared/lib'
 
 export interface MenuListPageProps {
   onCreateNew: () => void
@@ -28,7 +31,7 @@ export interface MenuListPageProps {
 }
 
 export default function MenuListPage({ onCreateNew, onViewMenu, onEditMenu }: MenuListPageProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   const [menus, setMenus] = useState<ApiMenu[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -139,17 +142,33 @@ export default function MenuListPage({ onCreateNew, onViewMenu, onEditMenu }: Me
             >
               <Flex justify="space-between" gap={4} align="start" wrap="wrap">
                 <Box>
-                  <Heading size="sm" color={headingColor}>{menu.title}</Heading>
+                  <Flex align="center" gap={2} mb={1}>
+                    <Heading size="sm" color={headingColor}>{menu.title}</Heading>
+                    <Badge
+                      colorScheme={menu.status === 'submitted' ? 'green' : 'yellow'}
+                      variant="subtle"
+                      fontSize="xs"
+                    >
+                      {t(`menus.status.${menu.status}`)}
+                    </Badge>
+                  </Flex>
                   {menu.description && (
                     <Text mt={1} color={textColor}>
                       {menu.description}
                     </Text>
                   )}
-                  {typeof menu.dish_count === 'number' && (
-                    <Text mt={2} fontSize="sm" color={mutedColor}>
-                      {t('menus.dishCount', { count: menu.dish_count })}
-                    </Text>
-                  )}
+                  <Flex mt={2} gap={4} wrap="wrap">
+                    {typeof menu.dish_count === 'number' && (
+                      <Text fontSize="sm" color={mutedColor}>
+                        {t('menus.dishCount', { count: menu.dish_count })}
+                      </Text>
+                    )}
+                    <Tooltip label={new Date(menu.updated_at).toLocaleString(i18n.language)} placement="top">
+                      <Text fontSize="sm" color={mutedColor}>
+                        {t('menus.lastModified', { time: formatRelativeTime(menu.updated_at, i18n.language) })}
+                      </Text>
+                    </Tooltip>
+                  </Flex>
                 </Box>
 
                 <Flex gap={2}>

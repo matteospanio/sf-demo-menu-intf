@@ -18,6 +18,29 @@
         "loggingIn": "Logging in...",
         "registering": "Registering..."
     },
+    "profile": {
+        "title": "Profile",
+        "memberSince": "Member since {{date}}",
+        "emailHidden": "Email is hidden for security",
+        "changeEmail": "Change email",
+        "changePassword": "Change password",
+        "newEmail": "New email",
+        "emailRequired": "Email is required",
+        "currentPassword": "Current password",
+        "currentPasswordPlaceholder": "Enter your current password",
+        "newPassword": "New password",
+        "newPasswordPlaceholder": "Enter your new password",
+        "showPassword": "Show password",
+        "hidePassword": "Hide password",
+        "emailUpdated": {
+            "title": "Email updated",
+            "description": "Your email has been updated successfully."
+        },
+        "passwordUpdated": {
+            "title": "Password updated",
+            "description": "Your password has been updated successfully."
+        }
+    },
     "main": {
         "actions": "Actions",
         "newMenuRequest": "New Menu Request",
@@ -57,6 +80,11 @@
         "dishCount": "{{count}} dishes",
         "dishesTitle": "Dishes",
         "noDishes": "No dishes for this menu.",
+        "lastModified": "Modified {{time}}",
+        "status": {
+            "draft": "Draft",
+            "submitted": "Submitted"
+        },
         "actions": {
             "view": "View",
             "edit": "Edit",
@@ -183,6 +211,10 @@
         "menuSubmitted": {
             "title": "Menu submitted",
             "description": "The menu has been submitted successfully."
+        },
+        "draftSaved": {
+            "title": "Draft saved",
+            "description": "Your menu has been saved as draft."
         },
         "menuCreated": {
             "title": "Menu created",

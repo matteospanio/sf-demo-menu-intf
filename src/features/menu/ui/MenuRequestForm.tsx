@@ -51,7 +51,8 @@ import {
   dishService,
   CreateDishRequest,
   ApiDish,
-  ApiError
+  ApiError,
+  MenuStatus
 } from '../../../api'
 import { Dish } from '../model/dish'
 
@@ -199,8 +200,10 @@ function MenuRequestForm({ menuId: initialMenuId, onDone }: MenuRequestFormProps
   const [title, setTitle] = useState('')
   const [menuDesc, setMenuDesc] = useState('')
   const [menuId, setMenuId] = useState<number | null>(initialMenuId ?? null)
+  const [menuStatus, setMenuStatus] = useState<MenuStatus>('draft')
   const [dishes, setDishes] = useState<LocalDish[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSavingDraft, setIsSavingDraft] = useState(false)
   const [isLoadingExistingMenu, setIsLoadingExistingMenu] = useState(false)
   const [existingMenuError, setExistingMenuError] = useState<string | null>(null)
 
@@ -248,6 +251,7 @@ function MenuRequestForm({ menuId: initialMenuId, onDone }: MenuRequestFormProps
           setMenuId(initialMenuId)
           setTitle(menuResponse.title)
           setMenuDesc(menuResponse.description ?? '')
+          setMenuStatus(menuResponse.status)
           setDishes(dishesResponse.map(apiDishToLocal))
         }
       } catch (err) {
@@ -441,6 +445,76 @@ function MenuRequestForm({ menuId: initialMenuId, onDone }: MenuRequestFormProps
     setDishes(prev => prev.filter(d => d.id !== dish.id))
   }
 
+  /**
+   * Save menu as draft (no strict validations required).
+   * Only menu title is required for drafts.
+   */
+  const saveDraft = async () => {
+    if (!title) {
+      toast({
+        title: t('toast.menuTitleRequired.title'),
+        description: t('toast.menuTitleRequired.description'),
+        status: 'error',
+        duration: MODAL_TIMER,
+        isClosable: true,
+      })
+      return
+    }
+
+    setIsSavingDraft(true)
+
+    try {
+      let currentMenuId = menuId
+      if (!currentMenuId) {
+        // Create new menu as draft
+        const menuResponse = await menuService.create({
+          title,
+          description: menuDesc || undefined,
+        })
+        currentMenuId = menuResponse.id
+        setMenuId(currentMenuId)
+
+        // Create all dishes if any
+        for (const dish of dishes) {
+          const response = await dishService.create(currentMenuId, localDishToApi(dish))
+          dish.id = response.id
+        }
+        setDishes([...dishes])
+      } else {
+        // Update existing menu, keeping it as draft
+        await menuService.update(currentMenuId, {
+          title,
+          description: menuDesc || undefined,
+          status: 'draft',
+        })
+      }
+
+      setMenuStatus('draft')
+
+      toast({
+        title: t('toast.draftSaved.title'),
+        description: t('toast.draftSaved.description'),
+        status: 'success',
+        duration: MODAL_TIMER,
+        isClosable: true,
+      })
+    } catch (err) {
+      toast({
+        title: t('toast.apiError.title'),
+        description: err instanceof ApiError ? err.message : t('toast.apiError.description'),
+        status: 'error',
+        duration: MODAL_TIMER,
+        isClosable: true,
+      })
+    } finally {
+      setIsSavingDraft(false)
+    }
+  }
+
+  /**
+   * Submit menu for processing (strict validations required).
+   * Requires title and at least one dish.
+   */
   const submitMenu = async () => {
     if (!title) {
       toast({
@@ -489,6 +563,10 @@ function MenuRequestForm({ menuId: initialMenuId, onDone }: MenuRequestFormProps
           description: menuDesc || undefined,
         })
       }
+
+      // Submit the menu (change status to 'submitted')
+      await menuService.submit(currentMenuId)
+      setMenuStatus('submitted')
 
       toast({
         title: t('toast.menuSubmitted.title'),
@@ -553,6 +631,21 @@ function MenuRequestForm({ menuId: initialMenuId, onDone }: MenuRequestFormProps
           dishes: dishes.map(localDishToLegacy),
         }}
       />
+
+      {/* Show current status badge when editing an existing menu */}
+      {menuId && (
+        <Flex mb={4}>
+          <Badge
+            colorScheme={menuStatus === 'submitted' ? 'green' : 'yellow'}
+            variant="subtle"
+            fontSize="sm"
+            px={3}
+            py={1}
+          >
+            {t(`menus.status.${menuStatus}`)}
+          </Badge>
+        </Flex>
+      )}
 
       <InputWrapper label={t("main.menuTitle")} isRequired>
         <Input value={title} onChange={(e) => { e.preventDefault(); setTitle(e.target.value) }} />
@@ -849,10 +942,17 @@ function MenuRequestForm({ menuId: initialMenuId, onDone }: MenuRequestFormProps
             variant={'solid'}
             leftIcon={<EmailIcon />}
             isLoading={isSubmitting}
+            isDisabled={isSavingDraft}
           >
             {t('main.submit')}
           </Button>
-          <Button variant={'outline'} isDisabled leftIcon={<FaSave />}>
+          <Button
+            variant={'outline'}
+            leftIcon={<FaSave />}
+            onClick={saveDraft}
+            isLoading={isSavingDraft}
+            isDisabled={isSubmitting}
+          >
             {t('main.save')}
           </Button>
         </Stack>

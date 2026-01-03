@@ -14,6 +14,10 @@ SoundFood creates tailored music experiences for restaurants to enhance the perc
 - **Authentication**
   - Register, login, logout
   - Token persisted in `localStorage` (`auth_token`)
+- **Profile management**
+  - View profile information (username, member since)
+  - Update email address
+  - Change password
 - **Menu request creation**
   - Create a menu (title required, description optional)
   - Add multiple dishes to the menu
@@ -174,6 +178,9 @@ See [.github/workflows/ci.yml](.github/workflows/ci.yml).
 ## User stories (what you can do in the app)
 
 - As a restaurant user, I can **register** and **log in** to access the menu intake form.
+- As a restaurant user, I can **view my profile** with username and registration date.
+- As a restaurant user, I can **update my email address** from the profile page.
+- As a restaurant user, I can **change my password** by providing the current password and a new one.
 - As a restaurant user, I can **create a menu request** with a title and optional description.
 - As a restaurant user, I can **add multiple dishes** to the menu.
 - As a restaurant user, I can **describe each dish** through:
@@ -184,9 +191,12 @@ See [.github/workflows/ci.yml](.github/workflows/ci.yml).
   - selectable textures/shapes/emotions loaded from the API
 - As a restaurant user, I can **edit** or **delete** dishes before submitting.
 - As a restaurant user, I can **reorder dishes** to match the menu order.
-- As a restaurant user, I can **submit** the menu request, sending menu + dishes to the SoundFood API.
+- As a restaurant user, I can **save a menu as draft** (only title required, no dishes needed).
+- As a restaurant user, I can **submit** the menu request (title and at least one dish required), sending menu + dishes to the SoundFood API.
+- As a restaurant user, I can **edit a submitted menu** (menus remain editable after submission).
 - As a restaurant user, I can **review a summary** of what was submitted.
-- As a restaurant user, I can **see the list of my created menus**, open details, **edit**, and **delete** a menu.
+- As a restaurant user, I can **see the list of my created menus** with their status (Draft/Submitted) and last modification time.
+- As a restaurant user, I can open menu details, **edit**, and **delete** a menu.
 - As a user, I can **switch language** (EN/IT) from the top bar.
 - As a user, I can **log out**.
 
@@ -199,11 +209,13 @@ flowchart LR
   User((Restaurant user)) --> UI[SoundFood Menu Intake UI]
 
   UI --> Auth[Auth Feature]
+  UI --> Profile[Profile Feature]
   UI --> Menu[Menu Feature]
   UI --> MenusMgmt[Menus Management UI]
   UI --> Shared[Shared UI/Lib]
 
   Auth --> Api[API Client]
+  Profile --> Api
   Menu --> Api
   MenusMgmt --> Api
   Menu --> Attr[Attributes Loader]
@@ -239,7 +251,52 @@ sequenceDiagram
     A-->>FE: dishId
   end
 
+  FE->>A: POST /api/menus/{menuId}/submit
+  A->>API: POST /api/menus/{menuId}/submit
+  API-->>A: { message }
+  A-->>FE: ok
+  Note over FE: Menu status changes to 'submitted'
+
   FE-->>U: Show success toast + open summary drawer
+```
+
+### Sequence diagram — save menu as draft
+
+```mermaid
+sequenceDiagram
+  autonumber
+  actor U as Restaurant user
+  participant FE as Frontend
+  participant A as API Client
+  participant API as SoundFood API
+
+  U->>FE: Fill menu title (description optional)
+  U->>FE: Optionally add dishes
+  U->>FE: Click "Save draft"
+
+  alt Menu not yet created
+    FE->>A: POST /api/menus (CreateMenuRequest)
+    A->>API: POST /api/menus
+    API-->>A: { id }
+    A-->>FE: menuId
+    Note over FE: Menu created with status='draft'
+
+    opt If dishes present
+      loop for each dish
+        FE->>A: POST /api/menus/{menuId}/dishes
+        A->>API: POST /api/menus/{menuId}/dishes
+        API-->>A: { id }
+        A-->>FE: dishId
+      end
+    end
+  else Menu already exists
+    FE->>A: PUT /api/menus/{menuId} (status='draft')
+    A->>API: PUT /api/menus/{menuId}
+    API-->>A: { message }
+    A-->>FE: ok
+  end
+
+  FE-->>U: Show "Draft saved" toast
 ```
 
 ### Sequence diagram — manage menus (list / view / edit / delete)
@@ -281,14 +338,65 @@ sequenceDiagram
   A-->>FE: ok
 ```
 
+### Sequence diagram — profile management (update email / password)
+
+```mermaid
+sequenceDiagram
+  autonumber
+  actor U as Restaurant user
+  participant FE as Frontend
+  participant A as API Client
+  participant API as SoundFood API
+
+  U->>FE: Open Profile page
+  FE-->>U: Show profile info (username, member since)
+
+  U->>FE: Click "Change email"
+  FE-->>U: Show email input form
+
+  U->>FE: Enter new email and confirm
+  FE->>A: PATCH /auth/me/email
+  A->>API: PATCH /auth/me/email
+  API-->>A: { message }
+  A-->>FE: ok
+  FE-->>U: Show success toast
+
+  U->>FE: Click "Change password"
+  FE-->>U: Show password input form
+
+  U->>FE: Enter current + new password and confirm
+  FE->>A: PATCH /auth/me/password
+  A->>API: PATCH /auth/me/password
+  API-->>A: { message }
+  A-->>FE: ok
+  FE-->>U: Show success toast
+```
+
 ### Class diagram — API domain types
 
 ```mermaid
 classDiagram
+  class User {
+    +number id
+    +string username
+    +string role
+    +string created_at
+    +string updated_at
+  }
+
   class ApiMenu {
     +number id
     +string title
     +string description
+    +MenuStatus status
+    +string created_at
+    +string updated_at
+  }
+
+  class MenuStatus {
+    <<enumeration>>
+    draft
+    submitted
   }
 
   class ApiDish {
@@ -305,6 +413,8 @@ classDiagram
     +number fat
     +number temperature
     +string[] colors
+    +string created_at
+    +string updated_at
   }
 
   class ApiEmotion {
@@ -320,10 +430,35 @@ classDiagram
     +string description
   }
 
+  User "1" --> "many" ApiMenu : owns
   ApiMenu "1" --> "many" ApiDish : dishes
+  ApiMenu --> MenuStatus : status
   ApiDish "many" --> "many" ApiEmotion : emotions
   ApiDish "many" --> "many" ApiTexture : textures
   ApiDish "many" --> "many" ApiShape : shapes
+```
+
+### State diagram — menu status
+
+```mermaid
+stateDiagram-v2
+  [*] --> Draft: Create new menu
+  Draft --> Draft: Save draft
+  Draft --> Submitted: Submit
+  Submitted --> Draft: Revert to draft
+  Submitted --> Submitted: Update (still editable)
+
+  note right of Draft
+    - Only title required
+    - No validation on dishes
+    - Can be saved anytime
+  end note
+
+  note right of Submitted
+    - Title + dishes required
+    - Menu sent for processing
+    - Still editable
+  end note
 ```
 
 ### State diagram — auth

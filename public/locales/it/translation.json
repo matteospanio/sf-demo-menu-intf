@@ -18,6 +18,29 @@
         "loggingIn": "Accesso in corso...",
         "registering": "Registrazione in corso..."
     },
+    "profile": {
+        "title": "Profilo",
+        "memberSince": "Membro dal {{date}}",
+        "emailHidden": "L'email è nascosta per sicurezza",
+        "changeEmail": "Cambia email",
+        "changePassword": "Cambia password",
+        "newEmail": "Nuova email",
+        "emailRequired": "L'email è obbligatoria",
+        "currentPassword": "Password attuale",
+        "currentPasswordPlaceholder": "Inserisci la password attuale",
+        "newPassword": "Nuova password",
+        "newPasswordPlaceholder": "Inserisci la nuova password",
+        "showPassword": "Mostra password",
+        "hidePassword": "Nascondi password",
+        "emailUpdated": {
+            "title": "Email aggiornata",
+            "description": "La tua email è stata aggiornata con successo."
+        },
+        "passwordUpdated": {
+            "title": "Password aggiornata",
+            "description": "La tua password è stata aggiornata con successo."
+        }
+    },
     "main": {
         "actions": "Azioni",
         "newMenuRequest": "Nuova richiesta di menu",
@@ -57,6 +80,11 @@
         "dishCount": "{{count}} portate",
         "dishesTitle": "Portate",
         "noDishes": "Nessuna portata per questo menu.",
+        "lastModified": "Modificato {{time}}",
+        "status": {
+            "draft": "Bozza",
+            "submitted": "Inviato"
+        },
         "actions": {
             "view": "Vedi",
             "edit": "Modifica",
@@ -183,6 +211,10 @@
         "menuSubmitted": {
             "title": "Menu inviato",
             "description": "Il menu è stato inviato con successo."
+        },
+        "draftSaved": {
+            "title": "Bozza salvata",
+            "description": "Il menu è stato salvato come bozza."
         },
         "menuCreated": {
             "title": "Menu creato",
