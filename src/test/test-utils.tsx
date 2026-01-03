@@ -98,6 +98,11 @@ i18n.use(initReactI18next).init({
           submit: 'Save',
           cancel: 'Close',
         },
+            settings: {
+              title: 'Settings',
+              themeDark: 'Dark mode',
+              language: 'Language',
+            },
         cathegory: {
           appetizer: 'Appetizer',
           firstCourse: 'First Course',

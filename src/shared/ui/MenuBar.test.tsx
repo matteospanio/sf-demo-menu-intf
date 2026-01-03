@@ -18,6 +18,7 @@ describe('MenuBar', () => {
     onGoToMenus: vi.fn(),
     onGoToNewMenu: vi.fn(),
     onGoToProfile: vi.fn(),
+    onGoToSettings: vi.fn(),
   }
 
   beforeEach(() => {

@@ -100,6 +100,11 @@
             "confirm": "Delete"
         }
     },
+    "settings": {
+        "title": "Settings",
+        "themeDark": "Dark mode",
+        "language": "Language"
+    },
     "cathegory": {
         "appetizer": "Appetizer",
         "firstCourse": "First Course",

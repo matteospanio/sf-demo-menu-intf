@@ -1,6 +1,8 @@
 export const SLIDER_DEFAULT = 0
 export const MODAL_TIMER = 5000
 
+export const CLIENT_SETTINGS_STORAGE_KEY = 'sf_client_settings'
+
 /**
  * SoundFood Brand Colors
  * These should match the theme configuration in src/theme.ts

@@ -35,9 +35,10 @@ export interface MenuBarProps {
   onGoToMenus: () => void
   onGoToNewMenu: () => void
   onGoToProfile: () => void
+  onGoToSettings: () => void
 }
 
-function MenuBar({ onGoToMenus, onGoToNewMenu, onGoToProfile }: MenuBarProps) {
+function MenuBar({ onGoToMenus, onGoToNewMenu, onGoToProfile, onGoToSettings }: MenuBarProps) {
   const { t } = useTranslation()
   const { user, logout } = useAuth()
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -73,6 +74,11 @@ function MenuBar({ onGoToMenus, onGoToNewMenu, onGoToProfile }: MenuBarProps) {
 
   const handleGoToProfile = () => {
     onGoToProfile()
+    onClose()
+  }
+
+  const handleGoToSettings = () => {
+    onGoToSettings()
     onClose()
   }
 
@@ -154,7 +160,9 @@ function MenuBar({ onGoToMenus, onGoToNewMenu, onGoToProfile }: MenuBarProps) {
               <MenuItem icon={<FaHouseUser size={20} />} onClick={onGoToProfile}>
                 {t('topLeft.profile')} ({user?.username})
               </MenuItem>
-              <MenuItem icon={<MdSettings size={20} />}>{t('topLeft.settings')}</MenuItem>
+              <MenuItem data-testid="user-menu-settings" icon={<MdSettings size={20} />} onClick={handleGoToSettings}>
+                {t('topLeft.settings')}
+              </MenuItem>
               {canAccessAdmin && (
                 <MenuItem
                   as="a"
@@ -239,11 +247,13 @@ function MenuBar({ onGoToMenus, onGoToNewMenu, onGoToProfile }: MenuBarProps) {
 
                 {/* Settings */}
                 <Button
+                  data-testid="drawer-settings"
                   variant="ghost"
                   justifyContent="flex-start"
                   color={textColor}
                   _hover={{ color: 'brand.500', bg: hoverBg }}
                   leftIcon={<MdSettings size={18} />}
+                  onClick={handleGoToSettings}
                 >
                   {t('topLeft.settings')}
                 </Button>

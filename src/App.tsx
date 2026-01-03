@@ -1,13 +1,14 @@
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, Container, Divider, Spinner, Center, Box, useColorModeValue } from '@chakra-ui/react'
 import { ChevronRightIcon } from '@chakra-ui/icons'
 import { MenuBar } from './shared/ui'
-import { MenuRequestForm } from './features/menu'
+import { MenuRequestForm, MenuSettingsPage } from './features/menu'
 import MenuListPage from './features/menu/ui/MenuListPage'
 import MenuDetailsPage from './features/menu/ui/MenuDetailsPage'
 import { LoginPage, useAuth, ProfilePage } from './features/auth'
 import { useTranslation } from 'react-i18next'
 import { useEffect, useMemo, useState } from 'react'
 import type { MenuRequestFormDoneResult } from './features/menu/ui/MenuRequestForm'
+import { useClientSettings } from './hooks/useClientSettings'
 
 type PageState =
   | { type: 'new' }
@@ -15,8 +16,11 @@ type PageState =
   | { type: 'details'; menuId: number; menuTitle?: string }
   | { type: 'edit'; menuId: number; menuTitle?: string }
   | { type: 'profile' }
+  | { type: 'settings' }
 
 function App() {
+
+  useClientSettings()
 
   const { t } = useTranslation()
   const { isAuthenticated, isLoading } = useAuth()
@@ -43,6 +47,13 @@ function App() {
       return [
         { label: t('menus.title'), onClick: () => setPage({ type: 'list' }) },
         { label: t('profile.title') },
+      ]
+    }
+
+    if (page.type === 'settings') {
+      return [
+        { label: t('menus.title'), onClick: () => setPage({ type: 'list' }) },
+        { label: t('settings.title') },
       ]
     }
 
@@ -90,6 +101,7 @@ function App() {
       onGoToMenus={() => setPage({ type: 'list' })}
       onGoToNewMenu={() => setPage({ type: 'new' })}
       onGoToProfile={() => setPage({ type: 'profile' })}
+      onGoToSettings={() => setPage({ type: 'settings' })}
     />
 
     <Container mt='2rem' maxW='900px' p={4}>
@@ -159,6 +171,13 @@ function App() {
         <>
           <Divider my={5} orientation='horizontal' />
           <ProfilePage onBack={() => setPage({ type: 'list' })} />
+        </>
+      )}
+
+      {page.type === 'settings' && (
+        <>
+          <Divider my={5} orientation='horizontal' />
+          <MenuSettingsPage onBack={() => setPage({ type: 'list' })} />
         </>
       )}
 

@@ -100,6 +100,11 @@
             "confirm": "Elimina"
         }
     },
+    "settings": {
+        "title": "Impostazioni",
+        "themeDark": "Modalità scura",
+        "language": "Lingua"
+    },
     "cathegory": {
         "appetizer": "Antipasto",
         "firstCourse": "Primo",

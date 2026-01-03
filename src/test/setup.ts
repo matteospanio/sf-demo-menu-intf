@@ -2,6 +2,15 @@ import '@testing-library/jest-dom'
 import { afterEach, vi } from 'vitest'
 import { cleanup } from '@testing-library/react'
 
+const focusVisibleMock = {
+  trackFocusVisible: () => () => {},
+  trackInteractionModality: () => () => {},
+  setInteractionModality: () => {},
+  getInteractionModality: () => null,
+}
+
+vi.mock('@zag-js/focus-visible', () => focusVisibleMock)
+
 // Cleanup after each test
 afterEach(() => {
   cleanup()
@@ -46,6 +55,21 @@ window.scrollTo = vi.fn()
 const originalGetComputedStyle = window.getComputedStyle
 window.getComputedStyle = (element: Element) => {
   return originalGetComputedStyle(element)
+}
+
+// Chakra UI (via @zag-js/focus-visible) may attempt to patch HTMLElement.prototype.focus.
+// Some jsdom versions expose focus as a getter-only property; make it writable for tests.
+try {
+  const desc = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'focus')
+  if (!desc || desc.writable !== true) {
+    Object.defineProperty(HTMLElement.prototype, 'focus', {
+      configurable: true,
+      writable: true,
+      value: vi.fn(),
+    })
+  }
+} catch {
+  // Ignore if the runtime prevents redefining.
 }
 
 // Mock localStorage

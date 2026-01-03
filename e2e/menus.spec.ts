@@ -54,11 +54,22 @@ async function mockAttributes(page: Page) {
 
 async function openMyMenus(page: Page) {
   const heading = page.getByRole('heading', { name: /my menus|i miei menu/i })
-  if (await heading.count()) return
 
-  // Navigation is responsive (desktop buttons vs mobile drawer). The logo action is stable.
+  // Wait for the page to stabilize (auth check completes, menus load)
+  // First wait for the app to be ready
+  await expect(page.getByRole('button', { name: 'Go to menus list' })).toBeVisible({ timeout: 10000 })
+
+  // Check if we're already on the menus page
+  const isOnMenusPage = await heading.isVisible().catch(() => false)
+  if (isOnMenusPage) {
+    return
+  }
+
+  // Click the logo/home button to navigate to menus
   await page.getByRole('button', { name: 'Go to menus list' }).click()
-  await expect(heading).toBeVisible()
+
+  // Wait for navigation to complete
+  await expect(heading).toBeVisible({ timeout: 10000 })
 }
 
 test.describe('Menus management', () => {
@@ -69,51 +80,60 @@ test.describe('Menus management', () => {
 
   test('can open menus list and view details', async ({ page }) => {
     const menuTitle = 'Winter Menu'
+    const nowIso = new Date().toISOString()
 
     await page.route(`${API}/api/menus`, async (route) => {
+      if (route.request().method() === 'OPTIONS') return fulfillPreflight(route)
       if (route.request().method() !== 'GET') return route.fallback()
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([
-          { id: 1, title: menuTitle, description: 'Seasonal dishes', dish_count: 2 },
-        ]),
-      })
+      await fulfillJson(route, [
+        {
+          id: 1,
+          title: menuTitle,
+          description: 'Seasonal dishes',
+          status: 'draft',
+          dish_count: 2,
+          created_at: nowIso,
+          updated_at: nowIso,
+        },
+      ])
     })
 
     await page.route(`${API}/api/menus/1`, async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ id: 1, title: menuTitle, description: 'Seasonal dishes' }),
+      if (route.request().method() === 'OPTIONS') return fulfillPreflight(route)
+      await fulfillJson(route, {
+        id: 1,
+        title: menuTitle,
+        description: 'Seasonal dishes',
+        status: 'draft',
+        created_at: nowIso,
+        updated_at: nowIso,
       })
     })
 
     await page.route(`${API}/api/menus/1/dishes`, async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([
-          {
-            id: 11,
-            name: 'Pumpkin Risotto',
-            description: 'Creamy and aromatic',
-            section: 'firstCourse',
-            emotions: [],
-            textures: [],
-            shapes: [],
-            bitter: 0,
-            salty: 0,
-            sour: 0,
-            sweet: 0,
-            umami: 0,
-            fat: 0,
-            piquant: 0,
-            temperature: 0,
-            colors: ['#ffffff'],
-          },
-        ]),
-      })
+      if (route.request().method() === 'OPTIONS') return fulfillPreflight(route)
+      await fulfillJson(route, [
+        {
+          id: 11,
+          name: 'Pumpkin Risotto',
+          description: 'Creamy and aromatic',
+          section: 'firstCourse',
+          emotions: [],
+          textures: [],
+          shapes: [],
+          bitter: 0,
+          salty: 0,
+          sour: 0,
+          sweet: 0,
+          umami: 0,
+          fat: 0,
+          piquant: 0,
+          temperature: 0,
+          colors: ['#ffffff'],
+          created_at: nowIso,
+          updated_at: nowIso,
+        },
+      ])
     })
 
     await page.goto('/')
@@ -131,24 +151,28 @@ test.describe('Menus management', () => {
   })
 
   test('can delete a menu from the list', async ({ page }) => {
+    const nowIso = new Date().toISOString()
+
     await page.route(`${API}/api/menus`, async (route) => {
+      if (route.request().method() === 'OPTIONS') return fulfillPreflight(route)
       if (route.request().method() !== 'GET') return route.fallback()
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([
-          { id: 7, title: 'Menu To Delete', description: '', dish_count: 0 },
-        ]),
-      })
+      await fulfillJson(route, [
+        {
+          id: 7,
+          title: 'Menu To Delete',
+          description: '',
+          status: 'draft',
+          dish_count: 0,
+          created_at: nowIso,
+          updated_at: nowIso,
+        },
+      ])
     })
 
     await page.route(`${API}/api/menus/7`, async (route) => {
+      if (route.request().method() === 'OPTIONS') return fulfillPreflight(route)
       if (route.request().method() !== 'DELETE') return route.fallback()
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ message: 'ok' }),
-      })
+      await fulfillJson(route, { message: 'ok' })
     })
 
     await page.goto('/')
@@ -171,18 +195,16 @@ test.describe('Menus management', () => {
     const nowIso = new Date().toISOString()
 
     await page.route(`${API}/api/menus`, async (route) => {
+      if (route.request().method() === 'OPTIONS') return fulfillPreflight(route)
       if (route.request().method() !== 'GET') return route.fallback()
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([
-          { id: 1, title: currentTitle, description: 'Desc', dish_count: 1, status: 'draft', created_at: nowIso, updated_at: nowIso },
-        ]),
-      })
+      await fulfillJson(route, [
+        { id: 1, title: currentTitle, description: 'Desc', dish_count: 1, status: 'draft', created_at: nowIso, updated_at: nowIso },
+      ])
     })
 
     await page.route(`${API}/api/menus/1`, async (route) => {
       const method = route.request().method()
+      if (method === 'OPTIONS') return fulfillPreflight(route)
       if (method === 'GET') {
         await fulfillJson(route, { id: 1, title: currentTitle, description: 'Desc', status: 'draft' })
         return
@@ -206,30 +228,27 @@ test.describe('Menus management', () => {
     })
 
     await page.route(`${API}/api/menus/1/dishes`, async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([
-          {
-            id: 22,
-            name: 'Existing Dish',
-            description: '',
-            section: 'appetizer',
-            emotions: [],
-            textures: [],
-            shapes: [],
-            bitter: 0,
-            salty: 0,
-            sour: 0,
-            sweet: 0,
-            umami: 0,
-            fat: 0,
-            piquant: 0,
-            temperature: 0,
-            colors: ['#ffffff'],
-          },
-        ]),
-      })
+      if (route.request().method() === 'OPTIONS') return fulfillPreflight(route)
+      await fulfillJson(route, [
+        {
+          id: 22,
+          name: 'Existing Dish',
+          description: '',
+          section: 'appetizer',
+          emotions: [],
+          textures: [],
+          shapes: [],
+          bitter: 0,
+          salty: 0,
+          sour: 0,
+          sweet: 0,
+          umami: 0,
+          fat: 0,
+          piquant: 0,
+          temperature: 0,
+          colors: ['#ffffff'],
+        },
+      ])
     })
 
     await page.goto('/')
