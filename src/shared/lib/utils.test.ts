@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { capitalize, Section, Emotion, Texture, Shape, formatRelativeTime } from './utils'
+import { capitalize, Section, Emotion, Texture, Shape, formatRelativeTime, parseApiUtcDate } from './utils'
 
 describe('Utils', () => {
   describe('capitalize', () => {
@@ -221,6 +221,20 @@ describe('Utils', () => {
         const fiveMinutesAgo = new Date('2026-01-03T11:55:00Z').toISOString()
         expect(formatRelativeTime(fiveMinutesAgo, 'fr')).toBe('5 minutes ago')
       })
+    })
+  })
+
+  describe('parseApiUtcDate', () => {
+    it('treats timezone-less ISO strings as UTC', () => {
+      expect(parseApiUtcDate('2026-01-03T10:30:00').toISOString()).toBe('2026-01-03T10:30:00.000Z')
+    })
+
+    it('treats timezone-less strings with space separator as UTC', () => {
+      expect(parseApiUtcDate('2026-01-03 10:30:00').toISOString()).toBe('2026-01-03T10:30:00.000Z')
+    })
+
+    it('preserves explicit timezone offsets', () => {
+      expect(parseApiUtcDate('2026-01-03T10:30:00+00:00').toISOString()).toBe('2026-01-03T10:30:00.000Z')
     })
   })
 })

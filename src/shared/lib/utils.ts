@@ -74,6 +74,37 @@ export interface SelectOption<T> {
 
 export const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 
+const hasExplicitTimezone = (s: string): boolean => {
+  // Matches a trailing 'Z' or numeric offset like +01:00 / -0530
+  return /(Z|[+-]\d{2}:?\d{2})$/i.test(s)
+}
+
+/**
+ * Parses an API date string that is known to be in UTC (+00:00).
+ *
+ * Some backends may return timestamps without an explicit timezone (e.g. "2026-01-03T10:30:00"),
+ * which JavaScript interprets as *local* time. That causes relative-time rendering ("1 ora fa")
+ * to be off by the local timezone offset.
+ *
+ * This helper treats timezone-less strings as UTC and returns a Date that represents the correct
+ * instant in time.
+ */
+export const parseApiUtcDate = (dateString: string): Date => {
+  const trimmed = dateString.trim()
+  const normalized = trimmed.includes(' ') && !trimmed.includes('T')
+    ? trimmed.replace(' ', 'T')
+    : trimmed
+
+  const utcString = hasExplicitTimezone(normalized) ? normalized : `${normalized}Z`
+  const parsed = new Date(utcString)
+  if (!Number.isNaN(parsed.getTime())) {
+    return parsed
+  }
+
+  // Fallback: let Date try its best for unusual formats.
+  return new Date(dateString)
+}
+
 /**
  * Formats a date string as relative time (e.g., "5 hours ago", "just now").
  *
@@ -86,7 +117,7 @@ export const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
  * formatRelativeTime('2024-01-15T10:30:00Z', 'it') // "2 ore fa"
  */
 export const formatRelativeTime = (dateString: string, locale: string = 'en'): string => {
-  const date = new Date(dateString)
+  const date = parseApiUtcDate(dateString)
   const now = new Date()
   const diffMs = now.getTime() - date.getTime()
   const diffSeconds = Math.floor(diffMs / 1000)
