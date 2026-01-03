@@ -1,6 +1,28 @@
-import { test, expect, type Page } from '@playwright/test'
+import { test, expect, type Page, type Route } from '@playwright/test'
 
 const API = 'http://localhost:5000'
+
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
+  'Access-Control-Allow-Headers': 'Authorization,Content-Type',
+}
+
+async function fulfillPreflight(route: Route) {
+  await route.fulfill({
+    status: 204,
+    headers: CORS_HEADERS,
+  })
+}
+
+async function fulfillJson(route: Route, body: unknown, status = 200) {
+  await route.fulfill({
+    status,
+    headers: CORS_HEADERS,
+    contentType: 'application/json',
+    body: JSON.stringify(body),
+  })
+}
 
 async function mockAuth(page: Page) {
   await page.addInitScript(() => {
@@ -10,19 +32,24 @@ async function mockAuth(page: Page) {
   })
 
   await page.route(`${API}/auth/me`, async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ id: 1, username: 'e2e-user', role: 'user' }),
-    })
+    if (route.request().method() === 'OPTIONS') return fulfillPreflight(route)
+    await fulfillJson(route, { id: 1, username: 'e2e-user', role: 'user' })
   })
 }
 
 async function mockAttributes(page: Page) {
-  const empty = { status: 200, contentType: 'application/json', body: JSON.stringify([]) }
-  await page.route(`${API}/api/emotions`, async (route) => route.fulfill(empty))
-  await page.route(`${API}/api/textures`, async (route) => route.fulfill(empty))
-  await page.route(`${API}/api/shapes`, async (route) => route.fulfill(empty))
+  await page.route(`${API}/api/emotions`, async (route) => {
+    if (route.request().method() === 'OPTIONS') return fulfillPreflight(route)
+    await fulfillJson(route, [])
+  })
+  await page.route(`${API}/api/textures`, async (route) => {
+    if (route.request().method() === 'OPTIONS') return fulfillPreflight(route)
+    await fulfillJson(route, [])
+  })
+  await page.route(`${API}/api/shapes`, async (route) => {
+    if (route.request().method() === 'OPTIONS') return fulfillPreflight(route)
+    await fulfillJson(route, [])
+  })
 }
 
 async function openMyMenus(page: Page) {
@@ -156,26 +183,25 @@ test.describe('Menus management', () => {
     await page.route(`${API}/api/menus/1`, async (route) => {
       const method = route.request().method()
       if (method === 'GET') {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ id: 1, title: currentTitle, description: 'Desc' }),
-        })
+        await fulfillJson(route, { id: 1, title: currentTitle, description: 'Desc', status: 'draft' })
         return
       }
 
       if (method === 'PUT') {
         const body = route.request().postDataJSON?.() ?? {}
         if (typeof body.title === 'string') currentTitle = body.title
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ message: 'ok' }),
-        })
+        await fulfillJson(route, { message: 'ok' })
         return
       }
 
       await route.fallback()
+    })
+
+    await page.route(`${API}/api/menus/1/submit`, async (route) => {
+      const method = route.request().method()
+      if (method === 'OPTIONS') return fulfillPreflight(route)
+      if (method !== 'POST') return route.fallback()
+      await fulfillJson(route, { message: 'ok' })
     })
 
     await page.route(`${API}/api/menus/1/dishes`, async (route) => {

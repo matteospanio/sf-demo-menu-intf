@@ -203,6 +203,13 @@ test.describe('Menu Form', () => {
       await fulfillJson(route, { message: 'ok', id: dishId })
     })
 
+    await page.route('**/api/menus/123/submit', async (route) => {
+      const method = route.request().method()
+      if (method === 'OPTIONS') return fulfillPreflight(route)
+      if (method !== 'POST') return route.fallback()
+      await fulfillJson(route, { message: 'ok' })
+    })
+
     const submit = page.getByRole('button', { name: 'Submit' })
     await submit.scrollIntoViewIfNeeded()
     await submit.click()

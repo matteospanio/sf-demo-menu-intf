@@ -142,8 +142,8 @@ describe('ProfilePage', () => {
       const emailInput = await screen.findByPlaceholderText(/email/i);
       fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
 
-      // Click save button (the check icon button with aria-label modal.submit)
-      const saveButton = screen.getByRole('button', { name: /modal\.submit/i });
+      // Click save button
+      const saveButton = screen.getByRole('button', { name: /save/i });
       fireEvent.click(saveButton);
 
       // Should show error alert
@@ -191,7 +191,7 @@ describe('ProfilePage', () => {
       }
 
       // Click save button
-      const saveButton = screen.getByRole('button', { name: /modal\.submit/i });
+      const saveButton = screen.getByRole('button', { name: /save/i });
       fireEvent.click(saveButton);
 
       // API should not be called with mismatched passwords
@@ -219,7 +219,7 @@ describe('ProfilePage', () => {
       fireEvent.change(emailInput, { target: { value: 'newemail@example.com' } });
 
       // Click save button
-      const saveButton = screen.getByRole('button', { name: /modal\.submit/i });
+      const saveButton = screen.getByRole('button', { name: /save/i });
       fireEvent.click(saveButton);
 
       // API should be called
@@ -261,7 +261,7 @@ describe('ProfilePage', () => {
       }
 
       // Click save button
-      const saveButton = screen.getByRole('button', { name: /modal\.submit/i });
+      const saveButton = screen.getByRole('button', { name: /save/i });
       fireEvent.click(saveButton);
 
       // API should be called
@@ -289,8 +289,8 @@ describe('ProfilePage', () => {
       const emailInput = await screen.findByPlaceholderText(/email/i);
       expect(emailInput).toBeInTheDocument();
 
-      // Click cancel button (the X icon button)
-      const cancelButton = screen.getByRole('button', { name: /cancel/i });
+      // Click cancel button (the Close button)
+      const cancelButton = screen.getByRole('button', { name: /close/i });
       fireEvent.click(cancelButton);
 
       // Email input should no longer be visible
@@ -318,16 +318,14 @@ describe('ProfilePage', () => {
       });
 
       // Click cancel button
-      const cancelButton = screen.getAllByRole('button', { name: /cancel/i })[0];
-      if (cancelButton) {
-        fireEvent.click(cancelButton);
+      const cancelButton = screen.getByRole('button', { name: /close/i });
+      fireEvent.click(cancelButton);
 
-        // Password inputs should no longer be visible
-        await waitFor(() => {
-          const passwordInputs = screen.queryAllByPlaceholderText(/password/i);
-          expect(passwordInputs.length).toBe(0);
-        });
-      }
+      // Password inputs should no longer be visible
+      await waitFor(() => {
+        const passwordInputs = screen.queryAllByPlaceholderText(/password/i);
+        expect(passwordInputs.length).toBe(0);
+      });
     }
   });
 
@@ -354,7 +352,7 @@ describe('ProfilePage', () => {
       const emailInput = await screen.findByPlaceholderText(/email/i);
       fireEvent.change(emailInput, { target: { value: 'newemail@example.com' } });
 
-      const saveButton = screen.getByRole('button', { name: /modal\.submit/i });
+      const saveButton = screen.getByRole('button', { name: /save/i });
       fireEvent.click(saveButton);
 
       // Should show error
@@ -394,7 +392,7 @@ describe('ProfilePage', () => {
         fireEvent.change(passwordInputs[2], { target: { value: 'newpassword123' } });
       }
 
-      const saveButton = screen.getByRole('button', { name: /modal\.submit/i });
+      const saveButton = screen.getByRole('button', { name: /save/i });
       fireEvent.click(saveButton);
 
       // Should show error
