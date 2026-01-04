@@ -63,7 +63,7 @@
     "jsdom": "^27.4.0",
     "typescript": "^5.2.2",
     "vite": "^5.4.21",
-    "vite-plugin-static-copy": "^1.0.5",
+    "vite-plugin-static-copy": "^2.3.2",
     "vitest": "^4.0.16"
   }
 }
