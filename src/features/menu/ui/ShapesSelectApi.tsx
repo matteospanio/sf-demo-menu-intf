@@ -13,7 +13,7 @@ function ShapesSelectApi({ shapes, selectedIds, onChange }: ShapesSelectApiProps
   const { t } = useTranslation()
 
   const options = shapes.map(shape => ({
-    label: shape.description,
+    label: t(`shapes.${shape.description}`),
     value: shape.id,
   }));
 

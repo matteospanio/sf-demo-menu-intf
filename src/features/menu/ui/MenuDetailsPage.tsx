@@ -194,7 +194,7 @@ export default function MenuDetailsPage({ menuId, onBack, onEdit, onDeleted, onM
                   >
                     <Text fontWeight="bold" color={headingColor}>{dish.name}</Text>
                     {dish.description && <Text color={textColor}>{dish.description}</Text>}
-                    <Text fontSize="sm" color="brand.500">{dish.section}</Text>
+                    <Text fontSize="sm" color="brand.500">{t(`cathegory.${dish.section}`)}</Text>
 
                     {(tasteSummary || attrCounts.length > 0 || colors.length > 0) && (
                       <Box mt={2}>

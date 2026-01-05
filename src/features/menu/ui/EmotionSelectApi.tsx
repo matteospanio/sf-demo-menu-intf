@@ -13,7 +13,7 @@ function EmotionSelectApi({ emotions, selectedIds, onChange }: EmotionSelectApiP
   const { t } = useTranslation()
 
   const options = emotions.map(emotion => ({
-    label: emotion.description,
+    label: t(`emotions.${emotion.description}`),
     value: emotion.id,
   }));
 

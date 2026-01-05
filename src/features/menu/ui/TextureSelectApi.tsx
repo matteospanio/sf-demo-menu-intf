@@ -13,7 +13,7 @@ function TextureSelectApi({ textures, selectedIds, onChange }: TextureSelectApiP
   const { t } = useTranslation()
 
   const options = textures.map(texture => ({
-    label: texture.description,
+    label: t(`textures.${texture.description}`),
     value: texture.id,
   }));
 

@@ -47,7 +47,7 @@ describe('MenuDetailsPage', () => {
         id: 1,
         name: 'Dish 1',
         description: '',
-        section: 'Appetizer',
+        section: 'appetizer',
         sweet: 0,
         salty: 0,
         bitter: 0,
