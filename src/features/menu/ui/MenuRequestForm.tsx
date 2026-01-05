@@ -75,6 +75,18 @@ interface LocalDish {
   emotion_ids: number[];
   texture_ids: number[];
   shape_ids: number[];
+  // Track which descriptors are explicitly checked
+  sweetChecked?: boolean;
+  bitterChecked?: boolean;
+  sourChecked?: boolean;
+  saltyChecked?: boolean;
+  umamiChecked?: boolean;
+  piquantChecked?: boolean;
+  fatChecked?: boolean;
+  temperatureChecked?: boolean;
+  color1Checked?: boolean;
+  color2Checked?: boolean;
+  color3Checked?: boolean;
 }
 
 // Convert local dish to API format
@@ -82,17 +94,18 @@ const localDishToApi = (dish: LocalDish): CreateDishRequest => ({
   name: dish.name,
   description: dish.description || undefined,
   section: dish.section,
-  sweet: dish.sweet,
-  bitter: dish.bitter,
-  sour: dish.sour,
-  salty: dish.salty,
-  umami: dish.umami,
-  piquant: dish.piquant,
-  fat: dish.fat,
-  temperature: dish.temperature,
-  color1: dish.color1 !== '#ffffff' ? dish.color1 : undefined,
-  color2: dish.color2 !== '#ffffff' ? dish.color2 : undefined,
-  color3: dish.color3 !== '#ffffff' ? dish.color3 : undefined,
+  // Manda il valore solo se checked, altrimenti undefined (l'API può interpretarlo come "non impostato")
+  sweet: dish.sweetChecked ? dish.sweet : undefined,
+  bitter: dish.bitterChecked ? dish.bitter : undefined,
+  sour: dish.sourChecked ? dish.sour : undefined,
+  salty: dish.saltyChecked ? dish.salty : undefined,
+  umami: dish.umamiChecked ? dish.umami : undefined,
+  piquant: dish.piquantChecked ? dish.piquant : undefined,
+  fat: dish.fatChecked ? dish.fat : undefined,
+  temperature: dish.temperatureChecked ? dish.temperature : undefined,
+  color1: dish.color1Checked ? dish.color1 : undefined,
+  color2: dish.color2Checked ? dish.color2 : undefined,
+  color3: dish.color3Checked ? dish.color3 : undefined,
   emotion_ids: dish.emotion_ids,
   texture_ids: dish.texture_ids,
   shape_ids: dish.shape_ids,
@@ -129,25 +142,41 @@ const apiDishToLocal = (dish: ApiDish): LocalDish => {
   const c2 = colors[1] ?? '#ffffff'
   const c3 = colors[2] ?? '#ffffff'
 
+  // L'API potrebbe restituire sempre tutti i valori o solo quelli impostati
+  // Consideriamo "checked" se il valore è presente (non undefined) nell'API
+  // Questo permette di distinguere tra unchecked (omesso dall'API) e checked=0 (presente nell'API)
   return {
     id: dish.id,
     name: dish.name,
     description: dish.description ?? '',
     section: dish.section as Section,
-    sweet: dish.sweet,
-    bitter: dish.bitter,
-    sour: dish.sour,
-    salty: dish.salty,
-    umami: dish.umami,
-    piquant: dish.piquant,
-    fat: dish.fat,
-    temperature: dish.temperature,
+    sweet: dish.sweet ?? 0,
+    bitter: dish.bitter ?? 0,
+    sour: dish.sour ?? 0,
+    salty: dish.salty ?? 0,
+    umami: dish.umami ?? 0,
+    piquant: dish.piquant ?? 0,
+    fat: dish.fat ?? 0,
+    temperature: dish.temperature ?? 0,
     color1: c1,
     color2: c2,
     color3: c3,
     emotion_ids: dish.emotions.map(e => e.id),
     texture_ids: dish.textures.map(t => t.id),
     shape_ids: dish.shapes.map(s => s.id),
+    // Consideriamo checked solo se il valore è esplicitamente presente nell'API (non undefined)
+    // Questo permette di supportare checked=0 (valore presente) vs unchecked (valore omesso)
+    sweetChecked: dish.sweet !== undefined,
+    bitterChecked: dish.bitter !== undefined,
+    sourChecked: dish.sour !== undefined,
+    saltyChecked: dish.salty !== undefined,
+    umamiChecked: dish.umami !== undefined,
+    piquantChecked: dish.piquant !== undefined,
+    fatChecked: dish.fat !== undefined,
+    temperatureChecked: dish.temperature !== undefined,
+    color1Checked: colors.length > 0,
+    color2Checked: colors.length > 1,
+    color3Checked: colors.length > 2,
   }
 }
 
@@ -282,17 +311,18 @@ function MenuRequestForm({ menuId: initialMenuId, onDone }: MenuRequestFormProps
   const loadDishIntoForm = (dish: LocalDish) => {
     setCurrentDish(dish)
     setEditingDishId(dish.id ?? null)
-    setSweetChecked(dish.sweet !== 0)
-    setBitterChecked(dish.bitter !== 0)
-    setSourChecked(dish.sour !== 0)
-    setSaltyChecked(dish.salty !== 0)
-    setUmamiChecked(dish.umami !== 0)
-    setPiquantChecked(dish.piquant !== 0)
-    setFatChecked(dish.fat !== 0)
-    setTemperatureChecked(dish.temperature !== 0)
-    setColorCheck1(dish.color1 !== '#ffffff')
-    setColorCheck2(dish.color2 !== '#ffffff')
-    setColorCheck3(dish.color3 !== '#ffffff')
+    // Usa i valori checked salvati nel dish, se presenti, altrimenti fallback al controllo del valore
+    setSweetChecked(dish.sweetChecked ?? (dish.sweet !== 0))
+    setBitterChecked(dish.bitterChecked ?? (dish.bitter !== 0))
+    setSourChecked(dish.sourChecked ?? (dish.sour !== 0))
+    setSaltyChecked(dish.saltyChecked ?? (dish.salty !== 0))
+    setUmamiChecked(dish.umamiChecked ?? (dish.umami !== 0))
+    setPiquantChecked(dish.piquantChecked ?? (dish.piquant !== 0))
+    setFatChecked(dish.fatChecked ?? (dish.fat !== 0))
+    setTemperatureChecked(dish.temperatureChecked ?? (dish.temperature !== 0))
+    setColorCheck1(dish.color1Checked ?? (dish.color1 !== '#ffffff'))
+    setColorCheck2(dish.color2Checked ?? (dish.color2 !== '#ffffff'))
+    setColorCheck3(dish.color3Checked ?? (dish.color3 !== '#ffffff'))
   }
 
   const saveDishLocal = async () => {
@@ -307,7 +337,7 @@ function MenuRequestForm({ menuId: initialMenuId, onDone }: MenuRequestFormProps
       return
     }
 
-    // Apply checkbox states to dish values
+    // Apply checkbox states to dish values and save checked states
     const dishToSave: LocalDish = {
       ...currentDish,
       sweet: sweetChecked ? currentDish.sweet : 0,
@@ -321,6 +351,18 @@ function MenuRequestForm({ menuId: initialMenuId, onDone }: MenuRequestFormProps
       color1: colorCheck1 ? currentDish.color1 : '#ffffff',
       color2: colorCheck2 ? currentDish.color2 : '#ffffff',
       color3: colorCheck3 ? currentDish.color3 : '#ffffff',
+      // Salva gli stati checked
+      sweetChecked,
+      bitterChecked,
+      sourChecked,
+      saltyChecked,
+      umamiChecked,
+      piquantChecked,
+      fatChecked,
+      temperatureChecked,
+      color1Checked: colorCheck1,
+      color2Checked: colorCheck2,
+      color3Checked: colorCheck3,
     }
 
     // If we have a menu already created, save to API
