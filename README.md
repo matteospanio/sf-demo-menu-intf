@@ -11,6 +11,7 @@
 [![Playwright](https://img.shields.io/badge/Playwright-E2E-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev/)
 [![i18next](https://img.shields.io/badge/i18next-23.x-26A69A?logo=i18next&logoColor=white)](https://www.i18next.com/)
 [![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/SoundFoodPhygital/menu-client)
 
 > A **React + TypeScript** web interface for collecting restaurant menu data and sending it to the **SoundFood API**.
 
